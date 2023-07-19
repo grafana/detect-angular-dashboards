@@ -20,7 +20,7 @@ func _main() error {
 	if len(os.Args) >= 2 {
 		grafanaURL = os.Args[1]
 	}
-	fmt.Println("Detecting Angular dashboards for %q", grafanaURL)
+	fmt.Printf("Detecting Angular dashboards for %q", grafanaURL)
 
 	ctx := context.Background()
 	grCl := grafana.NewAPIClient(grafanaURL, token)
