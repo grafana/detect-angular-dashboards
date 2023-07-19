@@ -9,12 +9,21 @@ import (
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
 )
 
-const token = "glsa_DqEkKuBAzcFClUjDEoMIA7jOQlfAA4jx_337f01d6"
+const envGrafanaToken = "GRAFANA_TOKEN"
 
 func _main() error {
-	ctx := context.Background()
+	token := os.Getenv(envGrafanaToken)
+	if token == "" {
+		return fmt.Errorf("missing env var %q", envGrafanaToken)
+	}
+	grafanaURL := grafana.DefaultBaseURL
+	if len(os.Args) >= 2 {
+		grafanaURL = os.Args[1]
+	}
+	fmt.Println("Detecting Angular dashboards for %q", grafanaURL)
 
-	grCl := grafana.NewAPIClient(grafana.DefaultBaseURL, token)
+	ctx := context.Background()
+	grCl := grafana.NewAPIClient(grafanaURL, token)
 	gcomCl := gcom.NewAPIClient()
 
 	plugins, err := grCl.GetPlugins(ctx)
