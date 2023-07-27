@@ -74,7 +74,7 @@ type FrontendSettings struct {
 	// Panels is a map from panel plugin id to plugin metadata
 	Panels map[string]struct {
 		// AngularDetected is true if the plugin uses Angular APIs
-		AngularDetected bool
+		AngularDetected *bool
 	}
 
 	// Datasources is a map from datasource names to plugin metadata
@@ -83,7 +83,7 @@ type FrontendSettings struct {
 		Type string
 
 		// AngularDetected is true if the plugin uses Angular APIs
-		AngularDetected bool
+		AngularDetected *bool
 	}
 }
 

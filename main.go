@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/grafana/detect-angular-dashboards/api/gcom"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
 )
 
@@ -19,41 +20,61 @@ func _main() error {
 	if len(os.Args) >= 2 {
 		grafanaURL = os.Args[1]
 	}
-	fmt.Printf("Detecting Angular dashboards for %q", grafanaURL)
+	fmt.Printf("Detecting Angular dashboards for %q\n", grafanaURL)
 
 	ctx := context.Background()
 	grCl := grafana.NewAPIClient(grafanaURL, token)
-	/* gcomCl := gcom.NewAPIClient()
+	gcomCl := gcom.NewAPIClient()
 
-	plugins, err := grCl.GetPlugins(ctx)
-	if err != nil {
-		return fmt.Errorf("get plugins: %w", err)
-	}
-
-	// Determine if plugins are angular
-	angularDetected := make(map[string]bool, len(plugins))
-	for _, p := range plugins {
-		if p.Info.Version == "" {
-			continue
-		}
-		angularDetected[p.ID], err = gcomCl.GetAngularDetected(ctx, p.ID, p.Info.Version)
-		if err != nil {
-			return fmt.Errorf("get angular detected: %w", err)
-		}
-		fmt.Println("Plugin", p.ID, "version", p.Info.Version, "angular", angularDetected[p.ID])
-	}	 */
-
-	// Determine if plugins are angular
+	// Determine if plugins are angular.
+	// This can be done from frontendsettings (faster and works with private plugins, but only works with >= 10.1.0)
+	// or from GCOM (slower, but always available, but public plugins only)
 	angularDetected := map[string]bool{}
 	frontendSettings, err := grCl.GetFrontendSettings(ctx)
 	if err != nil {
 		return fmt.Errorf("get frontend settings: %w", err)
 	}
-	for pluginID, meta := range frontendSettings.Panels {
-		angularDetected[pluginID] = meta.AngularDetected
+
+	// Determine if we should use GCOM or frontendsettings
+	var useGCOM bool
+	// Get any key and see if AngularDetected is present or not.
+	// From Grafana 10.1.0, it will always be present.
+	// Before Grafana 10.1.0, it's always nil as it's not present in the body.
+	for _, p := range frontendSettings.Panels {
+		useGCOM = p.AngularDetected == nil
+		break
 	}
-	for _, meta := range frontendSettings.Datasources {
-		angularDetected[meta.Type] = meta.AngularDetected
+	if useGCOM {
+		// Fall back to GCOM (< 10.1.0)
+		fmt.Println(
+			"Using GCOM to find Angular plugins\n(WARNING, dependencies on private plugins won't be flagged)",
+		)
+		plugins, err := grCl.GetPlugins(ctx)
+		if err != nil {
+			return fmt.Errorf("get plugins: %w", err)
+		}
+		for _, p := range plugins {
+			if p.Info.Version == "" {
+				continue
+			}
+			angularDetected[p.ID], err = gcomCl.GetAngularDetected(ctx, p.ID, p.Info.Version)
+			if err != nil {
+				return fmt.Errorf("get angular detected: %w", err)
+			}
+		}
+	} else {
+		fmt.Println("Using frontendsettings to find Angular plugins")
+		for pluginID, meta := range frontendSettings.Panels {
+			angularDetected[pluginID] = *meta.AngularDetected
+		}
+		for _, meta := range frontendSettings.Datasources {
+			angularDetected[meta.Type] = *meta.AngularDetected
+		}
+	}
+
+	// Debug
+	for p, isAngular := range angularDetected {
+		fmt.Println("Plugin", p, "angular", isAngular)
 	}
 
 	// Map ds name -> ds plugin id, to resolve legacy dashboards that have ds name
