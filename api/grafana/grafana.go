@@ -68,3 +68,29 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*Dashboard, e
 
 	return out.Dashboard, nil
 }
+
+// FrontendSettings is the response returned by api/frontend/settings
+type FrontendSettings struct {
+	// Panels is a map from panel plugin id to plugin metadata
+	Panels map[string]struct {
+		// AngularDetected is true if the plugin uses Angular APIs
+		AngularDetected bool
+	}
+
+	// Datasources is a map from datasource names to plugin metadata
+	Datasources map[string]struct {
+		// Type is the plugin's ID
+		Type string
+
+		// AngularDetected is true if the plugin uses Angular APIs
+		AngularDetected bool
+	}
+}
+
+func (cl APIClient) GetFrontendSettings(ctx context.Context) (*FrontendSettings, error) {
+	var out FrontendSettings
+	if err := cl.Request(ctx, "frontend/settings", &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}

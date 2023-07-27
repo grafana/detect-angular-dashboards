@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/grafana/detect-angular-dashboards/api/gcom"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
 )
 
@@ -24,7 +23,7 @@ func _main() error {
 
 	ctx := context.Background()
 	grCl := grafana.NewAPIClient(grafanaURL, token)
-	gcomCl := gcom.NewAPIClient()
+	/* gcomCl := gcom.NewAPIClient()
 
 	plugins, err := grCl.GetPlugins(ctx)
 	if err != nil {
@@ -42,6 +41,19 @@ func _main() error {
 			return fmt.Errorf("get angular detected: %w", err)
 		}
 		fmt.Println("Plugin", p.ID, "version", p.Info.Version, "angular", angularDetected[p.ID])
+	}	 */
+
+	// Determine if plugins are angular
+	angularDetected := map[string]bool{}
+	frontendSettings, err := grCl.GetFrontendSettings(ctx)
+	if err != nil {
+		return fmt.Errorf("get frontend settings: %w", err)
+	}
+	for pluginID, meta := range frontendSettings.Panels {
+		angularDetected[pluginID] = meta.AngularDetected
+	}
+	for _, meta := range frontendSettings.Datasources {
+		angularDetected[meta.Type] = meta.AngularDetected
 	}
 
 	// Map ds name -> ds plugin id, to resolve legacy dashboards that have ds name
