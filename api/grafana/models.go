@@ -16,6 +16,7 @@ type Datasource struct {
 
 type ListedDashboard struct {
 	UID   string
+	URL   string
 	Title string
 }
 

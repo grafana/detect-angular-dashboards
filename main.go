@@ -2,25 +2,34 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
+	"net/url"
 	"os"
+	"strings"
 
 	"github.com/grafana/detect-angular-dashboards/api/gcom"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
+	"github.com/grafana/detect-angular-dashboards/logger"
 )
 
 const envGrafanaToken = "GRAFANA_TOKEN"
 
 func _main() error {
+	verboseFlag := flag.Bool("v", false, "verbose output")
+	flag.Parse()
+
+	log := &logger.Logger{Verbose: *verboseFlag}
+
 	token := os.Getenv(envGrafanaToken)
 	if token == "" {
 		return fmt.Errorf("missing env var %q", envGrafanaToken)
 	}
 	grafanaURL := grafana.DefaultBaseURL
-	if len(os.Args) >= 2 {
-		grafanaURL = os.Args[1]
+	if flag.NArg() >= 1 {
+		grafanaURL = flag.Arg(0)
 	}
-	fmt.Printf("Detecting Angular dashboards for %q\n", grafanaURL)
+	log.Logf("Detecting Angular dashboards for %q", grafanaURL)
 
 	ctx := context.Background()
 	grCl := grafana.NewAPIClient(grafanaURL, token)
@@ -46,9 +55,8 @@ func _main() error {
 	}
 	if useGCOM {
 		// Fall back to GCOM (< 10.1.0)
-		fmt.Println(
-			"Using GCOM to find Angular plugins\n(WARNING, dependencies on private plugins won't be flagged)",
-		)
+		log.Verbosef("Using GCOM to find Angular plugins")
+		log.Logf("(WARNING, dependencies on private plugins won't be flagged)")
 		plugins, err := grCl.GetPlugins(ctx)
 		if err != nil {
 			return fmt.Errorf("get plugins: %w", err)
@@ -63,7 +71,7 @@ func _main() error {
 			}
 		}
 	} else {
-		fmt.Println("Using frontendsettings to find Angular plugins")
+		log.Verbosef("Using frontendsettings to find Angular plugins")
 		for pluginID, meta := range frontendSettings.Panels {
 			angularDetected[pluginID] = *meta.AngularDetected
 		}
@@ -74,7 +82,7 @@ func _main() error {
 
 	// Debug
 	for p, isAngular := range angularDetected {
-		fmt.Println("Plugin", p, "angular", isAngular)
+		log.Verbosef("Plugin %q angular %t", p, isAngular)
 	}
 
 	// Map ds name -> ds plugin id, to resolve legacy dashboards that have ds name
@@ -85,7 +93,7 @@ func _main() error {
 	datasourcePluginIDs := make(map[string]string, len(apiDs))
 	for _, ds := range apiDs {
 		datasourcePluginIDs[ds.Name] = ds.Type
-		fmt.Println("Datasource", ds.Name, "plugin id", ds.Type)
+		log.Verbosef("Datasource %q plugin ID %q", ds.Name, ds.Type)
 	}
 
 	dashboards, err := grCl.GetDashboards(ctx, 1)
@@ -93,7 +101,7 @@ func _main() error {
 		return fmt.Errorf("get dashboards: %w", err)
 	}
 	for _, d := range dashboards {
-		fmt.Println("Checking dashboard", d.UID, d.Title)
+		var detectionMessages []string
 		dashboard, err := grCl.GetDashboard(ctx, d.UID)
 		if err != nil {
 			return fmt.Errorf("get dashboard %q: %w", d.UID, err)
@@ -101,7 +109,7 @@ func _main() error {
 		for _, p := range dashboard.Panels {
 			// Check panel
 			if angularDetected[p.Type] {
-				fmt.Println("\tFound angular panel", p.Type)
+				detectionMessages = append(detectionMessages, fmt.Sprintf("Found angular panel %q", p.Type))
 			}
 
 			// Check datasource
@@ -118,11 +126,28 @@ func _main() error {
 				return fmt.Errorf("unknown unmarshaled datasource type %T", p.Datasource)
 			}
 			if angularDetected[dsPlugin] {
-				fmt.Println("\tFound angular datasource", dsPlugin)
+				detectionMessages = append(detectionMessages, fmt.Sprintf("Found angular datasource %q", dsPlugin))
 			}
 		}
-	}
 
+		// Determine absolute dashboard URL
+		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(grafanaURL, "/api"), d.URL)
+		if err != nil {
+			// Silently ignore errors
+			dashboardAbsURL = ""
+		}
+
+		// Print output
+		checkMessage := fmt.Sprintf("Checking dashboard %q %q", d.Title, dashboardAbsURL)
+		if len(detectionMessages) > 0 {
+			log.Logf(checkMessage)
+			for _, msg := range detectionMessages {
+				log.Logf(msg)
+			}
+		} else {
+			log.Verbosef(checkMessage)
+		}
+	}
 	return nil
 }
 
