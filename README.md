@@ -26,7 +26,16 @@ Then, create a service account token for the newly created service account and s
 
 ## Usage
 
+### Building from source
+
 ```bash
-$ go build -v
-$ GRAFANA_TOKEN=abcd ./detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:3000/api]
+go build -v
+GRAFANA_TOKEN=abcd ./detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:3000/api]
 ```
+
+### Running with Docker
+```bash
+docker build -t detect-angular-dashboards .
+docker run --rm -it -e GRAFANA_TOKEN=abcd detect-angular-dashboards http://172.17.0.1:3000/api
+```
+
