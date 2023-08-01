@@ -1,0 +1,45 @@
+---
+kind: pipeline
+type: docker
+name: publish
+
+steps:
+  - name: github-release
+    image: alpine:3.18
+    environment: :
+      GITHUB_APP_ID:
+        from_secret: gh-app-id
+      GITHUB_APP_INSTALLATION_ID:
+        from_secret: gh-app-installation-id
+      GITHUB_APP_PRIVATE_KEY:
+        from_secret: gh-app-private-key
+
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
+
+trigger:
+  ref:
+    - refs/tags/*
+
+---
+name: gh-app-private-key
+kind: secret
+get:
+  name: private-key
+  path: infra/data/ci/detect-ancular-dashboards/github-app
+---
+name: gh-app-installation-id
+kind: secret
+get:
+  name: app-installation-id
+  path: infra/data/ci/detect-ancular-dashboards/github-app
+---
+name: gh-app-id
+kind: secret
+get:
+  name: app-id
+  path: infra/data/ci/detect-ancular-dashboards/github-app
+
+# TODO: signature
