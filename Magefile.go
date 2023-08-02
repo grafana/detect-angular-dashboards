@@ -4,14 +4,17 @@ package main
 
 import (
 	"archive/zip"
+	"errors"
 	"fmt"
-	"github.com/magefile/mage/mg"
-	"github.com/magefile/mage/sh"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
+
+	"github.com/magefile/mage/mg"
+	"github.com/magefile/mage/sh"
 )
 
 type Build mg.Namespace
@@ -57,6 +60,7 @@ func (b Build) All() error {
 	return nil
 }
 
+// zipFolder zips all files in inFolder into the outFileName .zip file (which will be created).
 func (b Build) zipFolder(inFolder string, outFileName string) error {
 	w, err := os.Create(outFileName)
 	if err != nil {
@@ -96,9 +100,19 @@ func (b Build) zipFolder(inFolder string, outFileName string) error {
 	return nil
 }
 
-func (b Build) Package(releaseName string) error {
+// Docker builds the docker image with the specified tag.
+func (Build) Docker(tag string) error {
+	return sh.RunV("docker", "build", "-t", "detect-angular-dashboards:"+tag, ".")
+}
+
+// Package runs build:all and creates multiple .zip files inside dist/artifacts/<releaseName>, one for each folder in dist/*.
+func Package(releaseName string) error {
+	var b Build
 	mg.Deps(b.All)
-	return filepath.WalkDir(distFolder, func(path string, d fs.DirEntry, err error) error {
+
+	var wg sync.WaitGroup
+	errs := make(chan error, 1)
+	errs <- filepath.WalkDir(distFolder, func(path string, d fs.DirEntry, err error) error {
 		// Skip dist folder (first call)
 		if path == distFolder {
 			return nil
@@ -115,17 +129,42 @@ func (b Build) Package(releaseName string) error {
 			return fmt.Errorf("mkdir %q: %w", outFolder, err)
 		}
 		zipFn := filepath.Join(outFolder, fmt.Sprintf("%s_%s.zip", d.Name(), releaseName))
-		fmt.Println("creating release package", zipFn)
-		if err := b.zipFolder(path, zipFn); err != nil {
-			return fmt.Errorf("zip folder %q: %w", zipFn, err)
-		}
+
+		wg.Add(1)
+		go func() {
+			fmt.Println("creating release package", zipFn)
+			if err := b.zipFolder(path, zipFn); err != nil {
+				errs <- fmt.Errorf("zip folder %q: %w", zipFn, err)
+			}
+			wg.Done()
+		}()
+
 		return nil
 	})
+
+	// Join all zip and general walkdir error
+	var finalErr error
+	go func() {
+		for err := range errs {
+			finalErr = errors.Join(finalErr, err)
+		}
+	}()
+
+	// Wait for everyone to terminate
+	wg.Wait()
+	close(errs)
+	return finalErr
 }
 
-// Docker builds the docker image with the specified tag.
-func (Build) Docker(tag string) error {
-	return sh.RunV("docker", "build", "-t", "detect-angular-dashboards:"+tag, ".")
+// Clean deletes all the build binaries and artifacts from dist.
+func Clean() error {
+	if err := os.RemoveAll(distFolder); err != nil {
+		return fmt.Errorf("removeall: %w", err)
+	}
+	if err := os.MkdirAll(distFolder, os.ModePerm); err != nil {
+		return fmt.Errorf("mkdirall: %w", err)
+	}
+	return nil
 }
 
 // Test runs the test suite.
@@ -159,7 +198,7 @@ type GitHub mg.Namespace
 
 // Release pushes a GitHub release
 func (g GitHub) Release(releaseName string) error {
-	mg.Deps(mg.F(Build{}.Package, releaseName))
+	mg.Deps(mg.F(Package, releaseName))
 	// TODO: create GitHub release
 	return nil
 }
