@@ -28,18 +28,18 @@ name: gh-app-private-key
 kind: secret
 get:
   name: private-key
-  path: infra/data/ci/detect-ancular-dashboards/github-app
+  path: infra/data/ci/detect-angular-dashboards/github-app
 ---
 name: gh-app-installation-id
 kind: secret
 get:
   name: app-installation-id
-  path: infra/data/ci/detect-ancular-dashboards/github-app
+  path: infra/data/ci/detect-angular-dashboards/github-app
 ---
 name: gh-app-id
 kind: secret
 get:
   name: app-id
-  path: infra/data/ci/detect-ancular-dashboards/github-app
+  path: infra/data/ci/detect-angular-dashboards/github-app
 
 # TODO: signature
