@@ -41,8 +41,8 @@ func (Build) Go(goOs, goArch string) error {
 	)
 }
 
-// Build builds the binary for the current os and arch.
-func (b Build) Build() error {
+// Current builds the binary for the current os and arch.
+func (b Build) Current() error {
 	return b.Go(runtime.GOOS, runtime.GOARCH)
 }
 
