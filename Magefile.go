@@ -43,7 +43,7 @@ func (Build) Go(goOs, goArch string) error {
 	const programName = "detect-angular-dashboards"
 	args := []string{"build", "-o", filepath.Join(distFolder, goOs+"_"+goArch, programName)}
 
-	var ldFlags []string
+	ldFlags := []string{"-s", "-w"}
 	const buildPkg = "github.com/grafana/detect-angular-dashboards/build"
 
 	if commitSha := gitCommitSha(); commitSha != "" {
