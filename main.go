@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/grafana/detect-angular-dashboards/build"
 	"net/url"
 	"os"
 	"strings"
@@ -16,8 +17,14 @@ import (
 const envGrafanaToken = "GRAFANA_TOKEN"
 
 func _main() error {
+	versionFlag := flag.Bool("version", false, "print version number")
 	verboseFlag := flag.Bool("v", false, "verbose output")
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("%s %s (%s)\n", os.Args[0], build.Version, build.LinkerCommitSHA)
+		return nil
+	}
 
 	log := &logger.Logger{Verbose: *verboseFlag}
 
