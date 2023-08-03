@@ -307,6 +307,7 @@ func (g GitHub) Release(releaseName string) error {
 				Name: filepath.Base(fn),
 			}, f); err != nil {
 				errs <- fmt.Errorf("upload release artifact %q: %w", fn, err)
+				return
 			}
 			fmt.Println("upload", fn, "ok!")
 		}()
