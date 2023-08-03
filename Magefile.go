@@ -33,7 +33,7 @@ const (
 	droneServerURL = "https://drone.grafana.net"
 	gitHubOrg      = "grafana"
 	gitHubRepo     = "detect-angular-dashboards"
-	droneRepo      = "github.com/" + gitHubOrg + "/" + gitHubRepo
+	droneRepo      = gitHubOrg + "/" + gitHubRepo
 )
 
 // Go builds the go binary for the specified os and arch into dist/<os>_<arch>/detect-angular-dashboards.
