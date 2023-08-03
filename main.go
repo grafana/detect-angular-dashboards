@@ -22,7 +22,7 @@ func _main() error {
 	flag.Parse()
 
 	if *versionFlag {
-		fmt.Printf("%s %s (%s)\n", os.Args[0], build.Version, build.LinkerCommitSHA)
+		fmt.Printf("%s %s (%s)\n", os.Args[0], build.LinkerVersion, build.LinkerCommitSHA)
 		return nil
 	}
 

@@ -1,5 +1,5 @@
 package build
 
-var Version = "v0.1.0"
+var LinkerVersion = "v0.0.0"
 
 var LinkerCommitSHA = "0000000"

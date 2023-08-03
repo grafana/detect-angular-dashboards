@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -41,11 +42,25 @@ func (Build) Go(goOs, goArch string) error {
 
 	const programName = "detect-angular-dashboards"
 	args := []string{"build", "-o", filepath.Join(distFolder, goOs+"_"+goArch, programName)}
+
+	var ldFlags []string
+	const buildPkg = "github.com/grafana/detect-angular-dashboards/build"
+
 	if commitSha := gitCommitSha(); commitSha != "" {
 		// If commit sha was determined, add it to ldflags
-		args = append(args, "-ldflags", `-X github.com/grafana/detect-angular-dashboards/build.LinkerCommitSHA=`+commitSha)
+		ldFlags = append(ldFlags, fmt.Sprintf("-X %s.LinkerCommitSHA=%s", buildPkg, commitSha))
+	}
+	if droneTag := os.Getenv("DRONE_TAG"); droneTag != "" {
+		// Add drone tag as linker version
+		ldFlags = append(ldFlags, fmt.Sprintf("-X %s.LinkerVersion=%s", buildPkg, droneTag))
 	}
 
+	// Add all ldflags to args
+	if len(ldFlags) > 0 {
+		args = append(args, "-ldflags", strings.Join(ldFlags, " "))
+	}
+
+	// Run `go build` command
 	return sh.RunWithV(
 		map[string]string{
 			"CGO_ENABLED": "0",
