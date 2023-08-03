@@ -24,11 +24,6 @@ steps:
       - cd /drone/src
       - mage gitHub:release $DRONE_TAG
 
-volumes:
-  - name: docker_sock
-    host:
-      path: /var/run/docker.sock
-
 trigger:
   event:
     include:
@@ -55,6 +50,6 @@ get:
 
 ---
 kind: signature
-hmac: 284e1dc133f7808b3c6b49acc903deef0f5550a307e7da02cf7f0dce806aae7d
+hmac: 98fbd9fb22bf117038f88ce04cceb49ffd6eb7b34a0d9c467cfd123d6735a547
 
 ...
