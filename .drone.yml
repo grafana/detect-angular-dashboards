@@ -5,14 +5,24 @@ name: publish
 
 steps:
   - name: github-release
-    image: alpine:3.18
-    environment: :
+    image: golang:1.20.6-alpine3.18
+    environment:
       GITHUB_APP_ID:
         from_secret: gh-app-id
       GITHUB_APP_INSTALLATION_ID:
         from_secret: gh-app-installation-id
       GITHUB_APP_PRIVATE_KEY:
         from_secret: gh-app-private-key
+    commands:
+      - apk add git
+
+      - cd /tmp
+      - git clone https://github.com/magefile/mage
+      - cd mage
+      - go run bootstrap.go
+
+      - cd /drone/src
+      - mage gitHub:release $DRONE_TAG
 
 volumes:
   - name: docker_sock
@@ -21,7 +31,7 @@ volumes:
 
 trigger:
   ref:
-    - refs/tags/*
+    - refs/tags/v*
 
 ---
 name: gh-app-private-key
@@ -42,4 +52,8 @@ get:
   name: app-id
   path: infra/data/ci/detect-angular-dashboards/github-app
 
-# TODO: signature
+---
+kind: signature
+hmac: 1f26ddf5fad75f1f289e226b3d25d7991d914e83a305fd42c287aafda8c90ab1
+
+...
