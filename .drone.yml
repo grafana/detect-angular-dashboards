@@ -30,8 +30,9 @@ volumes:
       path: /var/run/docker.sock
 
 trigger:
-  ref:
-    - refs/tags/v*
+  event:
+    include:
+      - tag
 
 ---
 name: gh-app-private-key
@@ -54,6 +55,6 @@ get:
 
 ---
 kind: signature
-hmac: 1f26ddf5fad75f1f289e226b3d25d7991d914e83a305fd42c287aafda8c90ab1
+hmac: 284e1dc133f7808b3c6b49acc903deef0f5550a307e7da02cf7f0dce806aae7d
 
 ...
