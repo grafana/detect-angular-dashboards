@@ -37,15 +37,23 @@ const (
 
 // Go builds the go binary for the specified os and arch into dist/<os>_<arch>/detect-angular-dashboards.
 func (Build) Go(goOs, goArch string) error {
-	const programName = "detect-angular-dashboards"
 	fmt.Println("building for", goOs, goArch)
+
+	const programName = "detect-angular-dashboards"
+	args := []string{"build", "-o", filepath.Join(distFolder, goOs+"_"+goArch, programName)}
+	if commitSha := gitCommitSha(); commitSha != "" {
+		// If commit sha was determined, add it to ldflags
+		args = append(args, "-ldflags", `-X github.com/grafana/detect-angular-dashboards/build.LinkerCommitSHA=`+commitSha)
+	}
+
 	return sh.RunWithV(
 		map[string]string{
 			"CGO_ENABLED": "0",
 			"GOOS":        goOs,
 			"GOARCH":      goArch,
 		},
-		"go", "build", "-v", "-o", filepath.Join(distFolder, goOs+"_"+goArch, programName),
+		"go",
+		args...,
 	)
 }
 
@@ -317,4 +325,18 @@ func (g GitHub) Release(releaseName string) error {
 	wg.Wait()
 	close(errs)
 	return finalErr
+}
+
+// gitCommitSha returns the git commit sha for the current repo or "" if none.
+// It tries to get it from DRONE_COMMIT_SHA env var (set from drone).
+// If it's not set, it invokes `git`.
+// If it's not possible to run `git`, it returns an empty string.
+func gitCommitSha() string {
+	// Try to get git commit sha, prioritize env var from drone
+	if commitSha := os.Getenv("DRONE_COMMIT_SHA"); commitSha != "" {
+		return commitSha
+	}
+	// If not possible, try invoking `git` command
+	hash, _ := sh.Output("git", "rev-parse", "--short", "HEAD")
+	return hash
 }
