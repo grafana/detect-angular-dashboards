@@ -24,7 +24,9 @@ const (
 	artifactsFolder = "artifacts"
 
 	droneServerURL = "https://drone.grafana.net"
-	droneRepo      = "github.com/grafana/detect-angular-dashboards"
+	gitHubOrg      = "grafana"
+	gitHubRepo     = "detect-angular-dashboards"
+	droneRepo      = "github.com/" + gitHubOrg + "/" + gitHubRepo
 )
 
 // Go builds the go binary for the specified os and arch into dist/<os>_<arch>/detect-angular-dashboards.
@@ -110,8 +112,16 @@ func Package(releaseName string) error {
 	var b Build
 	mg.Deps(b.All)
 
+	// Join all zip and general walkdir error
+	errs := make(chan error)
+	var finalErr error
+	go func() {
+		for err := range errs {
+			finalErr = errors.Join(finalErr, err)
+		}
+	}()
+
 	var wg sync.WaitGroup
-	errs := make(chan error, 1)
 	errs <- filepath.WalkDir(distFolder, func(path string, d fs.DirEntry, err error) error {
 		// Skip dist folder (first call)
 		if path == distFolder {
@@ -128,7 +138,7 @@ func Package(releaseName string) error {
 		if err := os.MkdirAll(outFolder, os.ModePerm); err != nil {
 			return fmt.Errorf("mkdir %q: %w", outFolder, err)
 		}
-		zipFn := filepath.Join(outFolder, fmt.Sprintf("%s_%s.zip", d.Name(), releaseName))
+		zipFn := filepath.Join(outFolder, fmt.Sprintf("%s_%s_%s.zip", gitHubRepo, releaseName, d.Name()))
 
 		wg.Add(1)
 		go func() {
@@ -141,14 +151,6 @@ func Package(releaseName string) error {
 
 		return nil
 	})
-
-	// Join all zip and general walkdir error
-	var finalErr error
-	go func() {
-		for err := range errs {
-			finalErr = errors.Join(finalErr, err)
-		}
-	}()
 
 	// Wait for everyone to terminate
 	wg.Wait()
