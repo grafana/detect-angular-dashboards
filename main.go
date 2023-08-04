@@ -133,7 +133,7 @@ func _main() error {
 				return fmt.Errorf("unknown unmarshaled datasource type %T", p.Datasource)
 			}
 			if angularDetected[dsPlugin] {
-				detectionMessages = append(detectionMessages, fmt.Sprintf("Found angular datasource %q", dsPlugin))
+				detectionMessages = append(detectionMessages, fmt.Sprintf("Found angular data source %q", dsPlugin))
 			}
 		}
 
@@ -145,14 +145,13 @@ func _main() error {
 		}
 
 		// Print output
-		checkMessage := fmt.Sprintf("Checking dashboard %q %q", d.Title, dashboardAbsURL)
 		if len(detectionMessages) > 0 {
-			log.Logf(checkMessage)
+			log.Logf("Found dashboard with Angular plugins %q %q:", d.Title, dashboardAbsURL)
 			for _, msg := range detectionMessages {
 				log.Logf(msg)
 			}
 		} else {
-			log.Verbosef(checkMessage)
+			log.Verbosef("Checking dashboard %q %q", d.Title, dashboardAbsURL)
 		}
 	}
 	return nil
