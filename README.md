@@ -1,8 +1,10 @@
 # detect-angular-dashboards
 
-Detect angular dashboards in a running Grafana instance using Grafana API.
+Detect dashboards depending on Angular data source and panel plugins on a running Grafana instance using the Grafana API.
 
 Compatible with Grafana OSS, Grafana Enterprise, On-Prem and Grafana Cloud.
+
+[Read more about Angular support deprecation in our documentation](https://grafana.com/docs/grafana/latest/developers/angular_deprecation/).
 
 ## Configuration
 
@@ -32,7 +34,21 @@ Then, create a service account token for the newly created service account and s
 
 ## Usage
 
-### Pre-built binaries
+### Example
+
+```bash
+GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.example.com/api
+2023/08/04 16:36:50 Detecting Angular dashboards for "http://my-grafana.example.com/api"
+2023/08/04 16:36:50 Found dashboard with Angular plugins "Angular" "http://my-grafana.example.com/api/d/daa8ddc2-1d1a-45c9-9691-6b87f8f35e5f/angular":
+2023/08/04 16:36:50 Found angular panel "satellogic-3d-globe-panel"
+2023/08/04 16:36:50 Found angular data source "akumuli-datasource"
+2023/08/04 16:36:50 Found angular data source "akumuli-datasource"
+2023/08/04 16:36:50 Found angular panel "pr0ps-trackmap-panel"
+2023/08/04 16:36:50 Found dashboard with Angular plugins "Angular 2" "http://my-grafana.example.com/api/d/fdca7a20-93bd-4e00-90b9-71543ceeaca2/angular-2":
+2023/08/04 16:36:50 Found angular data source "akumuli-datasource"
+```
+
+### Using pre-built binaries
 
 You can download pre-built binaries from the [releases](https://github.com/grafana/detect-angular-dashboards/releases) section.
 
@@ -44,7 +60,7 @@ GRAFANA_TOKEN=abcd ./detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:300
 
 ### Building from source
 
-You need to install Go and [Mage](https://magefile.org/).
+You need to install [Go](https://go.dev) and [Mage](https://magefile.org/).
 
 Then, clone the repository, build and run the program:
 
