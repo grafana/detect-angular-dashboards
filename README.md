@@ -2,11 +2,15 @@
 
 Detect angular dashboards in a running Grafana instance using Grafana API.
 
+Compatible with Grafana OSS, Grafana Enterprise, On-Prem and Grafana Cloud.
+
 ## Configuration
 
 The program requires a service account and API key to work properly.
 
 Configuration changes slightly depending on your version of Grafana.
+
+We recommend using Grafana >= 10.1.0, otherwise Angular private plugins (that are not in Grafana's catalog) will be ignored.
 
 ### Grafana >= 10.1.0
 
@@ -24,18 +28,41 @@ The reason behind admin rights is that the plugins endpoint returns all plugins 
 
 Then, create a service account token for the newly created service account and set it to the `GRAFANA_TOKEN` env var.
 
+
+
 ## Usage
+
+### Pre-built binaries
+
+You can download pre-built binaries from the [releases](https://github.com/grafana/detect-angular-dashboards/releases) section.
+
+Then, run the program:
+
+```bash
+GRAFANA_TOKEN=abcd ./detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:3000/api]
+````
 
 ### Building from source
 
+You need to install Go and [Mage](https://magefile.org/).
+
+Then, clone the repository, build and run the program:
+
 ```bash
-go build -v
-GRAFANA_TOKEN=abcd ./detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:3000/api]
+mage build:current
+GRAFANA_TOKEN=abcd ./dist/linux_amd64/detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:3000/api]
 ```
 
-### Running with Docker
+### Docker image
+
+Clone the repository and build the Docker image:
+
 ```bash
 docker build -t detect-angular-dashboards .
 docker run --rm -it -e GRAFANA_TOKEN=abcd detect-angular-dashboards http://172.17.0.1:3000/api
 ```
 
+
+## LICENSE
+
+Apache License 2.0
