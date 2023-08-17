@@ -4,13 +4,13 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/grafana/detect-angular-dashboards/build"
 	"net/url"
 	"os"
 	"strings"
 
 	"github.com/grafana/detect-angular-dashboards/api/gcom"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
+	"github.com/grafana/detect-angular-dashboards/build"
 	"github.com/grafana/detect-angular-dashboards/logger"
 )
 
@@ -64,6 +64,25 @@ func _main() error {
 		// Fall back to GCOM (< 10.1.0)
 		log.Verbosef("Using GCOM to find Angular plugins")
 		log.Logf("(WARNING, dependencies on private plugins won't be flagged)")
+
+		// Double check that the token has the correct permissions, which is "datasources:create".
+		// If we don't have such permissions, the plugins endpoint will still return a valid response,
+		// but it will contain only core plugins:
+		// https://github.com/grafana/grafana/blob/0315b911ef45b4ce9d3d5c182d8b112c6b9b41da/pkg/api/plugins.go#L56
+		permissions, err := grCl.GetServiceAccountPermissions(ctx)
+		if err != nil {
+			// Do not hard fail if we can't get service account permissions
+			// as we may be running against an old Grafana version without service accounts
+			log.Logf("(WARNING: could not get service account permissions: %v)", err)
+			log.Logf("Please make sure that you have created an ADMIN token or the output will be wrong")
+		} else if _, ok := permissions["datasources:create"]; !ok {
+			return fmt.Errorf(
+				`the service account does not have "datasources:create" permission, please provide a ` +
+					"token for a service account with admin privileges",
+			)
+		}
+
+		// Get the plugins
 		plugins, err := grCl.GetPlugins(ctx)
 		if err != nil {
 			return fmt.Errorf("get plugins: %w", err)

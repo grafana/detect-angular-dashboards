@@ -94,3 +94,11 @@ func (cl APIClient) GetFrontendSettings(ctx context.Context) (*FrontendSettings,
 	}
 	return &out, nil
 }
+
+func (cl APIClient) GetServiceAccountPermissions(ctx context.Context) (map[string][]string, error) {
+	var out map[string][]string
+	if err := cl.Request(ctx, "access-control/user/permissions", &out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
