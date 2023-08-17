@@ -75,11 +75,15 @@ func _main() error {
 			// as we may be running against an old Grafana version without service accounts
 			log.Logf("(WARNING: could not get service account permissions: %v)", err)
 			log.Logf("Please make sure that you have created an ADMIN token or the output will be wrong")
-		} else if _, ok := permissions["datasources:create"]; !ok {
-			return fmt.Errorf(
-				`the service account does not have "datasources:create" permission, please provide a ` +
-					"token for a service account with admin privileges",
-			)
+		} else {
+			_, hasDsCreate := permissions["datasources:create"]
+			_, hasPluginsInstall := permissions["plugins:install"]
+			if !hasDsCreate && !hasPluginsInstall {
+				return fmt.Errorf(
+					`the service account does not have "datasources:create" or "plugins:install" permission, ` +
+						"please provide a token for a service account with admin privileges",
+				)
+			}
 		}
 
 		// Get the plugins

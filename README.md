@@ -24,7 +24,7 @@ Then, create a service account token for the newly created service account and s
 
 > Warning, Angular private plugins will be ignored from the scan when using Grafana <= 10.1.0.
 
-Create a service account, with `Plugins / Plugin Writer` permissions (or "Admin" if using OSS without RBAC).
+Create a service account, with `Plugins / Plugin Maintainer` permissions (or "Admin" if using OSS without RBAC).
 
 The reason behind admin rights is that the plugins endpoint returns all plugins only if the token can view and install plugins.
 
