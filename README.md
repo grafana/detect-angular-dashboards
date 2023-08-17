@@ -34,18 +34,68 @@ Then, create a service account token for the newly created service account and s
 
 ## Usage
 
-### Example
+### Readable output
 
 ```bash
 GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.example.com/api
-2023/08/04 16:36:50 Detecting Angular dashboards for "http://my-grafana.example.com/api"
-2023/08/04 16:36:50 Found dashboard with Angular plugins "Angular" "http://my-grafana.example.com/api/d/daa8ddc2-1d1a-45c9-9691-6b87f8f35e5f/angular":
-2023/08/04 16:36:50 Found angular panel "satellogic-3d-globe-panel"
-2023/08/04 16:36:50 Found angular data source "akumuli-datasource"
-2023/08/04 16:36:50 Found angular data source "akumuli-datasource"
-2023/08/04 16:36:50 Found angular panel "pr0ps-trackmap-panel"
-2023/08/04 16:36:50 Found dashboard with Angular plugins "Angular 2" "http://my-grafana.example.com/api/d/fdca7a20-93bd-4e00-90b9-71543ceeaca2/angular-2":
-2023/08/04 16:36:50 Found angular data source "akumuli-datasource"
+2023/08/17 11:17:12 Detecting Angular dashboards for "http://my-grafana.example.com/api"
+2023/08/17 11:17:13 Found dashboard with Angular plugins "Angular" "http://my-grafana.example.com/d/ef5e2c21-88aa-4619-a5db-786cc1dd37a9/angular":
+2023/08/17 11:17:13 Found angular panel "Panel two" ("akumuli-datasource")
+2023/08/17 11:17:13 Found panel with angular data source "Angular" ("grafana-worldmap-panel")
+2023/08/17 11:17:13 Found dashboard with Angular plugins "Datasource tests - Elasticsearch v7" "http://my-grafana.example.com/d/Y-RvmuRWk/datasource-tests-elasticsearch-v7":
+2023/08/17 11:17:13 Found panel with angular data source "World map panel" ("grafana-worldmap-panel")
+2023/08/17 11:17:14 Found dashboard with Angular plugins "New dashboard" "http://my-grafana.example.com/d/e10a098c-ad80-4d3c-b979-c39a4ce41183/new-dashboard":
+2023/08/17 11:17:14 Found angular panel "My panel" ("akumuli-datasource")
+```
+
+### JSON output
+
+> Pass flag -j to the program to output in JSON format to stdout. All other messages will be sent to stderr.
+> The example below will produce a valid "output.json" file that can be used with other tools.
+
+```bash
+GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.example.com/api | tee output.json
+2023/08/17 11:25:54 Detecting Angular dashboards for "http://my-grafana.example.com/api"
+[
+  {
+    "Detections": [
+      {
+        "PluginID": "akumuli-datasource",
+        "DetectionType": "datasource",
+        "Title": "Panel two"
+      },
+      {
+        "PluginID": "grafana-worldmap-panel",
+        "DetectionType": "panel",
+        "Title": "Angular"
+      }
+    ],
+    "URL": "http://my-grafana.example.com/d/ef5e2c21-88aa-4619-a5db-786cc1dd37a9/angular",
+    "Title": "Angular"
+  },
+  {
+    "Detections": [
+      {
+        "PluginID": "grafana-worldmap-panel",
+        "DetectionType": "panel",
+        "Title": "World map panel"
+      }
+    ],
+    "URL": "http://my-grafana.example.com/d/Y-RvmuRWk/datasource-tests-elasticsearch-v7",
+    "Title": "Datasource tests - Elasticsearch v7"
+  },
+  {
+    "Detections": [
+      {
+        "PluginID": "akumuli-datasource",
+        "DetectionType": "datasource",
+        "Title": "My panel"
+      }
+    ],
+    "URL": "http://my-grafana.example.com/d/e10a098c-ad80-4d3c-b979-c39a4ce41183/new-dashboard",
+    "Title": "New dashboard"
+  }
+]
 ```
 
 ### Using pre-built binaries
