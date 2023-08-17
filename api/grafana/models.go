@@ -26,6 +26,7 @@ type PanelDatasource struct {
 
 type Panel struct {
 	Type       string
+	Title      string
 	Datasource interface{}
 }
 

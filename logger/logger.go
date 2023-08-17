@@ -1,18 +1,46 @@
 package logger
 
-import "log"
+import (
+	"log"
+	"os"
+)
 
-type Logger struct {
-	Verbose bool
+type Logger interface {
+	Log(format string, v ...any)
+	Warn(format string, v ...any)
 }
 
-func (Logger) Logf(format string, v ...any) {
+type nopLogger struct{}
+
+func (nopLogger) Log(string, ...any)  {}
+func (nopLogger) Warn(string, ...any) {}
+
+type LeveledLogger struct {
+	isVerbose bool
+
+	Logger     *log.Logger
+	WarnLogger *log.Logger
+}
+
+func NewLeveledLogger(verbose bool) *LeveledLogger {
+	return &LeveledLogger{
+		isVerbose:  verbose,
+		Logger:     log.New(os.Stdout, "", log.LstdFlags),
+		WarnLogger: log.New(os.Stderr, "", log.LstdFlags),
+	}
+}
+
+func (l *LeveledLogger) Log(format string, v ...any) {
 	log.Printf(format, v...)
 }
 
-func (l Logger) Verbosef(format string, v ...any) {
-	if !l.Verbose {
-		return
+func (l *LeveledLogger) Warn(format string, v ...any) {
+	l.WarnLogger.Printf(format, v...)
+}
+
+func (l *LeveledLogger) Verbose() Logger {
+	if !l.isVerbose {
+		return nopLogger{}
 	}
-	l.Logf(format, v...)
+	return l
 }
