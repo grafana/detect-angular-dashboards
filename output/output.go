@@ -11,21 +11,36 @@ import (
 type DetectionType string
 
 const (
-	DetectionTypePanel      DetectionType = "panel"
-	DetectionTypeDatasource DetectionType = "datasource"
+	DetectionTypePanel       DetectionType = "panel"
+	DetectionTypeDatasource  DetectionType = "datasource"
+	DetectionTypeLegacyPanel DetectionType = "legacyPanel"
 )
 
 type Detection struct {
-	PluginID      string
+	// PluginID is the plugin ID that triggered the detection.
+	PluginID string
+
+	// DetectionType identifies the type of the detection.
 	DetectionType DetectionType
-	Title         string
+
+	// Title is the title of the panel that triggered the detection.
+	// It is used so the user can identify the panel on the dashboard.
+	Title string
 }
 
 func (d Detection) String() string {
-	if d.DetectionType == DetectionTypePanel {
+	switch d.DetectionType {
+	case DetectionTypePanel:
+		return fmt.Sprintf("Found angular panel %q (%q)", d.Title, d.PluginID)
+	case DetectionTypeDatasource:
 		return fmt.Sprintf("Found panel with angular data source %q (%q)", d.Title, d.PluginID)
+	case DetectionTypeLegacyPanel:
+		return fmt.Sprintf(`Found panel with "Graph (old)" panel %q. `+
+			`It will be migrated to a "Timeseries" panel by Grafana when opening the dashboard.`,
+			d.Title,
+		)
 	}
-	return fmt.Sprintf("Found angular panel %q (%q)", d.Title, d.PluginID)
+	return ""
 }
 
 type Dashboard struct {
