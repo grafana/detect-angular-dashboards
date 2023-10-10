@@ -15,7 +15,11 @@ import (
 	"github.com/grafana/detect-angular-dashboards/output"
 )
 
-const envGrafanaToken = "GRAFANA_TOKEN"
+const (
+	envGrafanaToken = "GRAFANA_TOKEN"
+
+	pluginIDGraphOld = "graph"
+)
 
 func _main() error {
 	versionFlag := flag.Bool("version", false, "print version number")
@@ -163,7 +167,15 @@ func _main() error {
 		}
 		for _, p := range dashboard.Panels {
 			// Check panel
-			if angularDetected[p.Type] {
+			if p.Type == pluginIDGraphOld {
+				// Different warning on Graph (old)
+				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
+					DetectionType: output.DetectionTypeLegacyPanel,
+					PluginID:      pluginIDGraphOld,
+					Title:         p.Title,
+				})
+			} else if angularDetected[p.Type] {
+				// Angular plugin
 				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
 					DetectionType: output.DetectionTypePanel,
 					PluginID:      p.Type,
