@@ -31,5 +31,6 @@ type Panel struct {
 }
 
 type Dashboard struct {
-	Panels []*Panel
+	Panels        []*Panel `json:"panels"`
+	SchemaVersion int      `json:"schemaVersion"`
 }
