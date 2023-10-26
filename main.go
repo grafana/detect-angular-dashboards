@@ -19,6 +19,8 @@ const (
 	envGrafanaToken = "GRAFANA_TOKEN"
 
 	pluginIDGraphOld = "graph"
+	pluginIDTable    = "table"
+	pluginIDTableOld = "table-old"
 )
 
 func _main() error {
@@ -167,11 +169,15 @@ func _main() error {
 		}
 		for _, p := range dashboard.Panels {
 			// Check panel
-			if p.Type == pluginIDGraphOld {
-				// Different warning on Graph (old)
+			// - "graph" has been replaced with timeseries
+			// - "table-old" is the old table panel (after it has been migrated)
+			// - "table" with a schema version < 24 is Angular table panel, which will be replaced by `table-old`:
+			//		https://github.com/grafana/grafana/blob/7869ca1932c3a2a8f233acf35a3fe676187847bc/public/app/features/dashboard/state/DashboardMigrator.ts#L595-L610
+			if p.Type == pluginIDGraphOld || p.Type == pluginIDTableOld || (p.Type == pluginIDTable && dashboard.SchemaVersion < 24) {
+				// Different warning on legacy panel that can be migrated to React automatically
 				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
 					DetectionType: output.DetectionTypeLegacyPanel,
-					PluginID:      pluginIDGraphOld,
+					PluginID:      p.Type,
 					Title:         p.Title,
 				})
 			} else if angularDetected[p.Type] {

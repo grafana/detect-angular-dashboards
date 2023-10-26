@@ -35,8 +35,9 @@ func (d Detection) String() string {
 	case DetectionTypeDatasource:
 		return fmt.Sprintf("Found panel with angular data source %q (%q)", d.Title, d.PluginID)
 	case DetectionTypeLegacyPanel:
-		return fmt.Sprintf(`Found "Graph (old)" panel %q. `+
-			`It can be migrated to a "Timeseries" panel by Grafana when opening the dashboard.`,
+		return fmt.Sprintf(`Found legacy plugin %q in panel %q. `+
+			`It can be migrated to a React-based panel by Grafana when opening the dashboard.`,
+			d.PluginID,
 			d.Title,
 		)
 	}
