@@ -24,13 +24,13 @@ type PanelDatasource struct {
 	Type string
 }
 
-type Panel struct {
+type DashboardPanel struct {
 	Type       string
 	Title      string
 	Datasource interface{}
 }
 
 type Dashboard struct {
-	Panels        []*Panel `json:"panels"`
-	SchemaVersion int      `json:"schemaVersion"`
+	Panels        []*DashboardPanel `json:"panels"`
+	SchemaVersion int               `json:"schemaVersion"`
 }

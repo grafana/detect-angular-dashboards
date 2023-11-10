@@ -2,11 +2,14 @@ package grafana
 
 import (
 	"context"
+	"errors"
 	"net/url"
 	"strconv"
 
 	"github.com/grafana/detect-angular-dashboards/api"
 )
+
+var errUnknownAngularStatus = errors.New("could not determine if plugin is angular or not")
 
 const DefaultBaseURL = "http://127.0.0.1:3000/api"
 
@@ -72,19 +75,78 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*Dashboard, e
 // FrontendSettings is the response returned by api/frontend/settings
 type FrontendSettings struct {
 	// Panels is a map from panel plugin id to plugin metadata
-	Panels map[string]struct {
-		// AngularDetected is true if the plugin uses Angular APIs
-		AngularDetected *bool
-	}
+	Panels map[string]FrontendSettingsPanel
 
 	// Datasources is a map from datasource names to plugin metadata
-	Datasources map[string]struct {
-		// Type is the plugin's ID
-		Type string
+	Datasources map[string]FrontendSettingsDatasource
+}
 
-		// AngularDetected is true if the plugin uses Angular APIs
-		AngularDetected *bool
+// FrontendSettingsPanel is a panel present in FrontendSettings.
+// Which fields are populated depends on the Grafana version.
+type FrontendSettingsPanel struct {
+	// AngularDetected is true if the plugin uses Angular APIs
+	// (present in Grafana >= 10.1.0 && < 10.3.0)
+	AngularDetected *bool
+
+	// Angular contains the Angular metadata for the plugin
+	// (present in Grafana >= 10.3.0)
+	Angular *struct {
+		// Detected is true if the plugin uses Angular APIs
+		Detected bool
 	}
+}
+
+// IsAngular returns true if the panel plugin is an angular plugin.
+// The correct fields are used depending on the Grafana version.
+// If this information cannot be determined, it returns an errUnknownAngularStatus.
+func (p FrontendSettingsPanel) IsAngular() (bool, error) {
+	if p.Angular != nil {
+		// >= 10.3.0
+		return p.Angular.Detected, nil
+	}
+	if p.AngularDetected != nil {
+		// >= 10.1.0 && < 10.3.0
+		return *p.AngularDetected, nil
+	}
+	// < 10.1.0
+	return false, errUnknownAngularStatus
+}
+
+// FrontendSettingsDatasource is a datasource present in FrontendSettings.
+// Which fields are populated depends on the Grafana version.
+type FrontendSettingsDatasource struct {
+	// AngularDetected is true if the plugin uses Angular APIs
+	// (present in Grafana >= 10.1.0 && < 10.3.0)
+	AngularDetected *bool
+
+	// Meta contains plugin metadata
+	Meta struct {
+		// Angular contains angular plugin metadata
+		// (present in Grafana >= 10.3.0)
+		Angular *struct {
+			// Detected is true if the plugin uses Angular APIs
+			Detected bool
+		}
+	}
+
+	// Type is the plugin's ID
+	Type string
+}
+
+// IsAngular returns true if the datasource plugin is an angular plugin.
+// The correct fields are used depending on the Grafana version.
+// If this information cannot be determined, it returns an errUnknownAngularStatus.
+func (d FrontendSettingsDatasource) IsAngular() (bool, error) {
+	if d.Meta.Angular != nil {
+		// >= 10.3.0
+		return d.Meta.Angular.Detected, nil
+	}
+	if d.AngularDetected != nil {
+		// >= 10.1.0 && < 10.3.0
+		return *d.AngularDetected, nil
+	}
+	// < 10.1.0
+	return false, errUnknownAngularStatus
 }
 
 func (cl APIClient) GetFrontendSettings(ctx context.Context) (*FrontendSettings, error) {
