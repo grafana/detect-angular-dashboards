@@ -9,7 +9,7 @@ import (
 	"github.com/grafana/detect-angular-dashboards/api"
 )
 
-var errUnknownAngularStatus = errors.New("could not determine if plugin is angular or not")
+var errUnknownAngularStatus = errors.New("could not determine if plugin is angular or not, use GCOM instead")
 
 const DefaultBaseURL = "http://127.0.0.1:3000/api"
 
