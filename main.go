@@ -66,11 +66,13 @@ func _main() error {
 
 	// Determine if we should use GCOM or frontendsettings
 	var useGCOM bool
-	// Get any key and see if AngularDetected is present or not.
-	// From Grafana 10.1.0, it will always be present.
-	// Before Grafana 10.1.0, it's always nil as it's not present in the body.
+	// Get any key and see if Angular or AngularDetected is present or not.
+	// With Grafana >= 10.3.0, Angular is present.
+	// With Grafana >= 10.1.0 && < 10.3.0, AngularDetected is present.
+	// With Grafana <= 10.1.0, it's always nil as it's not present in the body.
+	// In the last case, we can only rely on the data in GCOM.
 	for _, p := range frontendSettings.Panels {
-		useGCOM = p.AngularDetected == nil
+		useGCOM = p.Angular == nil && p.AngularDetected == nil
 		break
 	}
 	if useGCOM {
@@ -115,11 +117,19 @@ func _main() error {
 		}
 	} else {
 		log.Verbose().Log("Using frontendsettings to find Angular plugins")
-		for pluginID, meta := range frontendSettings.Panels {
-			angularDetected[pluginID] = *meta.AngularDetected
+		for pluginID, panel := range frontendSettings.Panels {
+			v, err := panel.IsAngular()
+			if err != nil {
+				return fmt.Errorf("%q is angular: %w", pluginID, err)
+			}
+			angularDetected[pluginID] = v
 		}
-		for _, meta := range frontendSettings.Datasources {
-			angularDetected[meta.Type] = *meta.AngularDetected
+		for _, ds := range frontendSettings.Datasources {
+			v, err := ds.IsAngular()
+			if err != nil {
+				return fmt.Errorf("%q is angular: %w", ds.Type, err)
+			}
+			angularDetected[ds.Type] = v
 		}
 	}
 
