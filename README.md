@@ -96,7 +96,7 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
 ]
 ```
 
-### Using jq
+### Using with jq
 
 You can use tools such as `jq` combined with JSON output (`-j`) to get some useful information, such as:
 
