@@ -12,7 +12,7 @@ The program requires a service account and API key to work properly.
 
 Configuration changes slightly depending on your version of Grafana.
 
-We recommend using Grafana >= 10.1.0, otherwise Angular private plugins (that are not in Grafana's catalog) will be ignored.
+We recommend using Grafana >= 10.1.0, otherwise Angular private plugins (that are not in Grafana's catalog) won't be detected.
 
 ### Grafana >= 10.1.0
 
@@ -22,15 +22,13 @@ Then, create a service account token for the newly created service account and s
 
 ### Grafana < 10.1.0
 
-> Warning, Angular private plugins will be ignored from the scan when using Grafana <= 10.1.0.
+> Warning, Angular private plugins will be not be detected from the scan when using Grafana <= 10.1.0.
 
 Create a service account, with `Plugins / Plugin Maintainer` permissions (or "Admin" if using OSS without RBAC).
 
 The reason behind admin rights is that the plugins endpoint returns all plugins only if the token can view and install plugins.
 
 Then, create a service account token for the newly created service account and set it to the `GRAFANA_TOKEN` env var.
-
-
 
 ## Usage
 
@@ -98,15 +96,21 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
 ]
 ```
 
+### Running against multiple organizations
+
+If you have multiple organizations on your Grafana instance, you have to run the tool against each organization.
+To do so, you first have to create a service account and token for each organization, and then
+run the program with each service account token. The Grafana URL is the same for every organization.
+
 ### Using pre-built binaries
 
 You can download pre-built binaries from the [releases](https://github.com/grafana/detect-angular-dashboards/releases) section.
 
-Then, run the program:
+Then, run the program. Replace `http://127.0.0.1:3000` with the URL of your Grafana instance.
 
 ```bash
-GRAFANA_TOKEN=abcd ./detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:3000/api]
-````
+GRAFANA_TOKEN=abcd ./detect-angular-dashboards http://127.0.0.1:3000/api
+```
 
 ### Building from source
 
@@ -116,7 +120,7 @@ Then, clone the repository, build and run the program:
 
 ```bash
 mage build:current
-GRAFANA_TOKEN=abcd ./dist/linux_amd64/detect-angular-dashboards [GRAFANA_URL=http://127.0.0.1:3000/api]
+GRAFANA_TOKEN=abcd ./dist/linux_amd64/detect-angular-dashboards http://127.0.0.1:3000/api
 ```
 
 ### Docker image
@@ -127,7 +131,6 @@ Clone the repository and build the Docker image:
 docker build -t detect-angular-dashboards .
 docker run --rm -it -e GRAFANA_TOKEN=abcd detect-angular-dashboards http://172.17.0.1:3000/api
 ```
-
 
 ## LICENSE
 
