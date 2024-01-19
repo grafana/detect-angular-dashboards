@@ -116,7 +116,7 @@ GRAFANA_TOKEN=abcd ./detect-angular-dashboards http://127.0.0.1:3000/api
 
 You need to install [Go](https://go.dev) and [Mage](https://magefile.org/).
 
-Then, clone the repository, build and run the program:
+Then, clone the repository, build and run the program. Replace `http://127.0.0.1:3000` with the URL of your Grafana instance.
 
 ```bash
 mage build:current
@@ -125,7 +125,7 @@ GRAFANA_TOKEN=abcd ./dist/linux_amd64/detect-angular-dashboards http://127.0.0.1
 
 ### Docker image
 
-Clone the repository and build the Docker image:
+Clone the repository and build the Docker image. Replace `http://127.0.0.1:3000` with the URL of your Grafana instance.
 
 ```bash
 docker build -t detect-angular-dashboards .
