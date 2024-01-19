@@ -22,7 +22,7 @@ Then, create a service account token for the newly created service account and s
 
 ### Grafana < 10.1.0
 
-> Warning, Angular private plugins will be not be detected from the scan when using Grafana <= 10.1.0.
+> Warning, Angular private plugins won't be detected from the scan when using Grafana <= 10.1.0.
 
 Create a service account, with `Plugins / Plugin Maintainer` permissions (or "Admin" if using OSS without RBAC).
 
