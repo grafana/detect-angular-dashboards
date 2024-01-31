@@ -96,6 +96,49 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
 ]
 ```
 
+### Using with jq
+
+You can use tools such as `jq` combined with JSON output (`-j`) to get some useful information, such as:
+
+#### Number of affected dashboards
+
+```bash
+./detect-angular-dashboards -j | jq '. | length'
+36
+```
+
+#### Affected dashboard URLs
+
+```bash
+./detect-angular-dashboards -j | jq -r '.[].URL'
+http://127.0.0.1:3000/d/e1bd7dd5-2ee2-4e47-8e16-4c43c7c12277/a-dashboard-that-contains-some-angular-plugins
+http://127.0.0.1:3000/d/7MeksYbmk/alerting-with-testdata
+http://127.0.0.1:3000/d/cf2efc3b-1990-4855-9977-32a55fb27452/an-old-dashboard
+```
+
+#### Used Angular plugin ids
+
+```bash
+./detect-angular-dashboards -j | jq -r ".[].Detections[].PluginID" | sort | uniq
+
+akumuli-datasource
+grafana-polystat-panel
+grafana-worldmap-panel
+graph
+table-old
+```
+
+#### Used Angular plugin ids and number of occurrences
+
+```bash
+./detect-angular-dashboards -j | jq -r ".[].Detections[].PluginID" | sort | uniq -c | sort -nr
+    222 graph
+      7 table-old
+      4 grafana-polystat-panel
+      2 grafana-worldmap-panel
+      1 akumuli-datasource
+```
+
 ### Running against multiple organizations
 
 If you have multiple organizations on your Grafana instance, you have to run the tool against each organization.
