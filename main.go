@@ -23,35 +23,14 @@ const (
 	pluginIDTableOld = "table-old"
 )
 
-func _main() error {
-	versionFlag := flag.Bool("version", false, "print version number")
-	verboseFlag := flag.Bool("v", false, "verbose output")
-	jsonOutputFlag := flag.Bool("j", false, "json output")
-	flag.Parse()
+var log *logger.LeveledLogger
 
-	if *versionFlag {
-		fmt.Printf("%s %s (%s)\n", os.Args[0], build.LinkerVersion, build.LinkerCommitSHA)
-		return nil
-	}
+func Run(ctx context.Context, grafanaURL, token string) ([]output.Dashboard, error) {
+	var (
+		finalOutput []output.Dashboard
+		useGCOM     bool
+	)
 
-	log := logger.NewLeveledLogger(*verboseFlag)
-	if *jsonOutputFlag {
-		// Redirect everything to stderr to avoid mixing with json output
-		log.Logger.SetOutput(os.Stderr)
-		log.WarnLogger.SetOutput(os.Stderr)
-	}
-
-	token := os.Getenv(envGrafanaToken)
-	if token == "" {
-		return fmt.Errorf("missing env var %q", envGrafanaToken)
-	}
-	grafanaURL := grafana.DefaultBaseURL
-	if flag.NArg() >= 1 {
-		grafanaURL = flag.Arg(0)
-	}
-	log.Log("Detecting Angular dashboards for %q", grafanaURL)
-
-	ctx := context.Background()
 	grCl := grafana.NewAPIClient(grafanaURL, token)
 	gcomCl := gcom.NewAPIClient()
 
@@ -61,11 +40,10 @@ func _main() error {
 	angularDetected := map[string]bool{}
 	frontendSettings, err := grCl.GetFrontendSettings(ctx)
 	if err != nil {
-		return fmt.Errorf("get frontend settings: %w", err)
+		return []output.Dashboard{}, fmt.Errorf("get frontend settings: %w", err)
 	}
 
 	// Determine if we should use GCOM or frontendsettings
-	var useGCOM bool
 	// Get any key and see if Angular or AngularDetected is present or not.
 	// With Grafana >= 10.3.0, Angular is present.
 	// With Grafana >= 10.1.0 && < 10.3.0, AngularDetected is present.
@@ -94,7 +72,7 @@ func _main() error {
 			_, hasDsCreate := permissions["datasources:create"]
 			_, hasPluginsInstall := permissions["plugins:install"]
 			if !hasDsCreate && !hasPluginsInstall {
-				return fmt.Errorf(
+				return []output.Dashboard{}, fmt.Errorf(
 					`the service account does not have "datasources:create" or "plugins:install" permission, ` +
 						"please provide a token for a service account with admin privileges",
 				)
@@ -104,7 +82,7 @@ func _main() error {
 		// Get the plugins
 		plugins, err := grCl.GetPlugins(ctx)
 		if err != nil {
-			return fmt.Errorf("get plugins: %w", err)
+			return []output.Dashboard{}, fmt.Errorf("get plugins: %w", err)
 		}
 		for _, p := range plugins {
 			if p.Info.Version == "" {
@@ -112,7 +90,7 @@ func _main() error {
 			}
 			angularDetected[p.ID], err = gcomCl.GetAngularDetected(ctx, p.ID, p.Info.Version)
 			if err != nil {
-				return fmt.Errorf("get angular detected: %w", err)
+				return []output.Dashboard{}, fmt.Errorf("get angular detected: %w", err)
 			}
 		}
 	} else {
@@ -120,14 +98,14 @@ func _main() error {
 		for pluginID, panel := range frontendSettings.Panels {
 			v, err := panel.IsAngular()
 			if err != nil {
-				return fmt.Errorf("%q is angular: %w", pluginID, err)
+				return []output.Dashboard{}, fmt.Errorf("%q is angular: %w", pluginID, err)
 			}
 			angularDetected[pluginID] = v
 		}
 		for _, ds := range frontendSettings.Datasources {
 			v, err := ds.IsAngular()
 			if err != nil {
-				return fmt.Errorf("%q is angular: %w", ds.Type, err)
+				return []output.Dashboard{}, fmt.Errorf("%q is angular: %w", ds.Type, err)
 			}
 			angularDetected[ds.Type] = v
 		}
@@ -141,26 +119,19 @@ func _main() error {
 	// Map ds name -> ds plugin id, to resolve legacy dashboards that have ds name
 	apiDs, err := grCl.GetDatasourcePluginIDs(ctx)
 	if err != nil {
-		return fmt.Errorf("get datasource plugin ids: %w", err)
+		return []output.Dashboard{}, fmt.Errorf("get datasource plugin ids: %w", err)
 	}
 	datasourcePluginIDs := make(map[string]string, len(apiDs))
 	for _, ds := range apiDs {
 		datasourcePluginIDs[ds.Name] = ds.Type
-		log.Verbose().Log("Datasource %q plugin ID %q", ds.Name, ds.Type)
+		// log.Verbose().Log("Datasource %q plugin ID %q", ds.Name, ds.Type)
 	}
 
 	dashboards, err := grCl.GetDashboards(ctx, 1)
 	if err != nil {
-		return fmt.Errorf("get dashboards: %w", err)
+		return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
 	}
 
-	var out output.Outputter
-	if *jsonOutputFlag {
-		out = output.NewJSONOutputter(os.Stdout)
-	} else {
-		out = output.NewLoggerReadableOutput(log)
-	}
-	var finalOutput []output.Dashboard
 	for _, d := range dashboards {
 		// Determine absolute dashboard URL for output
 		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(grafanaURL, "/api"), d.URL)
@@ -175,7 +146,7 @@ func _main() error {
 		}
 		dashboard, err := grCl.GetDashboard(ctx, d.UID)
 		if err != nil {
-			return fmt.Errorf("get dashboard %q: %w", d.UID, err)
+			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", d.UID, err)
 		}
 		for _, p := range dashboard.Panels {
 			// Check panel
@@ -210,7 +181,7 @@ func _main() error {
 			} else if ds, ok := p.Datasource.(grafana.PanelDatasource); ok {
 				dsPlugin = ds.Type
 			} else {
-				return fmt.Errorf("unknown unmarshaled datasource type %T", p.Datasource)
+				return []output.Dashboard{}, fmt.Errorf("unknown unmarshaled datasource type %T", p.Datasource)
 			}
 			if angularDetected[dsPlugin] {
 				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
@@ -222,15 +193,66 @@ func _main() error {
 		}
 		finalOutput = append(finalOutput, dashboardOutput)
 	}
-	// Print output
-	if err := out.Output(finalOutput); err != nil {
-		return fmt.Errorf("output: %w", err)
+	return finalOutput, nil
+}
+
+func configureLogger(verboseFlag, jsonOutputFlag bool) *logger.LeveledLogger {
+	log = logger.NewLeveledLogger(verboseFlag)
+	if jsonOutputFlag {
+		// Redirect everything to stderr to avoid mixing with json output
+		log.Logger.SetOutput(os.Stderr)
+		log.WarnLogger.SetOutput(os.Stderr)
 	}
-	return nil
+	return log
+}
+
+func getToken() (string, error) {
+	token := os.Getenv(envGrafanaToken)
+	if token == "" {
+		return "", fmt.Errorf("missing env var %q", envGrafanaToken)
+	}
+	return token, nil
 }
 
 func main() {
-	if err := _main(); err != nil {
+	versionFlag := flag.Bool("version", false, "print version number")
+	verboseFlag := flag.Bool("v", false, "verbose output")
+	jsonOutputFlag := flag.Bool("j", false, "json output")
+	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("%s %s (%s)\n", os.Args[0], build.LinkerVersion, build.LinkerCommitSHA)
+		os.Exit(0)
+	}
+	log = configureLogger(*verboseFlag, *jsonOutputFlag)
+
+	token, err := getToken()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+
+	ctx := context.Background()
+	grafanaURL := grafana.DefaultBaseURL
+	if flag.NArg() >= 1 {
+		grafanaURL = flag.Arg(0)
+	}
+
+	log.Log("Detecting Angular dashboards for %q", grafanaURL)
+	finalOutput, err := Run(ctx, grafanaURL, token)
+	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
+	}
+
+	var out output.Outputter
+	if *jsonOutputFlag {
+		out = output.NewJSONOutputter(os.Stdout)
+	} else {
+		out = output.NewLoggerReadableOutput(log)
+	}
+
+	// Print output
+	if err := out.Output(finalOutput); err != nil {
+		_, _ = fmt.Fprintf(os.Stderr, "output: %s\n", err)
 	}
 }
