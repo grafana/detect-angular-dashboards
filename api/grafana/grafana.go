@@ -73,6 +73,14 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*Dashboard, e
 	return out.Dashboard, nil
 }
 
+func (cl APIClient) GetOrgs(ctx context.Context) ([]Org, error) {
+	var orgs []Org
+	err := cl.Request(ctx, http.MethodGet, "orgs?"+url.Values{
+		"perpage": []string{"1000"},
+	}.Encode(), &orgs)
+	return orgs, err
+}
+
 // FrontendSettings is the response returned by api/frontend/settings
 type FrontendSettings struct {
 	// Panels is a map from panel plugin id to plugin metadata
