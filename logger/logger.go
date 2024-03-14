@@ -15,6 +15,11 @@ type nopLogger struct{}
 func (nopLogger) Log(string, ...any)  {}
 func (nopLogger) Warn(string, ...any) {}
 
+// NewNopLogger returns a new logger whose methods are no-ops and don't log anything.
+func NewNopLogger() Logger {
+	return &nopLogger{}
+}
+
 type LeveledLogger struct {
 	isVerbose bool
 
@@ -40,7 +45,7 @@ func (l *LeveledLogger) Warn(format string, v ...any) {
 
 func (l *LeveledLogger) Verbose() Logger {
 	if !l.isVerbose {
-		return nopLogger{}
+		return NewNopLogger()
 	}
 	return l
 }
