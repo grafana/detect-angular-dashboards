@@ -5,19 +5,31 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 var ErrBadStatusCode = fmt.Errorf("bad status code")
 
 type Client struct {
-	BaseURL string
-	Token   string
+	BaseURL           string
+	Token             string
+	BasicAuthUser     string
+	BasicAuthPassword string
 }
 
 func NewClient(baseURL string, token string) Client {
-	return Client{
-		BaseURL: baseURL,
-		Token:   token,
+	auth := strings.SplitN(token, ":", 2)
+	if len(auth) == 2 {
+		return Client{
+			BaseURL:           baseURL,
+			BasicAuthUser:     auth[0],
+			BasicAuthPassword: auth[1],
+		}
+	} else {
+		return Client{
+			BaseURL: baseURL,
+			Token:   auth[0],
+		}
 	}
 }
 
@@ -30,8 +42,13 @@ func (cl Client) newRequest(ctx context.Context, url string) (*http.Request, err
 	if err != nil {
 		return nil, err
 	}
+	// There is two cases, either we have provided a service account's Token or
+	// the basicAuth. As the token is the recommended way to interact with the
+	// API let's use it first
 	if cl.Token != "" {
 		req.Header.Add("Authorization", "Bearer "+cl.Token)
+	} else if cl.BasicAuthUser != "" && cl.BasicAuthPassword != "" {
+		req.SetBasicAuth(cl.BasicAuthUser, cl.BasicAuthPassword)
 	}
 	return req, err
 }
