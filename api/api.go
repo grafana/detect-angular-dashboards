@@ -37,8 +37,11 @@ func (cl Client) urlFor(s string) string {
 	return cl.BaseURL + "/" + s
 }
 
-func (cl Client) newRequest(ctx context.Context, url string) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, cl.urlFor(url), nil)
+func (cl Client) newRequest(ctx context.Context, method, url string) (*http.Request, error) {
+	if method == "" {
+		method = http.MethodGet
+	}
+	req, err := http.NewRequestWithContext(ctx, method, cl.urlFor(url), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +56,8 @@ func (cl Client) newRequest(ctx context.Context, url string) (*http.Request, err
 	return req, err
 }
 
-func (cl Client) Request(ctx context.Context, url string, out interface{}) error {
-	req, err := cl.newRequest(ctx, url)
+func (cl Client) Request(ctx context.Context, method, url string, out interface{}) error {
+	req, err := cl.newRequest(ctx, method, url)
 	if err != nil {
 		return fmt.Errorf("new request: %w", err)
 	}

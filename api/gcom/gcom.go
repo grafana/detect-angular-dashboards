@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/grafana/detect-angular-dashboards/api"
 )
@@ -20,7 +21,7 @@ func NewAPIClient() APIClient {
 
 func (cl APIClient) GetAngularDetected(ctx context.Context, slug, version string) (bool, error) {
 	var resp PluginVersions
-	if err := cl.Request(ctx, "plugins/"+slug+"/versions", &resp); err != nil {
+	if err := cl.Request(ctx, http.MethodGet, "plugins/"+slug+"/versions", &resp); err != nil {
 		if errors.Is(err, api.ErrBadStatusCode) {
 			// Swallow bad status codes
 			return false, nil
