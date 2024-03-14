@@ -25,11 +25,10 @@ func NewClient(baseURL string, token string) Client {
 			BasicAuthUser:     auth[0],
 			BasicAuthPassword: auth[1],
 		}
-	} else {
-		return Client{
-			BaseURL: baseURL,
-			Token:   auth[0],
-		}
+	}
+	return Client{
+		BaseURL: baseURL,
+		Token:   auth[0],
 	}
 }
 
@@ -69,8 +68,10 @@ func (cl Client) Request(ctx context.Context, method, url string, out interface{
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("%w: %d", ErrBadStatusCode, resp.StatusCode)
 	}
-	if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
-		return fmt.Errorf("decode: %w", err)
+	if out != nil {
+		if err := json.NewDecoder(resp.Body).Decode(out); err != nil {
+			return fmt.Errorf("decode: %w", err)
+		}
 	}
 	return nil
 }

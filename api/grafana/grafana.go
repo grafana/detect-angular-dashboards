@@ -81,6 +81,10 @@ func (cl APIClient) GetOrgs(ctx context.Context) ([]Org, error) {
 	return orgs, err
 }
 
+func (cl APIClient) UserSwitchContext(ctx context.Context, orgID string) error {
+	return cl.Request(ctx, http.MethodPost, "user/using/"+orgID, nil)
+}
+
 // FrontendSettings is the response returned by api/frontend/settings
 type FrontendSettings struct {
 	// Panels is a map from panel plugin id to plugin metadata
