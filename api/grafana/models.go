@@ -34,3 +34,8 @@ type Dashboard struct {
 	Panels        []*DashboardPanel `json:"panels"`
 	SchemaVersion int               `json:"schemaVersion"`
 }
+
+type Org struct {
+	Name string `json:"name"`
+	ID   int    `json:"id"`
+}

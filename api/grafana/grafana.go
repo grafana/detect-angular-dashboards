@@ -3,6 +3,7 @@ package grafana
 import (
 	"context"
 	"errors"
+	"net/http"
 	"net/url"
 	"strconv"
 
@@ -25,19 +26,19 @@ func NewAPIClient(baseURL string, token string) APIClient {
 
 func (cl APIClient) GetPlugins(ctx context.Context) ([]Plugin, error) {
 	var out []Plugin
-	err := cl.Request(ctx, "plugins", &out)
+	err := cl.Request(ctx, http.MethodGet, "plugins", &out)
 	return out, err
 }
 
 func (cl APIClient) GetDatasourcePluginIDs(ctx context.Context) ([]Datasource, error) {
 	var out []Datasource
-	err := cl.Request(ctx, "datasources", &out)
+	err := cl.Request(ctx, http.MethodGet, "datasources", &out)
 	return out, err
 }
 
 func (cl APIClient) GetDashboards(ctx context.Context, page int) ([]ListedDashboard, error) {
 	var out []ListedDashboard
-	err := cl.Request(ctx, "search?"+url.Values{
+	err := cl.Request(ctx, http.MethodGet, "search?"+url.Values{
 		"limit": []string{"5000"},
 		"page":  []string{strconv.Itoa(page)},
 	}.Encode(), &out)
@@ -48,7 +49,7 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*Dashboard, e
 	var out struct {
 		Dashboard *Dashboard
 	}
-	if err := cl.Request(ctx, "dashboards/uid/"+uid, &out); err != nil {
+	if err := cl.Request(ctx, http.MethodGet, "dashboards/uid/"+uid, &out); err != nil {
 		return nil, err
 	}
 	// Convert datasources map[string]interface{} to custom type
@@ -70,6 +71,18 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*Dashboard, e
 	}
 
 	return out.Dashboard, nil
+}
+
+func (cl APIClient) GetOrgs(ctx context.Context) ([]Org, error) {
+	var orgs []Org
+	err := cl.Request(ctx, http.MethodGet, "orgs?"+url.Values{
+		"perpage": []string{"1000"},
+	}.Encode(), &orgs)
+	return orgs, err
+}
+
+func (cl APIClient) UserSwitchContext(ctx context.Context, orgID string) error {
+	return cl.Request(ctx, http.MethodPost, "user/using/"+orgID, nil)
 }
 
 // FrontendSettings is the response returned by api/frontend/settings
@@ -151,7 +164,7 @@ func (d FrontendSettingsDatasource) IsAngular() (bool, error) {
 
 func (cl APIClient) GetFrontendSettings(ctx context.Context) (*FrontendSettings, error) {
 	var out FrontendSettings
-	if err := cl.Request(ctx, "frontend/settings", &out); err != nil {
+	if err := cl.Request(ctx, http.MethodGet, "frontend/settings", &out); err != nil {
 		return nil, err
 	}
 	return &out, nil
@@ -159,7 +172,7 @@ func (cl APIClient) GetFrontendSettings(ctx context.Context) (*FrontendSettings,
 
 func (cl APIClient) GetServiceAccountPermissions(ctx context.Context) (map[string][]string, error) {
 	var out map[string][]string
-	if err := cl.Request(ctx, "access-control/user/permissions", &out); err != nil {
+	if err := cl.Request(ctx, http.MethodGet, "access-control/user/permissions", &out); err != nil {
 		return nil, err
 	}
 	return out, nil
