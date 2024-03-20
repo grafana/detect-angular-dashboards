@@ -48,6 +48,11 @@ type Dashboard struct {
 	Detections []Detection
 	URL        string
 	Title      string
+	Folder     string
+	UpdatedBy  string
+	CreatedBy  string
+	Created    string
+	Updated    string
 }
 
 type Outputter interface {

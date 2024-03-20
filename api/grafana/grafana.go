@@ -45,10 +45,8 @@ func (cl APIClient) GetDashboards(ctx context.Context, page int) ([]ListedDashbo
 	return out, err
 }
 
-func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*Dashboard, error) {
-	var out struct {
-		Dashboard *Dashboard
-	}
+func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*DashboardDefinition, error) {
+	var out *DashboardDefinition
 	if err := cl.Request(ctx, http.MethodGet, "dashboards/uid/"+uid, &out); err != nil {
 		return nil, err
 	}
@@ -70,7 +68,7 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*Dashboard, e
 		panel.Datasource = PanelDatasource{Type: m["type"].(string)}
 	}
 
-	return out.Dashboard, nil
+	return out, nil
 }
 
 func (cl APIClient) GetOrgs(ctx context.Context) ([]Org, error) {

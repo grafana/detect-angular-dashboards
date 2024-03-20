@@ -30,9 +30,24 @@ type DashboardPanel struct {
 	Datasource interface{}
 }
 
+type DashboardDefinition struct {
+	Dashboard Dashboard `json:"dashboard"`
+	Meta      Meta      `json:"meta"`
+}
+
 type Dashboard struct {
 	Panels        []*DashboardPanel `json:"panels"`
 	SchemaVersion int               `json:"schemaVersion"`
+}
+type Meta struct {
+	Slug        string `json:"slug"`
+	UpdatedBy   string `json:"updatedBy"`
+	CreatedBy   string `json:"createdBy"`
+	Created     string `json:"created"`
+	Updated     string `json:"updated"`
+	FolderUID   string `json:"folderUid"`
+	FolderTitle string `json:"folderTitle"`
+	FolderURL   string `json:"folderUrl"`
 }
 
 type Org struct {
