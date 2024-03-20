@@ -133,22 +133,27 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaURL, token strin
 			// Silently ignore errors
 			dashboardAbsURL = ""
 		}
+		dashboardDefinition, err := grCl.GetDashboard(ctx, d.UID)
+		if err != nil {
+			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", d.UID, err)
+		}
 		dashboardOutput := output.Dashboard{
 			Detections: []output.Detection{},
 			URL:        dashboardAbsURL,
 			Title:      d.Title,
+			Folder:     dashboardDefinition.Meta.FolderTitle,
+			CreatedBy:  dashboardDefinition.Meta.CreatedBy,
+			UpdatedBy:  dashboardDefinition.Meta.UpdatedBy,
+			Created:    dashboardDefinition.Meta.Created,
+			Updated:    dashboardDefinition.Meta.Updated,
 		}
-		dashboard, err := grCl.GetDashboard(ctx, d.UID)
-		if err != nil {
-			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", d.UID, err)
-		}
-		for _, p := range dashboard.Panels {
+		for _, p := range dashboardDefinition.Dashboard.Panels {
 			// Check panel
 			// - "graph" has been replaced with timeseries
 			// - "table-old" is the old table panel (after it has been migrated)
 			// - "table" with a schema version < 24 is Angular table panel, which will be replaced by `table-old`:
 			//		https://github.com/grafana/grafana/blob/7869ca1932c3a2a8f233acf35a3fe676187847bc/public/app/features/dashboard/state/DashboardMigrator.ts#L595-L610
-			if p.Type == pluginIDGraphOld || p.Type == pluginIDTableOld || (p.Type == pluginIDTable && dashboard.SchemaVersion < 24) {
+			if p.Type == pluginIDGraphOld || p.Type == pluginIDTableOld || (p.Type == pluginIDTable && dashboardDefinition.Dashboard.SchemaVersion < 24) {
 				// Different warning on legacy panel that can be migrated to React automatically
 				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
 					DetectionType: output.DetectionTypeLegacyPanel,
