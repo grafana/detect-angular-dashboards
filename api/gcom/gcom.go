@@ -15,7 +15,7 @@ type APIClient struct {
 
 func NewAPIClient() APIClient {
 	return APIClient{
-		Client: api.NewClient("https://grafana.com/api", ""),
+		Client: api.NewClient("https://grafana.com/api"),
 	}
 }
 

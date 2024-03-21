@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"flag"
 	"fmt"
+	"net/http"
 	"os"
 
+	"github.com/grafana/detect-angular-dashboards/api"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
 	"github.com/grafana/detect-angular-dashboards/build"
 	"github.com/grafana/detect-angular-dashboards/detector"
@@ -39,6 +42,7 @@ func main() {
 	versionFlag := flag.Bool("version", false, "print version number")
 	verboseFlag := flag.Bool("v", false, "verbose output")
 	jsonOutputFlag := flag.Bool("j", false, "json output")
+	skipTLSFlag := flag.Bool("-insecure", false, "skip TLS verification")
 	flag.Parse()
 
 	if *versionFlag {
@@ -60,7 +64,17 @@ func main() {
 	}
 
 	log.Log("Detecting Angular dashboards for %q", grafanaURL)
-	finalOutput, err := detector.Run(ctx, log, grafanaURL, token)
+
+	opts := []api.ClientOption{api.WithAuthentication(token)}
+	if *skipTLSFlag {
+		opts = append(opts, api.WithHTTPClient(&http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		}))
+	}
+	client := grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
+	finalOutput, err := detector.Run(ctx, log, client)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(0)
