@@ -132,7 +132,7 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.A
 			// Silently ignore errors
 			dashboardAbsURL = ""
 		}
-		dashboardDefinition, err := grafanaClient.GetDashboard(ctx, d.UID)
+		dashboardDefinition, err := grCl.GetDashboard(ctx, d.UID)
 		if err != nil {
 			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", d.UID, err)
 		}
