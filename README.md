@@ -69,7 +69,12 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
       }
     ],
     "URL": "http://my-grafana.example.com/d/ef5e2c21-88aa-4619-a5db-786cc1dd37a9/angular",
-    "Title": "Angular"
+    "Title": "Angular",
+    "Folder": "Angular deprecation",
+    "UpdatedBy": "admin",
+    "CreatedBy": "admin",
+    "Created": "2024-02-22T14:08:06+01:00",
+    "Updated": "2024-02-22T14:08:06+01:00"
   },
   {
     "Detections": [
@@ -81,6 +86,11 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
     ],
     "URL": "http://my-grafana.example.com/d/Y-RvmuRWk/datasource-tests-elasticsearch-v7",
     "Title": "Datasource tests - Elasticsearch v7"
+    "Folder": "Angular deprecation",
+    "UpdatedBy": "admin",
+    "CreatedBy": "admin",
+    "Created": "2024-02-22T14:08:06+01:00",
+    "Updated": "2024-02-22T14:08:06+01:00"
   },
   {
     "Detections": [
@@ -92,6 +102,11 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
     ],
     "URL": "http://my-grafana.example.com/d/e10a098c-ad80-4d3c-b979-c39a4ce41183/new-dashboard",
     "Title": "New dashboard"
+    "Folder": "Angular deprecation",
+    "UpdatedBy": "admin",
+    "CreatedBy": "admin",
+    "Created": "2024-02-22T14:08:06+01:00",
+    "Updated": "2024-02-22T14:08:06+01:00"
   }
 ]
 ```
