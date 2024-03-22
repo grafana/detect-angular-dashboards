@@ -85,7 +85,7 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
       }
     ],
     "URL": "http://my-grafana.example.com/d/Y-RvmuRWk/datasource-tests-elasticsearch-v7",
-    "Title": "Datasource tests - Elasticsearch v7"
+    "Title": "Datasource tests - Elasticsearch v7",
     "Folder": "Angular deprecation",
     "UpdatedBy": "admin",
     "CreatedBy": "admin",
@@ -101,7 +101,7 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
       }
     ],
     "URL": "http://my-grafana.example.com/d/e10a098c-ad80-4d3c-b979-c39a4ce41183/new-dashboard",
-    "Title": "New dashboard"
+    "Title": "New dashboard",
     "Folder": "Angular deprecation",
     "UpdatedBy": "admin",
     "CreatedBy": "admin",
