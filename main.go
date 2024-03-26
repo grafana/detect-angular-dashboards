@@ -42,7 +42,7 @@ func main() {
 	versionFlag := flag.Bool("version", false, "print version number")
 	verboseFlag := flag.Bool("v", false, "verbose output")
 	jsonOutputFlag := flag.Bool("j", false, "json output")
-	skipTLSFlag := flag.Bool("-insecure", false, "skip TLS verification")
+	skipTLSFlag := flag.Bool("insecure", false, "skip TLS verification")
 	flag.Parse()
 
 	if *versionFlag {
