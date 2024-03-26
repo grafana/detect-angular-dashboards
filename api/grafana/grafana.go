@@ -18,10 +18,8 @@ type APIClient struct {
 	api.Client
 }
 
-func NewAPIClient(baseURL string, token string) APIClient {
-	return APIClient{
-		Client: api.NewClient(baseURL, token),
-	}
+func NewAPIClient(client api.Client) APIClient {
+	return APIClient{Client: client}
 }
 
 func (cl APIClient) GetPlugins(ctx context.Context) ([]Plugin, error) {
