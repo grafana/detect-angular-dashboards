@@ -19,21 +19,20 @@ const (
 )
 
 // Run runs the angular detector tool against the specified Grafana instance.
-func Run(ctx context.Context, log *logger.LeveledLogger, grafanaURL, token string) ([]output.Dashboard, error) {
+func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.APIClient) ([]output.Dashboard, error) {
 	var (
 		finalOutput []output.Dashboard
 		// Determine if we should use GCOM or frontendsettings
 		useGCOM bool
 	)
 
-	grCl := grafana.NewAPIClient(grafanaURL, token)
 	gcomCl := gcom.NewAPIClient()
 
 	// Determine if plugins are angular.
 	// This can be done from frontendsettings (faster and works with private plugins, but only works with >= 10.1.0)
 	// or from GCOM (slower, but always available, but public plugins only)
 	angularDetected := map[string]bool{}
-	frontendSettings, err := grCl.GetFrontendSettings(ctx)
+	frontendSettings, err := grafanaClient.GetFrontendSettings(ctx)
 	if err != nil {
 		return []output.Dashboard{}, fmt.Errorf("get frontend settings: %w", err)
 	}
@@ -57,7 +56,7 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaURL, token strin
 		// If we don't have such permissions, the plugins endpoint will still return a valid response,
 		// but it will contain only core plugins:
 		// https://github.com/grafana/grafana/blob/0315b911ef45b4ce9d3d5c182d8b112c6b9b41da/pkg/api/plugins.go#L56
-		permissions, err := grCl.GetServiceAccountPermissions(ctx)
+		permissions, err := grafanaClient.GetServiceAccountPermissions(ctx)
 		if err != nil {
 			// Do not hard fail if we can't get service account permissions
 			// as we may be running against an old Grafana version without service accounts
@@ -75,7 +74,7 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaURL, token strin
 		}
 
 		// Get the plugins
-		plugins, err := grCl.GetPlugins(ctx)
+		plugins, err := grafanaClient.GetPlugins(ctx)
 		if err != nil {
 			return []output.Dashboard{}, fmt.Errorf("get plugins: %w", err)
 		}
@@ -112,7 +111,7 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaURL, token strin
 	}
 
 	// Map ds name -> ds plugin id, to resolve legacy dashboards that have ds name
-	apiDs, err := grCl.GetDatasourcePluginIDs(ctx)
+	apiDs, err := grafanaClient.GetDatasourcePluginIDs(ctx)
 	if err != nil {
 		return []output.Dashboard{}, fmt.Errorf("get datasource plugin ids: %w", err)
 	}
@@ -121,19 +120,19 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaURL, token strin
 		datasourcePluginIDs[ds.Name] = ds.Type
 	}
 
-	dashboards, err := grCl.GetDashboards(ctx, 1)
+	dashboards, err := grafanaClient.GetDashboards(ctx, 1)
 	if err != nil {
 		return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
 	}
 
 	for _, d := range dashboards {
 		// Determine absolute dashboard URL for output
-		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(grafanaURL, "/api"), d.URL)
+		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(grafanaClient.BaseURL, "/api"), d.URL)
 		if err != nil {
 			// Silently ignore errors
 			dashboardAbsURL = ""
 		}
-		dashboardDefinition, err := grCl.GetDashboard(ctx, d.UID)
+		dashboardDefinition, err := grafanaClient.GetDashboard(ctx, d.UID)
 		if err != nil {
 			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", d.UID, err)
 		}
