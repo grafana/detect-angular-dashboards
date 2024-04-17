@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/grafana/detect-angular-dashboards/api/gcom"
@@ -19,7 +20,7 @@ const (
 )
 
 // Run runs the angular detector tool against the specified Grafana instance.
-func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.APIClient) ([]output.Dashboard, error) {
+func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.APIClient, orgID int) ([]output.Dashboard, error) {
 	var (
 		finalOutput []output.Dashboard
 		// Determine if we should use GCOM or frontendsettings
@@ -125,9 +126,14 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.A
 		return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
 	}
 
+	orgIDURLsuffix := "?" + url.Values{
+		"orgID": []string{strconv.Itoa(orgID)},
+	}.Encode()
+
 	for _, d := range dashboards {
 		// Determine absolute dashboard URL for output
-		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(grafanaClient.BaseURL, "/api"), d.URL)
+
+		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(grafanaClient.BaseURL, "/api"), d.URL+orgIDURLsuffix)
 		if err != nil {
 			// Silently ignore errors
 			dashboardAbsURL = ""

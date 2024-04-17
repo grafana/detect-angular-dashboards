@@ -57,6 +57,7 @@ type Dashboard struct {
 
 type Outputter interface {
 	Output([]Dashboard) error
+	BulkOutput(map[int][]Dashboard) error
 }
 
 type LoggerReadableOutput struct {
@@ -81,6 +82,19 @@ func (o LoggerReadableOutput) Output(v []Dashboard) error {
 	return nil
 }
 
+func (o LoggerReadableOutput) BulkOutput(v map[int][]Dashboard) error {
+	for org, dashboards := range v {
+		if len(dashboards) > 0 {
+			o.log.Log("Found dashboards with Angular plugins in org %d", org)
+			err := o.Output(dashboards)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 type JSONOutputter struct {
 	writer io.Writer
 }
@@ -90,6 +104,12 @@ func NewJSONOutputter(w io.Writer) JSONOutputter {
 }
 
 func (o JSONOutputter) Output(v []Dashboard) error {
+	enc := json.NewEncoder(o.writer)
+	enc.SetIndent("", "  ")
+	return enc.Encode(o.removeDashboardsWithoutDetections(v))
+}
+
+func (o JSONOutputter) removeDashboardsWithoutDetections(v []Dashboard) []Dashboard {
 	var j int
 	for i, dashboard := range v {
 		// Remove dashboards without detections
@@ -99,7 +119,17 @@ func (o JSONOutputter) Output(v []Dashboard) error {
 		v[j] = v[i]
 		j++
 	}
-	v = v[:j]
+	return v[:j]
+}
+
+func (o JSONOutputter) BulkOutput(v map[int][]Dashboard) error {
+	for orgID, dashboards := range v {
+		if len(dashboards) == 0 {
+			delete(v, orgID)
+		} else {
+			v[orgID] = o.removeDashboardsWithoutDetections(dashboards)
+		}
+	}
 	enc := json.NewEncoder(o.writer)
 	enc.SetIndent("", "  ")
 	return enc.Encode(v)

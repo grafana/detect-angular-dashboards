@@ -77,6 +77,12 @@ func (cl APIClient) GetOrgs(ctx context.Context) ([]Org, error) {
 	return orgs, err
 }
 
+func (cl APIClient) GetCurrentOrg(ctx context.Context) (Org, error) {
+	var org Org
+	err := cl.Request(ctx, http.MethodGet, "org", &org)
+	return org, err
+}
+
 func (cl APIClient) UserSwitchContext(ctx context.Context, orgID string) error {
 	return cl.Request(ctx, http.MethodPost, "user/using/"+orgID, nil)
 }
