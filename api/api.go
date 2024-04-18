@@ -13,10 +13,10 @@ var ErrBadStatusCode = fmt.Errorf("bad status code")
 type Client struct {
 	BaseURL string
 
-	token string
+	Token string
 
-	basicAuthUser     string
-	basicAuthPassword string
+	BasicAuthUser     string
+	BasicAuthPassword string
 
 	httpClient *http.Client
 }
@@ -31,11 +31,11 @@ func WithAuthentication(token string) ClientOption {
 	return func(cl *Client) {
 		auth := strings.SplitN(token, ":", 2)
 		if len(auth) == 2 {
-			cl.basicAuthUser = auth[0]
-			cl.basicAuthPassword = auth[1]
+			cl.BasicAuthUser = auth[0]
+			cl.BasicAuthPassword = auth[1]
 			return
 		}
-		cl.token = token
+		cl.Token = token
 	}
 }
 
@@ -73,10 +73,10 @@ func (cl Client) newRequest(ctx context.Context, method, url string) (*http.Requ
 	// There is two cases, either we have provided a service account's Token or
 	// the basicAuth. As the token is the recommended way to interact with the
 	// API let's use it first
-	if cl.token != "" {
-		req.Header.Add("Authorization", "Bearer "+cl.token)
-	} else if cl.basicAuthUser != "" && cl.basicAuthPassword != "" {
-		req.SetBasicAuth(cl.basicAuthUser, cl.basicAuthPassword)
+	if cl.Token != "" {
+		req.Header.Add("Authorization", "Bearer "+cl.Token)
+	} else if cl.BasicAuthUser != "" && cl.BasicAuthPassword != "" {
+		req.SetBasicAuth(cl.BasicAuthUser, cl.BasicAuthPassword)
 	}
 	return req, err
 }
