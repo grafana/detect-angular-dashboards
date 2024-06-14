@@ -18,10 +18,20 @@ const (
 	pluginIDTableOld = "table-old"
 )
 
+type GrafanaDetectorAPIClient interface {
+	BaseURL() string
+	GetPlugins(ctx context.Context) ([]grafana.Plugin, error)
+	GetFrontendSettings(ctx context.Context) (*grafana.FrontendSettings, error)
+	GetServiceAccountPermissions(ctx context.Context) (map[string][]string, error)
+	GetDatasourcePluginIDs(ctx context.Context) ([]grafana.Datasource, error)
+	GetDashboards(ctx context.Context, page int) ([]grafana.ListedDashboard, error)
+	GetDashboard(ctx context.Context, uid string) (*grafana.DashboardDefinition, error)
+}
+
 // Detector can detect Angular plugins in Grafana dashboards.
 type Detector struct {
 	log           *logger.LeveledLogger
-	grafanaClient grafana.APIClient
+	grafanaClient GrafanaDetectorAPIClient
 	gcomClient    gcom.APIClient
 
 	angularDetected     map[string]bool
@@ -29,7 +39,7 @@ type Detector struct {
 }
 
 // NewDetector returns a new Detector.
-func NewDetector(log *logger.LeveledLogger, grafanaClient grafana.APIClient, gcomClient gcom.APIClient) *Detector {
+func NewDetector(log *logger.LeveledLogger, grafanaClient GrafanaDetectorAPIClient, gcomClient gcom.APIClient) *Detector {
 	return &Detector{
 		log:           log,
 		grafanaClient: grafanaClient,
@@ -144,7 +154,7 @@ func (d *Detector) Run(ctx context.Context) ([]output.Dashboard, error) {
 
 	for _, dash := range dashboards {
 		// Determine absolute dashboard URL for output
-		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(d.grafanaClient.BaseURL, "/api"), dash.URL)
+		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(d.grafanaClient.BaseURL(), "/api"), dash.URL)
 		if err != nil {
 			// Silently ignore errors
 			dashboardAbsURL = ""
