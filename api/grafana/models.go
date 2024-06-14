@@ -28,6 +28,8 @@ type DashboardPanel struct {
 	Type       string
 	Title      string
 	Datasource interface{}
+
+	Panels []*DashboardPanel // present for collapsed rows
 }
 
 type DashboardDefinition struct {

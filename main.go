@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/grafana/detect-angular-dashboards/api"
+	"github.com/grafana/detect-angular-dashboards/api/gcom"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
 	"github.com/grafana/detect-angular-dashboards/build"
 	"github.com/grafana/detect-angular-dashboards/detector"
@@ -74,7 +75,8 @@ func main() {
 		}))
 	}
 	client := grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
-	finalOutput, err := detector.Run(ctx, log, client)
+	d := detector.NewDetector(log, client, gcom.NewAPIClient())
+	finalOutput, err := d.Run(ctx)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(0)

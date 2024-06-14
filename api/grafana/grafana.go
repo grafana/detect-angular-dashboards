@@ -48,10 +48,20 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*DashboardDef
 	if err := cl.Request(ctx, http.MethodGet, "dashboards/uid/"+uid, &out); err != nil {
 		return nil, err
 	}
-	// Convert datasources map[string]interface{} to custom type
-	// The datasource field can either be a string (old) or object (new)
-	// Could check for schema, but this is easier
-	for _, panel := range out.Dashboard.Panels {
+	convertPanels(out.Dashboard.Panels)
+	return out, nil
+}
+
+// convertPanels recursively converts datasources map[string]interface{} to custom type.
+// The datasource field can either be a string (old) or object (new).
+// Could check for schema, but this is easier.
+func convertPanels(panels []*DashboardPanel) {
+	for _, panel := range panels {
+		// Recurse
+		if len(panel.Panels) > 0 {
+			convertPanels(panel.Panels)
+		}
+
 		m, ok := panel.Datasource.(map[string]interface{})
 		if !ok {
 			// String, keep as-is
@@ -65,8 +75,6 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*DashboardDef
 		}
 		panel.Datasource = PanelDatasource{Type: m["type"].(string)}
 	}
-
-	return out, nil
 }
 
 func (cl APIClient) GetOrgs(ctx context.Context) ([]Org, error) {
