@@ -183,7 +183,7 @@ func (d *Detector) checkPanels(dashboardDefinition *grafana.DashboardDefinition,
 		out = append(out, r...)
 
 		// Recurse
-		if len(p.Panels) > 0 {
+		if len(p.Panels) == 0 {
 			continue
 		}
 		rr, err := d.checkPanels(dashboardDefinition, p.Panels)
