@@ -137,6 +137,18 @@ func TestDetector(t *testing.T) {
 	})
 
 	t.Run("rows", func(t *testing.T) {
+		t.Run("expanded", func(t *testing.T) {
+			cl := TestAPIClient{
+				DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "rows-expanded.json"),
+			}
+			d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+			out, err := d.Run(context.Background())
+			require.NoError(t, err)
+			require.Len(t, out, 1)
+			require.Len(t, out[0].Detections, 1)
+			require.Equal(t, "expanded", out[0].Detections[0].Title)
+		})
+
 		t.Run("collapsed", func(t *testing.T) {
 			cl := TestAPIClient{
 				DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "rows-collapsed.json"),
