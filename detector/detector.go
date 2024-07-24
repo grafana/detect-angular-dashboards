@@ -18,21 +18,38 @@ const (
 	pluginIDTableOld = "table-old"
 )
 
+// Detector can detect Angular plugins in Grafana dashboards.
+type Detector struct {
+	log           *logger.LeveledLogger
+	grafanaClient grafana.APIClient
+	gcomClient    gcom.APIClient
+
+	angularDetected     map[string]bool
+	datasourcePluginIDs map[string]string
+}
+
+// NewDetector returns a new Detector.
+func NewDetector(log *logger.LeveledLogger, grafanaClient grafana.APIClient, gcomClient gcom.APIClient) *Detector {
+	return &Detector{
+		log:           log,
+		grafanaClient: grafanaClient,
+		gcomClient:    gcomClient,
+	}
+}
+
 // Run runs the angular detector tool against the specified Grafana instance.
-func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.APIClient) ([]output.Dashboard, error) {
+func (d *Detector) Run(ctx context.Context) ([]output.Dashboard, error) {
 	var (
 		finalOutput []output.Dashboard
 		// Determine if we should use GCOM or frontendsettings
 		useGCOM bool
 	)
 
-	gcomCl := gcom.NewAPIClient()
-
 	// Determine if plugins are angular.
 	// This can be done from frontendsettings (faster and works with private plugins, but only works with >= 10.1.0)
 	// or from GCOM (slower, but always available, but public plugins only)
-	angularDetected := map[string]bool{}
-	frontendSettings, err := grafanaClient.GetFrontendSettings(ctx)
+	d.angularDetected = map[string]bool{}
+	frontendSettings, err := d.grafanaClient.GetFrontendSettings(ctx)
 	if err != nil {
 		return []output.Dashboard{}, fmt.Errorf("get frontend settings: %w", err)
 	}
@@ -49,19 +66,19 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.A
 	}
 	if useGCOM {
 		// Fall back to GCOM (< 10.1.0)
-		log.Verbose().Log("Using GCOM to find Angular plugins")
-		log.Log("(WARNING, dependencies on private plugins won't be flagged)")
+		d.log.Verbose().Log("Using GCOM to find Angular plugins")
+		d.log.Log("(WARNING, dependencies on private plugins won't be flagged)")
 
 		// Double check that the token has the correct permissions, which is "datasources:create".
 		// If we don't have such permissions, the plugins endpoint will still return a valid response,
 		// but it will contain only core plugins:
 		// https://github.com/grafana/grafana/blob/0315b911ef45b4ce9d3d5c182d8b112c6b9b41da/pkg/api/plugins.go#L56
-		permissions, err := grafanaClient.GetServiceAccountPermissions(ctx)
+		permissions, err := d.grafanaClient.GetServiceAccountPermissions(ctx)
 		if err != nil {
 			// Do not hard fail if we can't get service account permissions
 			// as we may be running against an old Grafana version without service accounts
-			log.Verbose().Log("(WARNING: could not get service account permissions: %v)", err)
-			log.Verbose().Log("Please make sure that you have created an ADMIN token or the output will be wrong")
+			d.log.Verbose().Log("(WARNING: could not get service account permissions: %v)", err)
+			d.log.Verbose().Log("Please make sure that you have created an ADMIN token or the output will be wrong")
 		} else {
 			_, hasDsCreate := permissions["datasources:create"]
 			_, hasPluginsInstall := permissions["plugins:install"]
@@ -74,7 +91,7 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.A
 		}
 
 		// Get the plugins
-		plugins, err := grafanaClient.GetPlugins(ctx)
+		plugins, err := d.grafanaClient.GetPlugins(ctx)
 		if err != nil {
 			return []output.Dashboard{}, fmt.Errorf("get plugins: %w", err)
 		}
@@ -82,114 +99,146 @@ func Run(ctx context.Context, log *logger.LeveledLogger, grafanaClient grafana.A
 			if p.Info.Version == "" {
 				continue
 			}
-			angularDetected[p.ID], err = gcomCl.GetAngularDetected(ctx, p.ID, p.Info.Version)
+			d.angularDetected[p.ID], err = d.gcomClient.GetAngularDetected(ctx, p.ID, p.Info.Version)
 			if err != nil {
 				return []output.Dashboard{}, fmt.Errorf("get angular detected: %w", err)
 			}
 		}
 	} else {
-		log.Verbose().Log("Using frontendsettings to find Angular plugins")
+		d.log.Verbose().Log("Using frontendsettings to find Angular plugins")
 		for pluginID, panel := range frontendSettings.Panels {
 			v, err := panel.IsAngular()
 			if err != nil {
 				return []output.Dashboard{}, fmt.Errorf("%q is angular: %w", pluginID, err)
 			}
-			angularDetected[pluginID] = v
+			d.angularDetected[pluginID] = v
 		}
 		for _, ds := range frontendSettings.Datasources {
 			v, err := ds.IsAngular()
 			if err != nil {
 				return []output.Dashboard{}, fmt.Errorf("%q is angular: %w", ds.Type, err)
 			}
-			angularDetected[ds.Type] = v
+			d.angularDetected[ds.Type] = v
 		}
 	}
 
 	// Debug
-	for p, isAngular := range angularDetected {
-		log.Verbose().Log("Plugin %q angular %t", p, isAngular)
+	for p, isAngular := range d.angularDetected {
+		d.log.Verbose().Log("Plugin %q angular %t", p, isAngular)
 	}
 
 	// Map ds name -> ds plugin id, to resolve legacy dashboards that have ds name
-	apiDs, err := grafanaClient.GetDatasourcePluginIDs(ctx)
+	apiDs, err := d.grafanaClient.GetDatasourcePluginIDs(ctx)
 	if err != nil {
 		return []output.Dashboard{}, fmt.Errorf("get datasource plugin ids: %w", err)
 	}
-	datasourcePluginIDs := make(map[string]string, len(apiDs))
+	d.datasourcePluginIDs = make(map[string]string, len(apiDs))
 	for _, ds := range apiDs {
-		datasourcePluginIDs[ds.Name] = ds.Type
+		d.datasourcePluginIDs[ds.Name] = ds.Type
 	}
 
-	dashboards, err := grafanaClient.GetDashboards(ctx, 1)
+	dashboards, err := d.grafanaClient.GetDashboards(ctx, 1)
 	if err != nil {
 		return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
 	}
 
-	for _, d := range dashboards {
+	for _, dash := range dashboards {
 		// Determine absolute dashboard URL for output
-		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(grafanaClient.BaseURL, "/api"), d.URL)
+		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(d.grafanaClient.BaseURL, "/api"), dash.URL)
 		if err != nil {
 			// Silently ignore errors
 			dashboardAbsURL = ""
 		}
-		dashboardDefinition, err := grafanaClient.GetDashboard(ctx, d.UID)
+		dashboardDefinition, err := d.grafanaClient.GetDashboard(ctx, dash.UID)
 		if err != nil {
-			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", d.UID, err)
+			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", dash.UID, err)
 		}
 		dashboardOutput := output.Dashboard{
 			Detections: []output.Detection{},
 			URL:        dashboardAbsURL,
-			Title:      d.Title,
+			Title:      dash.Title,
 			Folder:     dashboardDefinition.Meta.FolderTitle,
 			CreatedBy:  dashboardDefinition.Meta.CreatedBy,
 			UpdatedBy:  dashboardDefinition.Meta.UpdatedBy,
 			Created:    dashboardDefinition.Meta.Created,
 			Updated:    dashboardDefinition.Meta.Updated,
 		}
-		for _, p := range dashboardDefinition.Dashboard.Panels {
-			// Check panel
-			// - "graph" has been replaced with timeseries
-			// - "table-old" is the old table panel (after it has been migrated)
-			// - "table" with a schema version < 24 is Angular table panel, which will be replaced by `table-old`:
-			//		https://github.com/grafana/grafana/blob/7869ca1932c3a2a8f233acf35a3fe676187847bc/public/app/features/dashboard/state/DashboardMigrator.ts#L595-L610
-			if p.Type == pluginIDGraphOld || p.Type == pluginIDTableOld || (p.Type == pluginIDTable && dashboardDefinition.Dashboard.SchemaVersion < 24) {
-				// Different warning on legacy panel that can be migrated to React automatically
-				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
-					DetectionType: output.DetectionTypeLegacyPanel,
-					PluginID:      p.Type,
-					Title:         p.Title,
-				})
-			} else if angularDetected[p.Type] {
-				// Angular plugin
-				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
-					DetectionType: output.DetectionTypePanel,
-					PluginID:      p.Type,
-					Title:         p.Title,
-				})
-			}
-
-			// Check datasource
-			var dsPlugin string
-			// The datasource field can either be a string (old) or object (new)
-			if p.Datasource == nil || p.Datasource == "" {
-				continue
-			}
-			if dsName, ok := p.Datasource.(string); ok {
-				dsPlugin = datasourcePluginIDs[dsName]
-			} else if ds, ok := p.Datasource.(grafana.PanelDatasource); ok {
-				dsPlugin = ds.Type
-			} else {
-				return []output.Dashboard{}, fmt.Errorf("unknown unmarshaled datasource type %T", p.Datasource)
-			}
-			if angularDetected[dsPlugin] {
-				dashboardOutput.Detections = append(dashboardOutput.Detections, output.Detection{
-					DetectionType: output.DetectionTypeDatasource,
-					PluginID:      dsPlugin,
-					Title:         p.Title,
-				})
-			}
+		dashboardOutput.Detections, err = d.checkPanels(dashboardDefinition, dashboardDefinition.Dashboard.Panels)
+		if err != nil {
+			return []output.Dashboard{}, fmt.Errorf("check panels: %w", err)
 		}
 		finalOutput = append(finalOutput, dashboardOutput)
 	}
 	return finalOutput, nil
+}
+
+// checkPanels calls checkPanel recursively on the given panels.
+func (d *Detector) checkPanels(dashboardDefinition *grafana.DashboardDefinition, panels []*grafana.DashboardPanel) ([]output.Detection, error) {
+	var out []output.Detection
+	for _, p := range panels {
+		r, err := d.checkPanel(dashboardDefinition, p)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, r...)
+
+		// Recurse
+		if len(p.Panels) == 0 {
+			continue
+		}
+		rr, err := d.checkPanels(dashboardDefinition, p.Panels)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, rr...)
+	}
+	return out, nil
+}
+
+// checkPanel checks the given panel for Angular plugins.
+func (d *Detector) checkPanel(dashboardDefinition *grafana.DashboardDefinition, p *grafana.DashboardPanel) ([]output.Detection, error) {
+	var out []output.Detection
+
+	// Check panel
+	// - "graph" has been replaced with timeseries
+	// - "table-old" is the old table panel (after it has been migrated)
+	// - "table" with a schema version < 24 is Angular table panel, which will be replaced by `table-old`:
+	//		https://github.com/grafana/grafana/blob/7869ca1932c3a2a8f233acf35a3fe676187847bc/public/app/features/dashboard/state/DashboardMigrator.ts#L595-L610
+	if p.Type == pluginIDGraphOld || p.Type == pluginIDTableOld || (p.Type == pluginIDTable && dashboardDefinition.Dashboard.SchemaVersion < 24) {
+		// Different warning on legacy panel that can be migrated to React automatically
+		out = append(out, output.Detection{
+			DetectionType: output.DetectionTypeLegacyPanel,
+			PluginID:      p.Type,
+			Title:         p.Title,
+		})
+	} else if d.angularDetected[p.Type] {
+		// Angular plugin
+		out = append(out, output.Detection{
+			DetectionType: output.DetectionTypePanel,
+			PluginID:      p.Type,
+			Title:         p.Title,
+		})
+	}
+
+	// Check datasource
+	var dsPlugin string
+	// The datasource field can either be a string (old) or object (new)
+	if p.Datasource == nil || p.Datasource == "" {
+		return out, nil
+	}
+	if dsName, ok := p.Datasource.(string); ok {
+		dsPlugin = d.datasourcePluginIDs[dsName]
+	} else if ds, ok := p.Datasource.(grafana.PanelDatasource); ok {
+		dsPlugin = ds.Type
+	} else {
+		return nil, fmt.Errorf("unknown unmarshaled datasource type %T", p.Datasource)
+	}
+	if d.angularDetected[dsPlugin] {
+		out = append(out, output.Detection{
+			DetectionType: output.DetectionTypeDatasource,
+			PluginID:      dsPlugin,
+			Title:         p.Title,
+		})
+	}
+	return out, nil
 }
