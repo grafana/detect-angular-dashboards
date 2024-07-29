@@ -18,10 +18,8 @@ import (
 
 func TestDetector(t *testing.T) {
 	t.Run("meta", func(t *testing.T) {
-		cl := TestAPIClient{
-			DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "graph-old.json"),
-		}
-		d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "graph-old.json"))
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -36,10 +34,8 @@ func TestDetector(t *testing.T) {
 	})
 
 	t.Run("legacy panel", func(t *testing.T) {
-		cl := TestAPIClient{
-			DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "graph-old.json"),
-		}
-		d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "graph-old.json"))
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -55,10 +51,8 @@ func TestDetector(t *testing.T) {
 	})
 
 	t.Run("angular panel", func(t *testing.T) {
-		cl := TestAPIClient{
-			DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "worldmap.json"),
-		}
-		d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "worldmap.json"))
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -70,10 +64,8 @@ func TestDetector(t *testing.T) {
 	})
 
 	t.Run("datasource", func(t *testing.T) {
-		cl := TestAPIClient{
-			DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "datasource.json"),
-		}
-		d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "datasource.json"))
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -85,10 +77,8 @@ func TestDetector(t *testing.T) {
 	})
 
 	t.Run("not angular", func(t *testing.T) {
-		cl := TestAPIClient{
-			DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "not-angular.json"),
-		}
-		d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "not-angular.json"))
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -96,10 +86,8 @@ func TestDetector(t *testing.T) {
 	})
 
 	t.Run("multiple", func(t *testing.T) {
-		cl := TestAPIClient{
-			DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "multiple.json"),
-		}
-		d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "multiple.json"))
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -125,10 +113,8 @@ func TestDetector(t *testing.T) {
 	t.Run("mixed", func(t *testing.T) {
 		// mix of angular and react panels
 
-		cl := TestAPIClient{
-			DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "mixed.json"),
-		}
-		d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "mixed.json"))
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -138,10 +124,8 @@ func TestDetector(t *testing.T) {
 
 	t.Run("rows", func(t *testing.T) {
 		t.Run("expanded", func(t *testing.T) {
-			cl := TestAPIClient{
-				DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "rows-expanded.json"),
-			}
-			d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+			cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "rows-expanded.json"))
+			d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 			out, err := d.Run(context.Background())
 			require.NoError(t, err)
 			require.Len(t, out, 1)
@@ -150,10 +134,8 @@ func TestDetector(t *testing.T) {
 		})
 
 		t.Run("collapsed", func(t *testing.T) {
-			cl := TestAPIClient{
-				DashboardJSONFilePath: filepath.Join("testdata", "dashboards", "rows-collapsed.json"),
-			}
-			d := NewDetector(logger.NewLeveledLogger(false), &cl, gcom.NewAPIClient())
+			cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "rows-collapsed.json"))
+			d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 			out, err := d.Run(context.Background())
 			require.NoError(t, err)
 			require.Len(t, out, 1)
@@ -172,6 +154,16 @@ type TestAPIClient struct {
 	PluginsFilePath          string
 }
 
+func NewTestAPIClient(dashboardJSONFilePath string) *TestAPIClient {
+	return &TestAPIClient{
+		DashboardJSONFilePath:    dashboardJSONFilePath,
+		DashboardMetaFilePath:    filepath.Join("testdata", "dashboard-meta.json"),
+		FrontendSettingsFilePath: filepath.Join("testdata", "frontend-settings.json"),
+		DatasourcesFilePath:      filepath.Join("testdata", "datasources.json"),
+		PluginsFilePath:          filepath.Join("testdata", "plugins.json"),
+	}
+}
+
 // unmarshalFromFile unmarshals JSON from a file into out, which must be a pointer to a value.
 func unmarshalFromFile(fn string, out any) error {
 	f, err := os.Open(fn)
@@ -187,23 +179,15 @@ func (c *TestAPIClient) BaseURL() string {
 	return ""
 }
 
-// GetPlugins returns plugins the content of testdata/plugins.json
+// GetPlugins returns plugins the content of c.PluginsFilePath.
 func (c *TestAPIClient) GetPlugins(_ context.Context) (plugins []grafana.Plugin, err error) {
-	fn := c.PluginsFilePath
-	if fn == "" {
-		fn = filepath.Join("testdata", "plugins.json")
-	}
-	err = unmarshalFromFile(fn, &plugins)
+	err = unmarshalFromFile(c.PluginsFilePath, &plugins)
 	return
 }
 
-// GetDatasourcePluginIDs returns the content of testdata/datasources.json
+// GetDatasourcePluginIDs returns the content of c.DatasourcesFilePath.
 func (c *TestAPIClient) GetDatasourcePluginIDs(_ context.Context) (datasources []grafana.Datasource, err error) {
-	fn := c.DatasourcesFilePath
-	if fn == "" {
-		fn = filepath.Join("testdata", "datasources.json")
-	}
-	err = unmarshalFromFile(fn, &datasources)
+	err = unmarshalFromFile(c.DatasourcesFilePath, &datasources)
 	return
 }
 
@@ -220,18 +204,13 @@ func (c *TestAPIClient) GetDashboards(_ context.Context, _ int) ([]grafana.Liste
 
 // GetDashboard returns a new DashboardDefinition that can be used for testing purposes.
 // The dashboard definition is taken from the file specified in c.DashboardJSONFilePath.
-// The dashboard meta is taken from the file specified in c.DashboardMetaFilePath,
-// which defaults to testdata/dashboard-meta.json if it's not specified.
+// The dashboard meta is taken from the file specified in c.DashboardMetaFilePath.
 func (c *TestAPIClient) GetDashboard(_ context.Context, _ string) (*grafana.DashboardDefinition, error) {
 	if c.DashboardJSONFilePath == "" {
 		return nil, fmt.Errorf("TestAPIClient DashboardJSONFilePath cannot be empty")
 	}
-	metaFn := c.DashboardMetaFilePath
-	if metaFn == "" {
-		metaFn = filepath.Join("testdata", "dashboard-meta.json")
-	}
 	var out grafana.DashboardDefinition
-	if err := unmarshalFromFile(metaFn, &out); err != nil {
+	if err := unmarshalFromFile(c.DashboardMetaFilePath, &out); err != nil {
 		return nil, fmt.Errorf("unmarshal meta: %w", err)
 	}
 	if err := unmarshalFromFile(c.DashboardJSONFilePath, &out.Dashboard); err != nil {
@@ -241,13 +220,9 @@ func (c *TestAPIClient) GetDashboard(_ context.Context, _ string) (*grafana.Dash
 	return &out, nil
 }
 
-// GetFrontendSettings returns the content of testdata/frontend-settings.json
+// GetFrontendSettings returns the content of c.FrontendSettingsFilePath.
 func (c *TestAPIClient) GetFrontendSettings(_ context.Context) (frontendSettings *grafana.FrontendSettings, err error) {
-	fn := c.FrontendSettingsFilePath
-	if fn == "" {
-		fn = filepath.Join("testdata", "frontend-settings.json")
-	}
-	err = unmarshalFromFile(fn, &frontendSettings)
+	err = unmarshalFromFile(c.FrontendSettingsFilePath, &frontendSettings)
 	return
 }
 
