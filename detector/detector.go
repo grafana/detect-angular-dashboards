@@ -18,6 +18,8 @@ const (
 	pluginIDTableOld = "table-old"
 )
 
+// GrafanaDetectorAPIClient is an interface that can be used to interact with the Grafana API for
+// detecting Angular plugins.
 type GrafanaDetectorAPIClient interface {
 	BaseURL() string
 	GetPlugins(ctx context.Context) ([]grafana.Plugin, error)

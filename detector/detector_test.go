@@ -163,6 +163,7 @@ func TestDetector(t *testing.T) {
 	})
 }
 
+// TestAPIClient is a GrafanaDetectorAPIClient implementation for testing.
 type TestAPIClient struct {
 	DashboardJSONFilePath    string
 	DashboardMetaFilePath    string
@@ -171,6 +172,7 @@ type TestAPIClient struct {
 	PluginsFilePath          string
 }
 
+// unmarshalFromFile unmarshals JSON from a file into out, which must be a pointer to a value.
 func unmarshalFromFile(fn string, out any) error {
 	f, err := os.Open(fn)
 	if err != nil {
@@ -180,11 +182,13 @@ func unmarshalFromFile(fn string, out any) error {
 	return json.NewDecoder(f).Decode(out)
 }
 
+// BaseURL always returns an empty string.
 func (c *TestAPIClient) BaseURL() string {
 	return ""
 }
 
-func (c *TestAPIClient) GetPlugins(ctx context.Context) (plugins []grafana.Plugin, err error) {
+// GetPlugins returns plugins the content of testdata/plugins.json
+func (c *TestAPIClient) GetPlugins(_ context.Context) (plugins []grafana.Plugin, err error) {
 	fn := c.PluginsFilePath
 	if fn == "" {
 		fn = filepath.Join("testdata", "plugins.json")
@@ -193,7 +197,8 @@ func (c *TestAPIClient) GetPlugins(ctx context.Context) (plugins []grafana.Plugi
 	return
 }
 
-func (c *TestAPIClient) GetDatasourcePluginIDs(ctx context.Context) (datasources []grafana.Datasource, err error) {
+// GetDatasourcePluginIDs returns the content of testdata/datasources.json
+func (c *TestAPIClient) GetDatasourcePluginIDs(_ context.Context) (datasources []grafana.Datasource, err error) {
 	fn := c.DatasourcesFilePath
 	if fn == "" {
 		fn = filepath.Join("testdata", "datasources.json")
@@ -202,7 +207,8 @@ func (c *TestAPIClient) GetDatasourcePluginIDs(ctx context.Context) (datasources
 	return
 }
 
-func (c *TestAPIClient) GetDashboards(ctx context.Context, page int) ([]grafana.ListedDashboard, error) {
+// GetDashboards returns a dummy response with only one dashboard.
+func (c *TestAPIClient) GetDashboards(_ context.Context, _ int) ([]grafana.ListedDashboard, error) {
 	return []grafana.ListedDashboard{
 		{
 			UID:   "test-case-dashboard",
@@ -212,7 +218,11 @@ func (c *TestAPIClient) GetDashboards(ctx context.Context, page int) ([]grafana.
 	}, nil
 }
 
-func (c *TestAPIClient) GetDashboard(ctx context.Context, uid string) (*grafana.DashboardDefinition, error) {
+// GetDashboard returns a new DashboardDefinition that can be used for testing purposes.
+// The dashboard definition is taken from the file specified in c.DashboardJSONFilePath.
+// The dashboard meta is taken from the file specified in c.DashboardMetaFilePath,
+// which defaults to testdata/dashboard-meta.json if it's not specified.
+func (c *TestAPIClient) GetDashboard(_ context.Context, _ string) (*grafana.DashboardDefinition, error) {
 	if c.DashboardJSONFilePath == "" {
 		return nil, fmt.Errorf("TestAPIClient DashboardJSONFilePath cannot be empty")
 	}
@@ -231,7 +241,8 @@ func (c *TestAPIClient) GetDashboard(ctx context.Context, uid string) (*grafana.
 	return &out, nil
 }
 
-func (c *TestAPIClient) GetFrontendSettings(ctx context.Context) (frontendSettings *grafana.FrontendSettings, err error) {
+// GetFrontendSettings returns the content of testdata/frontend-settings.json
+func (c *TestAPIClient) GetFrontendSettings(_ context.Context) (frontendSettings *grafana.FrontendSettings, err error) {
 	fn := c.FrontendSettingsFilePath
 	if fn == "" {
 		fn = filepath.Join("testdata", "frontend-settings.json")
@@ -240,7 +251,8 @@ func (c *TestAPIClient) GetFrontendSettings(ctx context.Context) (frontendSettin
 	return
 }
 
-func (c *TestAPIClient) GetServiceAccountPermissions(ctx context.Context) (map[string][]string, error) {
+// GetServiceAccountPermissions is not implemented for testing purposes and always returns an empty map and a nil error.
+func (c *TestAPIClient) GetServiceAccountPermissions(_ context.Context) (map[string][]string, error) {
 	return nil, nil
 }
 
