@@ -22,6 +22,10 @@ func NewAPIClient(client api.Client) APIClient {
 	return APIClient{Client: client}
 }
 
+func (cl APIClient) BaseURL() string {
+	return cl.Client.BaseURL
+}
+
 func (cl APIClient) GetPlugins(ctx context.Context) ([]Plugin, error) {
 	var out []Plugin
 	err := cl.Request(ctx, http.MethodGet, "plugins", &out)
@@ -48,18 +52,18 @@ func (cl APIClient) GetDashboard(ctx context.Context, uid string) (*DashboardDef
 	if err := cl.Request(ctx, http.MethodGet, "dashboards/uid/"+uid, &out); err != nil {
 		return nil, err
 	}
-	convertPanels(out.Dashboard.Panels)
+	ConvertPanels(out.Dashboard.Panels)
 	return out, nil
 }
 
-// convertPanels recursively converts datasources map[string]interface{} to custom type.
+// ConvertPanels recursively converts datasources map[string]interface{} to custom type.
 // The datasource field can either be a string (old) or object (new).
 // Could check for schema, but this is easier.
-func convertPanels(panels []*DashboardPanel) {
+func ConvertPanels(panels []*DashboardPanel) {
 	for _, panel := range panels {
 		// Recurse
 		if len(panel.Panels) > 0 {
-			convertPanels(panel.Panels)
+			ConvertPanels(panel.Panels)
 		}
 
 		m, ok := panel.Datasource.(map[string]interface{})

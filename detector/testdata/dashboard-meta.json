@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "type": "db",
+    "canSave": true,
+    "canEdit": true,
+    "canAdmin": true,
+    "canStar": true,
+    "canDelete": true,
+    "slug": "test-case-dashboard",
+    "url": "/d/test-case-dashboard/test-case-dashboard",
+    "expires": "0001-01-01T00:00:00Z",
+    "created": "2023-11-07T11:13:24+01:00",
+    "updated": "2024-02-21T13:09:27+01:00",
+    "updatedBy": "admin",
+    "createdBy": "admin",
+    "version": 6,
+    "hasAcl": false,
+    "isFolder": false,
+    "folderId": 200,
+    "folderUid": "test-case-folder",
+    "folderTitle": "test case folder",
+    "folderUrl": "/dashboards/f/test-case-folder/test-case-folder",
+    "provisioned": false,
+    "provisionedExternalId": "",
+    "annotationsPermissions": {
+      "dashboard": {
+        "canAdd": true,
+        "canEdit": true,
+        "canDelete": true
+      },
+      "organization": {
+        "canAdd": true,
+        "canEdit": true,
+        "canDelete": true
+      }
+    }
+  },
+  "dashboard": null
+}

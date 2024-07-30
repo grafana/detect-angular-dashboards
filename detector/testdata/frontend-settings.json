@@ -1,0 +1,4836 @@
+{
+  "defaultDatasource": "gdev-testdata",
+  "datasources": {
+    "-- Dashboard --": {
+      "type": "datasource",
+      "name": "-- Dashboard --",
+      "meta": {
+        "id": "dashboard",
+        "type": "datasource",
+        "name": "-- Dashboard --",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Uses the result set from another panel in the same dashboard",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/dashboard/img/icn-reusequeries.svg",
+            "large": "public/app/plugins/datasource/dashboard/img/icn-reusequeries.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "",
+        "preload": false,
+        "backend": false,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": true,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "builtIn": true,
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/dashboard",
+        "baseUrl": "public/app/plugins/datasource/dashboard",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "isDefault": false,
+      "preload": false,
+      "jsonData": {},
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "-- Grafana --": {
+      "id": -1,
+      "uid": "grafana",
+      "type": "datasource",
+      "name": "-- Grafana --",
+      "meta": {
+        "id": "grafana",
+        "type": "datasource",
+        "name": "-- Grafana --",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "A built-in data source that generates random walk data and can poll the Testdata data source. This helps you test visualizations and run experiments.",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/grafana/img/icn-grafanadb.svg",
+            "large": "public/app/plugins/datasource/grafana/img/icn-grafanadb.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "builtIn": true,
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/grafana",
+        "baseUrl": "public/app/plugins/datasource/grafana",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "isDefault": false,
+      "preload": false,
+      "jsonData": {},
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "-- Mixed --": {
+      "type": "datasource",
+      "name": "-- Mixed --",
+      "meta": {
+        "id": "mixed",
+        "type": "datasource",
+        "name": "-- Mixed --",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Lets you query multiple data sources in the same panel.",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/mixed/img/icn-mixeddatasources.svg",
+            "large": "public/app/plugins/datasource/mixed/img/icn-mixeddatasources.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "",
+        "preload": false,
+        "backend": false,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": true,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "builtIn": true,
+        "mixed": true,
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/mixed",
+        "baseUrl": "public/app/plugins/datasource/mixed",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "isDefault": false,
+      "preload": false,
+      "jsonData": {},
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "Akumuli": {
+      "id": 3,
+      "uid": "d26aa804-25ce-46d4-bcb4-9ea54d783f29",
+      "type": "akumuli-datasource",
+      "name": "Akumuli",
+      "meta": {
+        "id": "akumuli-datasource",
+        "type": "datasource",
+        "name": "Akumuli",
+        "info": {
+          "author": {
+            "name": "Eugene Lazin",
+            "url": "https://akumuli.org"
+          },
+          "description": "Datasource plugin for Akumuli time-series database",
+          "links": [
+            {
+              "name": "Project site",
+              "url": "https://github.com/akumuli/Akumuli"
+            }
+          ],
+          "logos": {
+            "small": "public/plugins/akumuli-datasource/img/logo.svg.png",
+            "large": "public/plugins/akumuli-datasource/img/logo.svg.png"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "1.3.12",
+          "updated": "2019-12-19",
+          "keywords": [
+            "akumuli",
+            "tsdb",
+            "time series",
+            "timeseries",
+            "time-series"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "4.5.x",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "",
+        "preload": false,
+        "backend": false,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "streaming": false,
+        "signature": "valid",
+        "module": "public/plugins/akumuli-datasource/module.js",
+        "baseUrl": "public/plugins/akumuli-datasource",
+        "angular": {
+          "detected": true,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/d26aa804-25ce-46d4-bcb4-9ea54d783f29",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/akumuli-datasource/module.js",
+      "jsonData": {
+        "tsdbVersion": 1
+      },
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "Datasource Http Backend": {
+      "id": 2,
+      "uid": "a3c4dc18-aac3-4250-978f-aae9ae281f4f",
+      "type": "grafana-datasourcehttpbackend-datasource",
+      "name": "Datasource Http Backend",
+      "meta": {
+        "id": "grafana-datasourcehttpbackend-datasource",
+        "type": "datasource",
+        "name": "Datasource Http Backend",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": ""
+          },
+          "description": "",
+          "links": [
+            {
+              "name": "Website",
+              "url": "https://github.com/grafana/grafana-starter-datasource"
+            },
+            {
+              "name": "License",
+              "url": "https://github.com/grafana/grafana-starter-datasource/blob/master/LICENSE"
+            }
+          ],
+          "logos": {
+            "small": "public/plugins/grafana-datasourcehttpbackend-datasource/img/logo.svg",
+            "large": "public/plugins/grafana-datasourcehttpbackend-datasource/img/logo.svg"
+          },
+          "build": {},
+          "screenshots": [],
+          "version": "1.0.0",
+          "updated": "2024-05-27",
+          "keywords": [
+            "datasource"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.3.3",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "streaming": false,
+        "executable": "gpx_datasource_http_backend",
+        "signature": "unsigned",
+        "module": "public/plugins/grafana-datasourcehttpbackend-datasource/module.js",
+        "baseUrl": "public/plugins/grafana-datasourcehttpbackend-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/a3c4dc18-aac3-4250-978f-aae9ae281f4f",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/grafana-datasourcehttpbackend-datasource/module.js",
+      "jsonData": {},
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "Elasticsearch": {
+      "id": 1,
+      "uid": "b43d7b11-67ff-458a-a56d-a9189d97d8ad",
+      "type": "elasticsearch",
+      "name": "Elasticsearch",
+      "meta": {
+        "id": "elasticsearch",
+        "type": "datasource",
+        "name": "Elasticsearch",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source logging \u0026 analytics database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://grafana.com/docs/features/datasources/elasticsearch/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+            "large": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": [
+            "elasticsearch"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "logging",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/elasticsearch",
+        "baseUrl": "public/app/plugins/datasource/elasticsearch",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/b43d7b11-67ff-458a-a56d-a9189d97d8ad",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/elasticsearch",
+      "jsonData": {
+        "includeFrozen": false,
+        "logLevelField": "",
+        "logMessageField": "",
+        "maxConcurrentShardRequests": 5,
+        "timeField": "@timestamp"
+      },
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "elasticsearch-1": {
+      "id": 32,
+      "uid": "b2d54c90-8ff5-403f-940d-e0937ff68240",
+      "type": "elasticsearch",
+      "name": "elasticsearch-1",
+      "meta": {
+        "id": "elasticsearch",
+        "type": "datasource",
+        "name": "Elasticsearch",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source logging \u0026 analytics database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://grafana.com/docs/features/datasources/elasticsearch/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+            "large": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": [
+            "elasticsearch"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "logging",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/elasticsearch",
+        "baseUrl": "public/app/plugins/datasource/elasticsearch",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/b2d54c90-8ff5-403f-940d-e0937ff68240",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/elasticsearch",
+      "jsonData": {
+        "includeFrozen": false,
+        "index": "foo,othernode:foo",
+        "logLevelField": "",
+        "logMessageField": "",
+        "maxConcurrentShardRequests": 5,
+        "oauthPassThru": false,
+        "sigV4Auth": false,
+        "timeField": "@timestamp",
+        "tlsSkipVerify": true
+      },
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-alertmanager": {
+      "id": 7,
+      "uid": "gdev-alertmanager",
+      "type": "alertmanager",
+      "name": "gdev-alertmanager",
+      "meta": {
+        "id": "alertmanager",
+        "type": "datasource",
+        "name": "Alertmanager",
+        "info": {
+          "author": {
+            "name": "Prometheus alertmanager",
+            "url": "https://grafana.com"
+          },
+          "description": "Add external Alertmanagers (supports Prometheus and Mimir implementations) so you can use the Grafana Alerting UI to manage silences, contact points, and notification policies.",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://prometheus.io/docs/alerting/latest/alertmanager/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/alertmanager/img/logo.svg",
+            "large": "public/app/plugins/datasource/alertmanager/img/logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": [
+            "alerts",
+            "alerting",
+            "prometheus",
+            "alertmanager",
+            "mimir",
+            "cortex"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "",
+        "preload": false,
+        "backend": false,
+        "routes": [
+          {
+            "path": "alertmanager/api/v2/silences",
+            "method": "POST",
+            "reqRole": "Editor",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "alertmanager/api/v2/silence",
+            "method": "DELETE",
+            "reqRole": "Editor",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "alertmanager/api/v2/silences",
+            "method": "GET",
+            "reqRole": "Viewer",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "",
+            "method": "POST",
+            "reqRole": "Editor",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "",
+            "method": "PUT",
+            "reqRole": "Editor",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "",
+            "method": "DELETE",
+            "reqRole": "Editor",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "alertmanager/api/v2/alerts",
+            "method": "GET",
+            "reqRole": "Viewer",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/alerts",
+            "method": "GET",
+            "reqRole": "Admin",
+            "reqAction": "",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          }
+        ],
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": false,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/alertmanager",
+        "baseUrl": "public/app/plugins/datasource/alertmanager",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-alertmanager",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/alertmanager",
+      "jsonData": {
+        "implementation": "prometheus"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-cloudwatch": {
+      "id": 26,
+      "uid": "P8045C56BDA891CB2",
+      "type": "cloudwatch",
+      "name": "gdev-cloudwatch",
+      "meta": {
+        "id": "cloudwatch",
+        "type": "datasource",
+        "name": "CloudWatch",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for Amazon AWS monitoring service",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/cloudwatch/img/amazon-web-services.png",
+            "large": "public/app/plugins/datasource/cloudwatch/img/amazon-web-services.png"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": [
+            "aws",
+            "amazon"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "EC2",
+            "path": "dashboards/ec2.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "EBS",
+            "path": "dashboards/EBS.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Lambda",
+            "path": "dashboards/Lambda.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Logs",
+            "path": "dashboards/Logs.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "RDS",
+            "path": "dashboards/RDS.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "cloud",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/cloudwatch",
+        "baseUrl": "public/app/plugins/datasource/cloudwatch",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P8045C56BDA891CB2",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/cloudwatch",
+      "jsonData": {
+        "authType": "credentials",
+        "customMetricsNamespaces": "CWAgent",
+        "defaultRegion": "eu-west-2"
+      },
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-elasticsearch": {
+      "id": 16,
+      "uid": "gdev-elasticsearch",
+      "type": "elasticsearch",
+      "name": "gdev-elasticsearch",
+      "meta": {
+        "id": "elasticsearch",
+        "type": "datasource",
+        "name": "Elasticsearch",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source logging \u0026 analytics database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://grafana.com/docs/features/datasources/elasticsearch/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+            "large": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": [
+            "elasticsearch"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "logging",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/elasticsearch",
+        "baseUrl": "public/app/plugins/datasource/elasticsearch",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-elasticsearch",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/elasticsearch",
+      "jsonData": {
+        "index": "[logs-]YYYY.MM.DD",
+        "interval": "Daily",
+        "logLevelField": "level",
+        "logMessageField": "line",
+        "timeField": "@timestamp"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-elasticsearch-filebeat": {
+      "id": 17,
+      "uid": "P7D95068EFA5BD6AD",
+      "type": "elasticsearch",
+      "name": "gdev-elasticsearch-filebeat",
+      "meta": {
+        "id": "elasticsearch",
+        "type": "datasource",
+        "name": "Elasticsearch",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source logging \u0026 analytics database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://grafana.com/docs/features/datasources/elasticsearch/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+            "large": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": [
+            "elasticsearch"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "logging",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/elasticsearch",
+        "baseUrl": "public/app/plugins/datasource/elasticsearch",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P7D95068EFA5BD6AD",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/elasticsearch",
+      "jsonData": {
+        "index": "[filebeat-]YYYY.MM.DD",
+        "interval": "Daily",
+        "logLevelField": "fields.level",
+        "logMessageField": "message",
+        "timeField": "@timestamp",
+        "timeInterval": "10s"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-elasticsearch-metricbeat": {
+      "id": 18,
+      "uid": "P686FCD4D7E84A649",
+      "type": "elasticsearch",
+      "name": "gdev-elasticsearch-metricbeat",
+      "meta": {
+        "id": "elasticsearch",
+        "type": "datasource",
+        "name": "Elasticsearch",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source logging \u0026 analytics database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://grafana.com/docs/features/datasources/elasticsearch/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+            "large": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": [
+            "elasticsearch"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "logging",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/elasticsearch",
+        "baseUrl": "public/app/plugins/datasource/elasticsearch",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P686FCD4D7E84A649",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/elasticsearch",
+      "jsonData": {
+        "index": "[metricbeat-]YYYY.MM.DD",
+        "interval": "Daily",
+        "timeField": "@timestamp",
+        "timeInterval": "10s"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-graphite": {
+      "id": 4,
+      "uid": "P6798F81BB5440721",
+      "type": "graphite",
+      "name": "gdev-graphite",
+      "meta": {
+        "id": "graphite",
+        "type": "datasource",
+        "name": "Graphite",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://graphiteapp.org/"
+            },
+            {
+              "name": "Graphite 1.1 Release",
+              "url": "https://grafana.com/blog/2018/01/11/graphite-1.1-teaching-an-old-dog-new-tricks/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+            "large": "public/app/plugins/datasource/graphite/img/graphite_logo.png"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "Graphite Carbon Metrics",
+            "path": "dashboards/carbon_metrics.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Metrictank (Graphite alternative)",
+            "path": "dashboards/metrictank.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "cacheTimeout": true,
+          "maxDataPoints": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/graphite",
+        "baseUrl": "public/app/plugins/datasource/graphite",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P6798F81BB5440721",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/graphite",
+      "jsonData": {
+        "graphiteVersion": "1.1"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-graphite-0.9": {
+      "id": 6,
+      "uid": "P967B9090E9495159",
+      "type": "graphite",
+      "name": "gdev-graphite-0.9",
+      "meta": {
+        "id": "graphite",
+        "type": "datasource",
+        "name": "Graphite",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://graphiteapp.org/"
+            },
+            {
+              "name": "Graphite 1.1 Release",
+              "url": "https://grafana.com/blog/2018/01/11/graphite-1.1-teaching-an-old-dog-new-tricks/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+            "large": "public/app/plugins/datasource/graphite/img/graphite_logo.png"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "Graphite Carbon Metrics",
+            "path": "dashboards/carbon_metrics.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Metrictank (Graphite alternative)",
+            "path": "dashboards/metrictank.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "cacheTimeout": true,
+          "maxDataPoints": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/graphite",
+        "baseUrl": "public/app/plugins/datasource/graphite",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P967B9090E9495159",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/graphite",
+      "jsonData": {
+        "graphiteVersion": "0.9"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-graphite-1.0": {
+      "id": 5,
+      "uid": "P2B3FA8147A5E257E",
+      "type": "graphite",
+      "name": "gdev-graphite-1.0",
+      "meta": {
+        "id": "graphite",
+        "type": "datasource",
+        "name": "Graphite",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://graphiteapp.org/"
+            },
+            {
+              "name": "Graphite 1.1 Release",
+              "url": "https://grafana.com/blog/2018/01/11/graphite-1.1-teaching-an-old-dog-new-tricks/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/graphite/img/graphite_logo.png",
+            "large": "public/app/plugins/datasource/graphite/img/graphite_logo.png"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "Graphite Carbon Metrics",
+            "path": "dashboards/carbon_metrics.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Metrictank (Graphite alternative)",
+            "path": "dashboards/metrictank.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "cacheTimeout": true,
+          "maxDataPoints": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/graphite",
+        "baseUrl": "public/app/plugins/datasource/graphite",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P2B3FA8147A5E257E",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/graphite",
+      "jsonData": {
+        "graphiteVersion": "1.0"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-influxdb-flux": {
+      "id": 12,
+      "uid": "P49A45DF074423DFB",
+      "type": "influxdb",
+      "name": "gdev-influxdb-flux",
+      "meta": {
+        "id": "influxdb",
+        "type": "datasource",
+        "name": "InfluxDB",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg",
+            "large": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/influxdb",
+        "baseUrl": "public/app/plugins/datasource/influxdb",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P49A45DF074423DFB",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/influxdb",
+      "jsonData": {
+        "defaultBucket": "mybucket",
+        "organization": "myorg",
+        "version": "Flux"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-influxdb-influxql": {
+      "id": 13,
+      "uid": "P8E9168127D59652D",
+      "type": "influxdb",
+      "name": "gdev-influxdb-influxql",
+      "meta": {
+        "id": "influxdb",
+        "type": "datasource",
+        "name": "InfluxDB",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg",
+            "large": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/influxdb",
+        "baseUrl": "public/app/plugins/datasource/influxdb",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P8E9168127D59652D",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/influxdb",
+      "jsonData": {
+        "dbName": "mybucket",
+        "httpHeaderName1": "Authorization"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-influxdb1-influxql": {
+      "id": 11,
+      "uid": "P15396BDD62B2BE29",
+      "type": "influxdb",
+      "name": "gdev-influxdb1-influxql",
+      "meta": {
+        "id": "influxdb",
+        "type": "datasource",
+        "name": "InfluxDB",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg",
+            "large": "public/app/plugins/datasource/influxdb/img/influxdb_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/influxdb",
+        "baseUrl": "public/app/plugins/datasource/influxdb",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P15396BDD62B2BE29",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/influxdb",
+      "jsonData": {
+        "dbName": "site"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-jaeger": {
+      "id": 28,
+      "uid": "gdev-jaeger",
+      "type": "jaeger",
+      "name": "gdev-jaeger",
+      "meta": {
+        "id": "jaeger",
+        "type": "datasource",
+        "name": "Jaeger",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source, end-to-end distributed tracing",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://www.jaegertracing.io"
+            },
+            {
+              "name": "GitHub Project",
+              "url": "https://github.com/jaegertracing/jaeger"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/jaeger/img/jaeger_logo.svg",
+            "large": "public/app/plugins/datasource/jaeger/img/jaeger_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "11.0.0",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.3.0-0",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tracing",
+        "preload": false,
+        "backend": false,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": true,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": true,
+        "streaming": false,
+        "signature": "internal",
+        "module": "public/plugins/jaeger/module.js",
+        "baseUrl": "public/app/plugins/datasource/jaeger",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-jaeger",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/jaeger/module.js",
+      "jsonData": {},
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-loki": {
+      "id": 27,
+      "uid": "PDDA8E780A17E7EF1",
+      "type": "loki",
+      "name": "gdev-loki",
+      "meta": {
+        "id": "loki",
+        "type": "datasource",
+        "name": "Loki",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Like Prometheus but for logs. OSS logging solution from Grafana Labs",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://grafana.com/loki"
+            },
+            {
+              "name": "GitHub Project",
+              "url": "https://github.com/grafana/loki"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/loki/img/loki_icon.svg",
+            "large": "public/app/plugins/datasource/loki/img/loki_icon.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "logging",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "maxDataPoints": true
+        },
+        "streaming": true,
+        "signature": "internal",
+        "module": "core:plugin/loki",
+        "baseUrl": "public/app/plugins/datasource/loki",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/PDDA8E780A17E7EF1",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/loki",
+      "jsonData": {
+        "derivedFields": [
+          {
+            "datasourceUid": "gdev-jaeger",
+            "matcherRegex": "traceID=(\\w+)",
+            "name": "traceID",
+            "url": "${__value.raw}"
+          },
+          {
+            "datasourceUid": "gdev-zipkin",
+            "matcherRegex": "traceID=(\\w+)",
+            "name": "traceID",
+            "url": "${__value.raw}"
+          },
+          {
+            "datasourceUid": "gdev-tempo",
+            "matcherRegex": "traceID=(\\w+)",
+            "name": "traceID",
+            "url": "${__value.raw}"
+          }
+        ],
+        "manageAlerts": false
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-mssql": {
+      "id": 21,
+      "uid": "P6B08AC199690F328",
+      "type": "mssql",
+      "name": "gdev-mssql",
+      "meta": {
+        "id": "mssql",
+        "type": "datasource",
+        "name": "Microsoft SQL Server",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for Microsoft SQL Server compatible databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/mssql/img/sql_server_logo.svg",
+            "large": "public/app/plugins/datasource/mssql/img/sql_server_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/mssql",
+        "baseUrl": "public/app/plugins/datasource/mssql",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P6B08AC199690F328",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/mssql",
+      "jsonData": {
+        "database": "grafana"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-mssql-ds-tests": {
+      "id": 23,
+      "uid": "P3AC514B6406627C2",
+      "type": "mssql",
+      "name": "gdev-mssql-ds-tests",
+      "meta": {
+        "id": "mssql",
+        "type": "datasource",
+        "name": "Microsoft SQL Server",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for Microsoft SQL Server compatible databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/mssql/img/sql_server_logo.svg",
+            "large": "public/app/plugins/datasource/mssql/img/sql_server_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/mssql",
+        "baseUrl": "public/app/plugins/datasource/mssql",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P3AC514B6406627C2",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/mssql",
+      "jsonData": {
+        "database": "grafanatest"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-mssql-tls": {
+      "id": 22,
+      "uid": "PB8EB3547D9522A75",
+      "type": "mssql",
+      "name": "gdev-mssql-tls",
+      "meta": {
+        "id": "mssql",
+        "type": "datasource",
+        "name": "Microsoft SQL Server",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for Microsoft SQL Server compatible databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/mssql/img/sql_server_logo.svg",
+            "large": "public/app/plugins/datasource/mssql/img/sql_server_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/mssql",
+        "baseUrl": "public/app/plugins/datasource/mssql",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/PB8EB3547D9522A75",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/mssql",
+      "jsonData": {
+        "database": "grafana",
+        "encrypt": "true",
+        "tlsSkipVerify": true
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-mysql": {
+      "id": 19,
+      "uid": "P4FDCC188E688367F",
+      "type": "mysql",
+      "name": "gdev-mysql",
+      "meta": {
+        "id": "mysql",
+        "type": "datasource",
+        "name": "MySQL",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for MySQL databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/mysql/img/mysql_logo.svg",
+            "large": "public/app/plugins/datasource/mysql/img/mysql_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "11.0.0",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.4.0",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "executable": "gpx_mysql",
+        "signature": "internal",
+        "module": "public/plugins/mysql/module.js",
+        "baseUrl": "public/app/plugins/datasource/mysql",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P4FDCC188E688367F",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/mysql/module.js",
+      "jsonData": {
+        "database": "grafana"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-mysql-ds-tests": {
+      "id": 20,
+      "uid": "P786EB2D376A795AE",
+      "type": "mysql",
+      "name": "gdev-mysql-ds-tests",
+      "meta": {
+        "id": "mysql",
+        "type": "datasource",
+        "name": "MySQL",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for MySQL databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/mysql/img/mysql_logo.svg",
+            "large": "public/app/plugins/datasource/mysql/img/mysql_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "11.0.0",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.4.0",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "executable": "gpx_mysql",
+        "signature": "internal",
+        "module": "public/plugins/mysql/module.js",
+        "baseUrl": "public/app/plugins/datasource/mysql",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P786EB2D376A795AE",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/mysql/module.js",
+      "jsonData": {
+        "database": "grafana_ds_tests"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-opentsdb": {
+      "id": 14,
+      "uid": "PCB9E7E5454C37640",
+      "type": "opentsdb",
+      "name": "gdev-opentsdb",
+      "meta": {
+        "id": "opentsdb",
+        "type": "datasource",
+        "name": "OpenTSDB",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/opentsdb/img/opentsdb_logo.png",
+            "large": "public/app/plugins/datasource/opentsdb/img/opentsdb_logo.png"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/opentsdb",
+        "baseUrl": "public/app/plugins/datasource/opentsdb",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/PCB9E7E5454C37640",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/opentsdb",
+      "jsonData": {
+        "tsdbResolution": 1,
+        "tsdbVersion": 1
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-opentsdb-v2.3": {
+      "id": 15,
+      "uid": "P311D5F9D9B165031",
+      "type": "opentsdb",
+      "name": "gdev-opentsdb-v2.3",
+      "meta": {
+        "id": "opentsdb",
+        "type": "datasource",
+        "name": "OpenTSDB",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/opentsdb/img/opentsdb_logo.png",
+            "large": "public/app/plugins/datasource/opentsdb/img/opentsdb_logo.png"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/opentsdb",
+        "baseUrl": "public/app/plugins/datasource/opentsdb",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P311D5F9D9B165031",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/opentsdb",
+      "jsonData": {
+        "tsdbResolution": 1,
+        "tsdbVersion": 3
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-postgres": {
+      "id": 24,
+      "uid": "PBBCEC2D313BC06C3",
+      "type": "grafana-postgresql-datasource",
+      "name": "gdev-postgres",
+      "meta": {
+        "id": "grafana-postgresql-datasource",
+        "type": "datasource",
+        "name": "PostgreSQL",
+        "aliasIDs": [
+          "postgres"
+        ],
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for PostgreSQL and compatible databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/grafana-postgresql-datasource/img/postgresql_logo.svg",
+            "large": "public/app/plugins/datasource/grafana-postgresql-datasource/img/postgresql_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "public/plugins/grafana-postgresql-datasource/module.js",
+        "baseUrl": "public/app/plugins/datasource/grafana-postgresql-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/PBBCEC2D313BC06C3",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/grafana-postgresql-datasource/module.js",
+      "jsonData": {
+        "database": "grafana",
+        "sslmode": "disable"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-postgres-ds-tests": {
+      "id": 25,
+      "uid": "P77E1291449379AFC",
+      "type": "grafana-postgresql-datasource",
+      "name": "gdev-postgres-ds-tests",
+      "meta": {
+        "id": "grafana-postgresql-datasource",
+        "type": "datasource",
+        "name": "PostgreSQL",
+        "aliasIDs": [
+          "postgres"
+        ],
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for PostgreSQL and compatible databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/grafana-postgresql-datasource/img/postgresql_logo.svg",
+            "large": "public/app/plugins/datasource/grafana-postgresql-datasource/img/postgresql_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "public/plugins/grafana-postgresql-datasource/module.js",
+        "baseUrl": "public/app/plugins/datasource/grafana-postgresql-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/P77E1291449379AFC",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/grafana-postgresql-datasource/module.js",
+      "jsonData": {
+        "database": "grafanadstest",
+        "sslmode": "disable"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-prometheus": {
+      "id": 8,
+      "uid": "gdev-prometheus",
+      "type": "prometheus",
+      "name": "gdev-prometheus",
+      "meta": {
+        "id": "prometheus",
+        "type": "datasource",
+        "name": "Prometheus",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database \u0026 alerting",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://prometheus.io/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+            "large": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "Prometheus Stats",
+            "path": "dashboards/prometheus_stats.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Prometheus 2.0 Stats",
+            "path": "dashboards/prometheus_2_stats.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Grafana Stats",
+            "path": "dashboards/grafana_stats.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": [
+          {
+            "path": "api/v1/query",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/query_range",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/series",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/labels",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/query_exemplars",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/rules",
+            "method": "GET",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/rules",
+            "method": "POST",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/rules",
+            "method": "DELETE",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/config/v1/rules",
+            "method": "DELETE",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/config/v1/rules",
+            "method": "POST",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          }
+        ],
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/prometheus",
+        "baseUrl": "public/app/plugins/datasource/prometheus",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-prometheus",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/prometheus",
+      "jsonData": {
+        "alertmanagerUid": "gdev-alertmanager",
+        "directUrl": "http://localhost:9090",
+        "exemplarTraceIdDestinations": [
+          {
+            "datasourceUid": "gdev-tempo",
+            "name": "traceID"
+          }
+        ],
+        "manageAlerts": true,
+        "prometheusType": "Prometheus",
+        "prometheusVersion": "2.40.0"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-pyroscope": {
+      "id": 47,
+      "uid": "gdev-pyroscope",
+      "type": "grafana-pyroscope-datasource",
+      "name": "gdev-pyroscope",
+      "meta": {
+        "id": "grafana-pyroscope-datasource",
+        "type": "datasource",
+        "name": "Grafana Pyroscope",
+        "aliasIDs": [
+          "phlare"
+        ],
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://www.grafana.com"
+          },
+          "description": "Data source for Grafana Pyroscope, horizontally-scalable, highly-available, multi-tenant continuous profiling aggregation system.",
+          "links": [
+            {
+              "name": "GitHub Project",
+              "url": "https://github.com/grafana/pyroscope"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/grafana-pyroscope-datasource/img/grafana_pyroscope_icon.svg",
+            "large": "public/app/plugins/datasource/grafana-pyroscope-datasource/img/grafana_pyroscope_icon.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "11.0.0",
+          "updated": "",
+          "keywords": [
+            "grafana",
+            "datasource",
+            "phlare",
+            "flamegraph",
+            "profiling",
+            "continuous profiling",
+            "pyroscope"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.3.0-0",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "profiling",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": true,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "streaming": false,
+        "executable": "gpx_grafana-pyroscope-datasource",
+        "signature": "internal",
+        "module": "public/plugins/grafana-pyroscope-datasource/module.js",
+        "baseUrl": "public/app/plugins/datasource/grafana-pyroscope-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-pyroscope",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/grafana-pyroscope-datasource/module.js",
+      "jsonData": {},
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-slow-prometheus": {
+      "id": 9,
+      "uid": "gdev-slow-prometheus-uid",
+      "type": "prometheus",
+      "name": "gdev-slow-prometheus",
+      "meta": {
+        "id": "prometheus",
+        "type": "datasource",
+        "name": "Prometheus",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Open source time series database \u0026 alerting",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://prometheus.io/"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg",
+            "large": "public/app/plugins/datasource/prometheus/img/prometheus_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "Prometheus Stats",
+            "path": "dashboards/prometheus_stats.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Prometheus 2.0 Stats",
+            "path": "dashboards/prometheus_2_stats.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          },
+          {
+            "name": "Grafana Stats",
+            "path": "dashboards/grafana_stats.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "tsdb",
+        "preload": false,
+        "backend": true,
+        "routes": [
+          {
+            "path": "api/v1/query",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/query_range",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/series",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/labels",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "api/v1/query_exemplars",
+            "method": "POST",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/rules",
+            "method": "GET",
+            "reqRole": "Viewer",
+            "reqAction": "datasources:query",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/rules",
+            "method": "POST",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/rules",
+            "method": "DELETE",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/config/v1/rules",
+            "method": "DELETE",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          },
+          {
+            "path": "/config/v1/rules",
+            "method": "POST",
+            "reqRole": "Editor",
+            "reqAction": "datasources:write",
+            "url": "",
+            "urlParams": null,
+            "headers": null,
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          }
+        ],
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "core:plugin/prometheus",
+        "baseUrl": "public/app/plugins/datasource/prometheus",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-slow-prometheus-uid",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "core:plugin/prometheus",
+      "jsonData": {
+        "directUrl": "http://localhost:3011",
+        "manageAlerts": false,
+        "prometheusType": "Prometheus",
+        "prometheusVersion": "2.40.0"
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-tempo": {
+      "id": 30,
+      "uid": "gdev-tempo",
+      "type": "tempo",
+      "name": "gdev-tempo",
+      "meta": {
+        "id": "tempo",
+        "type": "datasource",
+        "name": "Tempo",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "High volume, minimal dependency trace storage.  OSS tracing solution from Grafana Labs.",
+          "links": [
+            {
+              "name": "GitHub Project",
+              "url": "https://github.com/grafana/tempo"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/tempo/img/tempo_logo.svg",
+            "large": "public/app/plugins/datasource/tempo/img/tempo_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "11.0.0",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.3.0-0",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tracing",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": true,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": true,
+        "streaming": false,
+        "executable": "gpx_tempo",
+        "signature": "internal",
+        "module": "public/plugins/tempo/module.js",
+        "baseUrl": "public/app/plugins/datasource/tempo",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-tempo",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/tempo/module.js",
+      "jsonData": {
+        "tracesToLogsV2": {
+          "customQuery": true,
+          "datasourceUid": "gdev-loki",
+          "query": "{filename=\"/var/log/grafana/grafana.log\"} |=\"${__span.traceId}\"",
+          "spanEndTimeShift": "-5m",
+          "spanStartTimeShift": "5m"
+        },
+        "tracesToProfiles": {
+          "datasourceUid": "gdev-pyroscope",
+          "profileTypeId": "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+        }
+      },
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-testdata": {
+      "id": 10,
+      "uid": "PD8C576611E62080A",
+      "type": "grafana-testdata-datasource",
+      "name": "gdev-testdata",
+      "meta": {
+        "id": "grafana-testdata-datasource",
+        "type": "datasource",
+        "name": "TestData",
+        "aliasIDs": [
+          "testdata"
+        ],
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Generates test data in different forms",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/grafana-testdata-datasource/img/testdata.svg",
+            "large": "public/app/plugins/datasource/grafana-testdata-datasource/img/testdata.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "11.0.0",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.3.0-0",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "Streaming Example",
+            "path": "dashboards/streaming.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "maxDataPoints": true,
+          "minInterval": true
+        },
+        "streaming": false,
+        "executable": "gpx_testdata",
+        "apiVersion": "v0alpha1",
+        "signature": "internal",
+        "module": "public/plugins/grafana-testdata-datasource/module.js",
+        "baseUrl": "public/app/plugins/datasource/grafana-testdata-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/PD8C576611E62080A",
+      "isDefault": true,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/grafana-testdata-datasource/module.js",
+      "jsonData": {},
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "gdev-zipkin": {
+      "id": 29,
+      "uid": "gdev-zipkin",
+      "type": "zipkin",
+      "name": "gdev-zipkin",
+      "meta": {
+        "id": "zipkin",
+        "type": "datasource",
+        "name": "Zipkin",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Placeholder for the distributed tracing system.",
+          "links": [
+            {
+              "name": "Learn more",
+              "url": "https://zipkin.io"
+            }
+          ],
+          "logos": {
+            "small": "public/app/plugins/datasource/zipkin/img/zipkin-logo.svg",
+            "large": "public/app/plugins/datasource/zipkin/img/zipkin-logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "11.0.0",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.3.0-0",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "tracing",
+        "preload": false,
+        "backend": false,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": false,
+        "metrics": true,
+        "alerting": false,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": true,
+        "streaming": false,
+        "signature": "internal",
+        "module": "public/plugins/zipkin/module.js",
+        "baseUrl": "public/app/plugins/datasource/zipkin",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/gdev-zipkin",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/zipkin/module.js",
+      "jsonData": {},
+      "readOnly": true,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "grafana-github-datasource": {
+      "id": 46,
+      "uid": "edg4xlzdfi8sga",
+      "type": "grafana-github-datasource",
+      "name": "grafana-github-datasource",
+      "meta": {
+        "id": "grafana-github-datasource",
+        "type": "datasource",
+        "name": "GitHub",
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Show data about github issues/pull requests",
+          "links": [
+            {
+              "name": "Website",
+              "url": "https://github.com/grafana/github-datasource"
+            }
+          ],
+          "logos": {
+            "small": "public/plugins/grafana-github-datasource/img/github.svg",
+            "large": "public/plugins/grafana-github-datasource/img/github.svg"
+          },
+          "build": {
+            "time": 1667504419043,
+            "repo": "https://github.com/grafana/github-datasource",
+            "branch": "main",
+            "hash": "798a4d84cad320d616f2bc0b0832e9602f46f29b"
+          },
+          "screenshots": [],
+          "version": "1.3.0",
+          "updated": "2022-11-03",
+          "keywords": [
+            "github",
+            "datasource"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=8.4.7",
+          "grafanaVersion": "8.4.x",
+          "plugins": []
+        },
+        "includes": [
+          {
+            "name": "GitHub (demo)",
+            "path": "dashboards/dashboard.json",
+            "type": "dashboard",
+            "component": "",
+            "role": "Viewer",
+            "addToNav": false,
+            "defaultNav": false,
+            "slug": "",
+            "icon": "",
+            "uid": ""
+          }
+        ],
+        "category": "",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": false,
+        "tracing": false,
+        "streaming": false,
+        "executable": "gfx_github",
+        "signature": "valid",
+        "module": "public/plugins/grafana-github-datasource/module.js",
+        "baseUrl": "public/plugins/grafana-github-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/edg4xlzdfi8sga",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/grafana-github-datasource/module.js",
+      "jsonData": {},
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "grafana-postgresql-datasource": {
+      "id": 31,
+      "uid": "bac4068d-e449-4645-a52a-d3a9d5c226a5",
+      "type": "grafana-postgresql-datasource",
+      "name": "grafana-postgresql-datasource",
+      "meta": {
+        "id": "grafana-postgresql-datasource",
+        "type": "datasource",
+        "name": "PostgreSQL",
+        "aliasIDs": [
+          "postgres"
+        ],
+        "info": {
+          "author": {
+            "name": "Grafana Labs",
+            "url": "https://grafana.com"
+          },
+          "description": "Data source for PostgreSQL and compatible databases",
+          "links": null,
+          "logos": {
+            "small": "public/app/plugins/datasource/grafana-postgresql-datasource/img/postgresql_logo.svg",
+            "large": "public/app/plugins/datasource/grafana-postgresql-datasource/img/postgresql_logo.svg"
+          },
+          "build": {},
+          "screenshots": null,
+          "version": "",
+          "updated": "",
+          "keywords": null
+        },
+        "dependencies": {
+          "grafanaDependency": "",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "sql",
+        "preload": false,
+        "backend": true,
+        "routes": null,
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "queryOptions": {
+          "minInterval": true
+        },
+        "streaming": false,
+        "signature": "internal",
+        "module": "public/plugins/grafana-postgresql-datasource/module.js",
+        "baseUrl": "public/app/plugins/datasource/grafana-postgresql-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/bac4068d-e449-4645-a52a-d3a9d5c226a5",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/grafana-postgresql-datasource/module.js",
+      "jsonData": {
+        "connMaxLifetime": 14400,
+        "database": "postgres",
+        "maxIdleConns": 100,
+        "maxIdleConnsAuto": true,
+        "maxOpenConns": 100
+      },
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    },
+    "vertamedia-clickhouse-datasource": {
+      "id": 43,
+      "uid": "cdenu9f95n4lcb",
+      "type": "vertamedia-clickhouse-datasource",
+      "name": "vertamedia-clickhouse-datasource",
+      "meta": {
+        "id": "vertamedia-clickhouse-datasource",
+        "type": "datasource",
+        "name": "Altinity plugin for ClickHouse",
+        "info": {
+          "author": {
+            "name": "Altinity",
+            "url": "https://altinity.com/"
+          },
+          "description": "Altinity Grafana datasource for ClickHouse",
+          "links": [
+            {
+              "name": "GitHub",
+              "url": "https://github.com/Altinity/clickhouse-grafana"
+            }
+          ],
+          "logos": {
+            "small": "public/plugins/vertamedia-clickhouse-datasource/img/altinity_logo.svg",
+            "large": "public/plugins/vertamedia-clickhouse-datasource/img/altinity_logo.svg"
+          },
+          "build": {},
+          "screenshots": [
+            {
+              "name": "Connection properties",
+              "path": "public/plugins/vertamedia-clickhouse-datasource/img/datasource.png"
+            },
+            {
+              "name": "Query editor",
+              "path": "public/plugins/vertamedia-clickhouse-datasource/img/query_editor.png"
+            },
+            {
+              "name": "Annotations editor",
+              "path": "public/plugins/vertamedia-clickhouse-datasource/img/annotations.png"
+            }
+          ],
+          "version": "3.0.0",
+          "updated": "2024-01-19",
+          "keywords": [
+            "clickhouse",
+            "datasource",
+            "analytics",
+            "timeseries"
+          ]
+        },
+        "dependencies": {
+          "grafanaDependency": "\u003e=10.0.3",
+          "grafanaVersion": "*",
+          "plugins": []
+        },
+        "includes": null,
+        "category": "",
+        "preload": false,
+        "backend": true,
+        "routes": [
+          {
+            "path": "xHeaderKey",
+            "method": "",
+            "reqRole": "",
+            "reqAction": "",
+            "url": "{{ .JsonData.dataSourceUrl }}",
+            "urlParams": null,
+            "headers": [
+              {
+                "name": "X-ClickHouse-User",
+                "content": "{{ .JsonData.xHeaderUser }}"
+              },
+              {
+                "name": "X-ClickHouse-Key",
+                "content": "{{ .SecureJsonData.xHeaderKey }}"
+              }
+            ],
+            "authType": "",
+            "tokenAuth": null,
+            "jwtTokenAuth": null,
+            "body": null
+          }
+        ],
+        "skipDataQuery": false,
+        "autoEnabled": false,
+        "annotations": true,
+        "metrics": true,
+        "alerting": true,
+        "explore": false,
+        "tables": false,
+        "logs": true,
+        "tracing": false,
+        "streaming": false,
+        "executable": "altinity-clickhouse-plugin",
+        "signature": "valid",
+        "module": "public/plugins/vertamedia-clickhouse-datasource/module.js",
+        "baseUrl": "public/plugins/vertamedia-clickhouse-datasource",
+        "angular": {
+          "detected": false,
+          "hideDeprecation": false
+        }
+      },
+      "url": "/api/datasources/proxy/uid/cdenu9f95n4lcb",
+      "isDefault": false,
+      "access": "proxy",
+      "preload": false,
+      "module": "public/plugins/vertamedia-clickhouse-datasource/module.js",
+      "jsonData": {},
+      "readOnly": false,
+      "cachingConfig": {
+        "enabled": false,
+        "TTLMs": 0
+      }
+    }
+  },
+  "minRefreshInterval": "5s",
+  "panels": {
+    "alertlist": {
+      "id": "alertlist",
+      "name": "Alert list",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Shows list of alerts and their current status",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/alertlist/img/icn-singlestat-panel.svg",
+          "large": "public/app/plugins/panel/alertlist/img/icn-singlestat-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 15,
+      "skipDataQuery": true,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/alertlist",
+      "signature": "internal",
+      "module": "core:plugin/alertlist",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "annolist": {
+      "id": "annolist",
+      "name": "Annotations list",
+      "aliasIds": [
+        "ryantxu-annolist-panel"
+      ],
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "List annotations",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/annolist/img/icn-annolist-panel.svg",
+          "large": "public/app/plugins/panel/annolist/img/icn-annolist-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": true,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/annolist",
+      "signature": "internal",
+      "module": "core:plugin/annolist",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "barchart": {
+      "id": "barchart",
+      "name": "Bar chart",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Categorical charts with group support",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/barchart/img/barchart.svg",
+          "large": "public/app/plugins/panel/barchart/img/barchart.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 2,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/barchart",
+      "signature": "internal",
+      "module": "core:plugin/barchart",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "bargauge": {
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Horizontal and vertical gauges",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/bargauge/img/icon_bar_gauge.svg",
+          "large": "public/app/plugins/panel/bargauge/img/icon_bar_gauge.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 5,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/bargauge",
+      "signature": "internal",
+      "module": "core:plugin/bargauge",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "candlestick": {
+      "id": "candlestick",
+      "name": "Candlestick",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Graphical representation of price movements of a security, derivative, or currency.",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/candlestick/img/candlestick.svg",
+          "large": "public/app/plugins/panel/candlestick/img/candlestick.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": [
+          "financial",
+          "price",
+          "currency",
+          "k-line"
+        ]
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/candlestick",
+      "signature": "internal",
+      "module": "core:plugin/candlestick",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "canvas": {
+      "id": "canvas",
+      "name": "Canvas",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Explicit element placement",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/canvas/img/icn-canvas.svg",
+          "large": "public/app/plugins/panel/canvas/img/icn-canvas.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/canvas",
+      "signature": "internal",
+      "module": "core:plugin/canvas",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "dashlist": {
+      "id": "dashlist",
+      "name": "Dashboard list",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "List of dynamic links to other dashboards",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/dashlist/img/icn-dashlist-panel.svg",
+          "large": "public/app/plugins/panel/dashlist/img/icn-dashlist-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 16,
+      "skipDataQuery": true,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/dashlist",
+      "signature": "internal",
+      "module": "core:plugin/dashlist",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "flamegraph": {
+      "id": "flamegraph",
+      "name": "Flame Graph",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/flamegraph/img/icn-flamegraph.svg",
+          "large": "public/app/plugins/panel/flamegraph/img/icn-flamegraph.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/flamegraph",
+      "signature": "internal",
+      "module": "core:plugin/flamegraph",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "gauge": {
+      "id": "gauge",
+      "name": "Gauge",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Standard gauge visualization",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/gauge/img/icon_gauge.svg",
+          "large": "public/app/plugins/panel/gauge/img/icon_gauge.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 4,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/gauge",
+      "signature": "internal",
+      "module": "core:plugin/gauge",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "geomap": {
+      "id": "geomap",
+      "name": "Geomap",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Geomap panel",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/geomap/img/icn-geomap.svg",
+          "large": "public/app/plugins/panel/geomap/img/icn-geomap.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/geomap",
+      "signature": "internal",
+      "module": "core:plugin/geomap",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "gettingstarted": {
+      "id": "gettingstarted",
+      "name": "Getting Started",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/gettingstarted/img/icn-dashlist-panel.svg",
+          "large": "public/app/plugins/panel/gettingstarted/img/icn-dashlist-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": true,
+      "sort": 100,
+      "skipDataQuery": true,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/gettingstarted",
+      "signature": "internal",
+      "module": "core:plugin/gettingstarted",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "grafana-worldmap-panel": {
+      "id": "grafana-worldmap-panel",
+      "name": "Worldmap Panel",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "This panel is deprecated and will no longer be supported. Please use Geomap instead. World Map panel for Grafana. Displays time series data or geohash data from Elasticsearch overlaid on a world map.",
+        "links": [
+          {
+            "name": "Project site",
+            "url": "https://github.com/grafana/worldmap-panel"
+          },
+          {
+            "name": "MIT License",
+            "url": "https://github.com/grafana/worldmap-panel/blob/master/LICENSE"
+          }
+        ],
+        "logos": {
+          "small": "public/plugins/grafana-worldmap-panel/images/worldmap_logo.svg",
+          "large": "public/plugins/grafana-worldmap-panel/images/worldmap_logo.svg"
+        },
+        "build": {
+          "time": 1686842763869,
+          "repo": "https://github.com/grafana/worldmap-panel",
+          "branch": "master",
+          "hash": "0b51a41b5598d26590c6a92dcbd9c513cdfe633f"
+        },
+        "screenshots": [
+          {
+            "name": "World",
+            "path": "public/plugins/grafana-worldmap-panel/images/worldmap-world.png"
+          },
+          {
+            "name": "USA",
+            "path": "public/plugins/grafana-worldmap-panel/images/worldmap-usa.png"
+          },
+          {
+            "name": "Light Theme",
+            "path": "public/plugins/grafana-worldmap-panel/images/worldmap-light-theme.png"
+          }
+        ],
+        "version": "1.0.6",
+        "updated": "2023-06-15",
+        "keywords": [
+          "worldmap",
+          "panel"
+        ]
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/plugins/grafana-worldmap-panel",
+      "signature": "valid",
+      "module": "public/plugins/grafana-worldmap-panel/module.js",
+      "angular": {
+        "detected": true,
+        "hideDeprecation": false
+      }
+    },
+    "graph": {
+      "id": "graph",
+      "name": "Graph (old)",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "The old default graph panel",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/graph/img/icn-graph-panel.svg",
+          "large": "public/app/plugins/panel/graph/img/icn-graph-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 13,
+      "skipDataQuery": false,
+      "state": "deprecated",
+      "baseUrl": "public/app/plugins/panel/graph",
+      "signature": "internal",
+      "module": "core:plugin/graph",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "heatmap": {
+      "id": "heatmap",
+      "name": "Heatmap",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Like a histogram over time",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/heatmap/img/icn-heatmap-panel.svg",
+          "large": "public/app/plugins/panel/heatmap/img/icn-heatmap-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 10,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/heatmap",
+      "signature": "internal",
+      "module": "core:plugin/heatmap",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "histogram": {
+      "id": "histogram",
+      "name": "Histogram",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Distribution of values presented as a bar chart.",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/histogram/img/histogram.svg",
+          "large": "public/app/plugins/panel/histogram/img/histogram.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": [
+          "distribution",
+          "bar chart",
+          "frequency",
+          "proportional"
+        ]
+      },
+      "hideFromList": false,
+      "sort": 12,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/histogram",
+      "signature": "internal",
+      "module": "core:plugin/histogram",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "logs": {
+      "id": "logs",
+      "name": "Logs",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/logs/img/icn-logs-panel.svg",
+          "large": "public/app/plugins/panel/logs/img/icn-logs-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/logs",
+      "signature": "internal",
+      "module": "core:plugin/logs",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "news": {
+      "id": "news",
+      "name": "News",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "RSS feed reader",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/news/img/news.svg",
+          "large": "public/app/plugins/panel/news/img/news.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 17,
+      "skipDataQuery": true,
+      "state": "beta",
+      "baseUrl": "public/app/plugins/panel/news",
+      "signature": "internal",
+      "module": "core:plugin/news",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "nodeGraph": {
+      "id": "nodeGraph",
+      "name": "Node Graph",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/nodeGraph/img/icn-node-graph.svg",
+          "large": "public/app/plugins/panel/nodeGraph/img/icn-node-graph.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/nodeGraph",
+      "signature": "internal",
+      "module": "core:plugin/nodeGraph",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "piechart": {
+      "id": "piechart",
+      "name": "Pie chart",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "The new core pie chart visualization",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/piechart/img/icon_piechart.svg",
+          "large": "public/app/plugins/panel/piechart/img/icon_piechart.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 8,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/piechart",
+      "signature": "internal",
+      "module": "core:plugin/piechart",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "satellogic-3d-globe-panel": {
+      "id": "satellogic-3d-globe-panel",
+      "name": "3D Globe Panel",
+      "info": {
+        "author": {
+          "name": "Satellogic SA",
+          "url": "http://www.satellogic.com"
+        },
+        "description": "A Cesium based 3D Globe panel plugin.",
+        "links": [
+          {
+            "name": "GitHub",
+            "url": "https://github.com/satellogic/grafana-3d-globe-panel"
+          },
+          {
+            "name": "License",
+            "url": "https://github.com/satellogic/grafana-3d-globe-panel/blob/master/LICENSE"
+          },
+          {
+            "name": "Satellogic",
+            "url": "http://www.satellogic.com"
+          }
+        ],
+        "logos": {
+          "small": "public/plugins/satellogic-3d-globe-panel/img/earth.svg",
+          "large": "public/plugins/satellogic-3d-globe-panel/img/earth.svg"
+        },
+        "build": {},
+        "screenshots": [
+          {
+            "name": "Globe View",
+            "path": "public/plugins/satellogic-3d-globe-panel/img/screenshots/globe.png"
+          },
+          {
+            "name": "Spread View",
+            "path": "public/plugins/satellogic-3d-globe-panel/img/screenshots/spread.png"
+          }
+        ],
+        "version": "0.1.1",
+        "updated": "2016-12-06",
+        "keywords": [
+          "cesium",
+          "3d-globe",
+          "panel"
+        ]
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/plugins/satellogic-3d-globe-panel",
+      "signature": "valid",
+      "module": "public/plugins/satellogic-3d-globe-panel/module.js",
+      "angular": {
+        "detected": true,
+        "hideDeprecation": false
+      }
+    },
+    "stat": {
+      "id": "stat",
+      "name": "Stat",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Big stat values \u0026 sparklines",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/stat/img/icn-singlestat-panel.svg",
+          "large": "public/app/plugins/panel/stat/img/icn-singlestat-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 3,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/stat",
+      "signature": "internal",
+      "module": "core:plugin/stat",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "state-timeline": {
+      "id": "state-timeline",
+      "name": "State timeline",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "State changes and durations",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/state-timeline/img/timeline.svg",
+          "large": "public/app/plugins/panel/state-timeline/img/timeline.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 9,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/state-timeline",
+      "signature": "internal",
+      "module": "core:plugin/state-timeline",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "status-history": {
+      "id": "status-history",
+      "name": "Status history",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Periodic status history",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/status-history/img/status.svg",
+          "large": "public/app/plugins/panel/status-history/img/status.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 11,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/status-history",
+      "signature": "internal",
+      "module": "core:plugin/status-history",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "table": {
+      "id": "table",
+      "name": "Table",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Supports many column styles",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/table/img/icn-table-panel.svg",
+          "large": "public/app/plugins/panel/table/img/icn-table-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 6,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/table",
+      "signature": "internal",
+      "module": "core:plugin/table",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "table-old": {
+      "id": "table-old",
+      "name": "Table (old)",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Table Panel for Grafana",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/table-old/img/icn-table-panel.svg",
+          "large": "public/app/plugins/panel/table-old/img/icn-table-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "deprecated",
+      "baseUrl": "public/app/plugins/panel/table-old",
+      "signature": "internal",
+      "module": "core:plugin/table-old",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "text": {
+      "id": "text",
+      "name": "Text",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Supports markdown and html content",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/text/img/icn-text-panel.svg",
+          "large": "public/app/plugins/panel/text/img/icn-text-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 14,
+      "skipDataQuery": true,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/text",
+      "signature": "internal",
+      "module": "core:plugin/text",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "timeseries": {
+      "id": "timeseries",
+      "name": "Time series",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Time based line, area and bar charts",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/timeseries/img/icn-timeseries-panel.svg",
+          "large": "public/app/plugins/panel/timeseries/img/icn-timeseries-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 1,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/timeseries",
+      "signature": "internal",
+      "module": "core:plugin/timeseries",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "traces": {
+      "id": "traces",
+      "name": "Traces",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/traces/img/traces-panel.svg",
+          "large": "public/app/plugins/panel/traces/img/traces-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/traces",
+      "signature": "internal",
+      "module": "core:plugin/traces",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "trend": {
+      "id": "trend",
+      "name": "Trend",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Like timeseries, but when x != time",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/trend/img/trend.svg",
+          "large": "public/app/plugins/panel/trend/img/trend.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "beta",
+      "baseUrl": "public/app/plugins/panel/trend",
+      "signature": "internal",
+      "module": "core:plugin/trend",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "welcome": {
+      "id": "welcome",
+      "name": "Welcome",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/welcome/img/icn-dashlist-panel.svg",
+          "large": "public/app/plugins/panel/welcome/img/icn-dashlist-panel.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": null
+      },
+      "hideFromList": true,
+      "sort": 100,
+      "skipDataQuery": true,
+      "state": "",
+      "baseUrl": "public/app/plugins/panel/welcome",
+      "signature": "internal",
+      "module": "core:plugin/welcome",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    },
+    "xychart": {
+      "id": "xychart",
+      "name": "XY Chart",
+      "info": {
+        "author": {
+          "name": "Grafana Labs",
+          "url": "https://grafana.com"
+        },
+        "description": "Supports arbitrary X vs Y in a graph to visualize the relationship between two variables.",
+        "links": null,
+        "logos": {
+          "small": "public/app/plugins/panel/xychart/img/icn-xychart.svg",
+          "large": "public/app/plugins/panel/xychart/img/icn-xychart.svg"
+        },
+        "build": {},
+        "screenshots": null,
+        "version": "",
+        "updated": "",
+        "keywords": [
+          "scatter",
+          "plot"
+        ]
+      },
+      "hideFromList": false,
+      "sort": 100,
+      "skipDataQuery": false,
+      "state": "beta",
+      "baseUrl": "public/app/plugins/panel/xychart",
+      "signature": "internal",
+      "module": "core:plugin/xychart",
+      "angular": {
+        "detected": false,
+        "hideDeprecation": false
+      }
+    }
+  },
+  "apps": {},
+  "appUrl": "http://localhost:3000/",
+  "appSubUrl": "",
+  "allowOrgCreate": true,
+  "authProxyEnabled": false,
+  "ldapEnabled": false,
+  "jwtHeaderName": "",
+  "jwtUrlLogin": false,
+  "liveEnabled": true,
+  "autoAssignOrg": true,
+  "verifyEmailEnabled": false,
+  "sigV4AuthEnabled": false,
+  "azureAuthEnabled": false,
+  "rbacEnabled": true,
+  "exploreEnabled": true,
+  "helpEnabled": true,
+  "profileEnabled": true,
+  "newsFeedEnabled": true,
+  "queryHistoryEnabled": true,
+  "googleAnalyticsId": "",
+  "googleAnalytics4Id": "",
+  "GoogleAnalytics4SendManualPageViews": false,
+  "rudderstackWriteKey": "",
+  "rudderstackDataPlaneUrl": "",
+  "rudderstackSdkUrl": "",
+  "rudderstackConfigUrl": "",
+  "rudderstackIntegrationsUrl": "",
+  "feedbackLinksEnabled": true,
+  "applicationInsightsConnectionString": "",
+  "applicationInsightsEndpointUrl": "",
+  "disableLoginForm": false,
+  "disableUserSignUp": true,
+  "loginHint": "",
+  "passwordHint": "",
+  "externalUserMngInfo": "",
+  "externalUserMngLinkUrl": "",
+  "externalUserMngLinkName": "",
+  "viewersCanEdit": false,
+  "angularSupportEnabled": true,
+  "editorsCanAdmin": false,
+  "disableSanitizeHtml": false,
+  "trustedTypesDefaultPolicyEnabled": false,
+  "cspReportOnlyEnabled": false,
+  "disableFrontendSandboxForPlugins": [
+    "grafana-incident-app"
+  ],
+  "auth": {
+    "AuthProxyEnableLoginToken": false,
+    "OAuthSkipOrgRoleUpdateSync": false,
+    "SAMLSkipOrgRoleSync": false,
+    "LDAPSkipOrgRoleSync": false,
+    "GoogleSkipOrgRoleSync": false,
+    "GenericOAuthSkipOrgRoleSync": false,
+    "JWTAuthSkipOrgRoleSync": false,
+    "GrafanaComSkipOrgRoleSync": false,
+    "AzureADSkipOrgRoleSync": false,
+    "GithubSkipOrgRoleSync": false,
+    "GitLabSkipOrgRoleSync": false,
+    "OktaSkipOrgRoleSync": false,
+    "disableLogin": false,
+    "basicAuthStrongPasswordPolicy": false
+  },
+  "buildInfo": {
+    "hideVersion": false,
+    "version": "9.2.0",
+    "versionString": "Grafana v9.2.0 (NA)",
+    "commit": "NA",
+    "commitShort": "NA",
+    "buildstamp": 1718357783,
+    "edition": "Open Source",
+    "latestVersion": "11.0.0",
+    "hasUpdate": true,
+    "env": "development"
+  },
+  "licenseInfo": {
+    "expiry": 0,
+    "stateInfo": "",
+    "licenseUrl": "/admin/upgrading",
+    "edition": "Open Source",
+    "enabledFeatures": {}
+  },
+  "featureToggles": {
+    "alertingInsights": true,
+    "alertingNoDataErrorExecution": true,
+    "alertingSimplifiedRouting": true,
+    "angularDeprecationUI": true,
+    "annotationPermissionUpdate": true,
+    "awsAsyncQueryCaching": true,
+    "awsDatasourcesNewFormStyling": true,
+    "betterPageScrolling": true,
+    "cloudWatchCrossAccountQuerying": true,
+    "cloudWatchNewLabelParsing": true,
+    "correlations": true,
+    "dashgpt": true,
+    "dataplaneFrontendFallback": true,
+    "exploreContentOutline": true,
+    "exploreMetrics": true,
+    "influxdbBackendMigration": true,
+    "kubernetesPlaylists": true,
+    "logRowsPopoverMenu": true,
+    "logsContextDatasourceUi": true,
+    "logsExploreTableVisualisation": true,
+    "logsInfiniteScrolling": true,
+    "lokiMetricDataplane": true,
+    "lokiQueryHints": true,
+    "lokiQuerySplitting": true,
+    "lokiStructuredMetadata": true,
+    "managedPluginsInstall": true,
+    "nestedFolders": true,
+    "panelMonitoring": true,
+    "prometheusConfigOverhaulAuth": true,
+    "prometheusDataplane": true,
+    "prometheusMetricEncyclopedia": true,
+    "publicDashboards": true,
+    "recordedQueriesMulti": true,
+    "recoveryThreshold": true,
+    "ssoSettingsApi": true,
+    "topnav": true,
+    "transformationsRedesign": true
+  },
+  "anonymousEnabled": false,
+  "anonymousDeviceLimit": 0,
+  "rendererAvailable": false,
+  "rendererVersion": "",
+  "rendererDefaultImageWidth": 1000,
+  "rendererDefaultImageHeight": 500,
+  "rendererDefaultImageScale": 1,
+  "secretsManagerPluginEnabled": false,
+  "http2Enabled": false,
+  "grafanaJavascriptAgent": {
+    "enabled": false,
+    "customEndpoint": "/log-grafana-javascript-agent",
+    "errorInstrumentalizationEnabled": true,
+    "consoleInstrumentalizationEnabled": false,
+    "webVitalsInstrumentalizationEnabled": false,
+    "internalLoggerLevel": 0,
+    "apiKey": ""
+  },
+  "pluginCatalogURL": "https://grafana.com/grafana/plugins/",
+  "pluginAdminEnabled": true,
+  "pluginAdminExternalManageEnabled": false,
+  "pluginCatalogHiddenPlugins": [],
+  "expressionsEnabled": true,
+  "awsAllowedAuthProviders": [
+    "default",
+    "keys",
+    "credentials"
+  ],
+  "awsAssumeRoleEnabled": true,
+  "supportBundlesEnabled": true,
+  "snapshotEnabled": true,
+  "secureSocksDSProxyEnabled": false,
+  "azure": {
+    "cloud": "AzureCloud",
+    "clouds": [],
+    "managedIdentityEnabled": false,
+    "workloadIdentityEnabled": false,
+    "userIdentityEnabled": false,
+    "userIdentityFallbackCredentialsEnabled": false
+  },
+  "caching": {
+    "enabled": true
+  },
+  "recordedQueries": {
+    "enabled": true
+  },
+  "reporting": {
+    "enabled": true
+  },
+  "analytics": {
+    "enabled": true
+  },
+  "unifiedAlertingEnabled": true,
+  "unifiedAlerting": {
+    "minInterval": "10s",
+    "alertStateHistoryBackend": "annotations"
+  },
+  "oauth": {},
+  "samlEnabled": false,
+  "samlName": "SAML",
+  "tokenExpirationDayLimit": -1,
+  "sharedWithMeFolderUID": "sharedwithme",
+  "rootFolderUID": "general",
+  "geomapDisableCustomBaseLayer": false,
+  "publicDashboardAccessToken": "",
+  "publicDashboardsEnabled": true,
+  "cloudMigrationIsTarget": false,
+  "dateFormats": {
+    "fullDate": "YYYY-MM-DD HH:mm:ss",
+    "useBrowserLocale": false,
+    "interval": {
+      "millisecond": "HH:mm:ss.SSS",
+      "second": "HH:mm:ss",
+      "minute": "HH:mm",
+      "hour": "MM/DD HH:mm",
+      "day": "MM/DD",
+      "month": "YYYY-MM",
+      "year": "YYYY"
+    },
+    "defaultTimezone": "browser",
+    "defaultWeekStart": "browser"
+  },
+  "namespace": "stack-123",
+  "pluginsCDNBaseURL": "https://grafana-assets.grafana.net/plugins",
+  "sqlConnectionLimits": {
+    "maxOpenConns": 100,
+    "maxIdleConns": 100,
+    "connMaxLifetime": 14400
+  },
+  "localFileSystemAvailable": true,
+  "listScopesEndpoint": "",
+  "listDashboardScopesEndpoint": ""
+}
