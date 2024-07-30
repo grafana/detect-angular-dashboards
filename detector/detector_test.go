@@ -30,119 +30,105 @@ func TestDetector(t *testing.T) {
 		require.Equal(t, "admin", out[0].UpdatedBy)
 		require.Equal(t, "2023-11-07T11:13:24+01:00", out[0].Created)
 		require.Equal(t, "2024-02-21T13:09:27+01:00", out[0].Updated)
-
 	})
-
-	t.Run("legacy panel", func(t *testing.T) {
-		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "graph-old.json"))
-		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
-		out, err := d.Run(context.Background())
-		require.NoError(t, err)
-		require.Len(t, out, 1)
-		require.Len(t, out[0].Detections, 1)
-		require.Equal(t, "graph", out[0].Detections[0].PluginID)
-		require.Equal(t, output.DetectionTypeLegacyPanel, out[0].Detections[0].DetectionType)
-		require.Equal(t, "Flot graph", out[0].Detections[0].Title)
-		require.Equal(
-			t,
-			`Found legacy plugin "graph" in panel "Flot graph". It can be migrated to a React-based panel by Grafana when opening the dashboard.`,
-			out[0].Detections[0].String(),
-		)
-	})
-
-	t.Run("angular panel", func(t *testing.T) {
-		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "worldmap.json"))
-		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
-		out, err := d.Run(context.Background())
-		require.NoError(t, err)
-		require.Len(t, out, 1)
-		require.Len(t, out[0].Detections, 1)
-		require.Equal(t, "grafana-worldmap-panel", out[0].Detections[0].PluginID)
-		require.Equal(t, output.DetectionTypePanel, out[0].Detections[0].DetectionType)
-		require.Equal(t, "Panel Title", out[0].Detections[0].Title)
-		require.Equal(t, `Found angular panel "Panel Title" ("grafana-worldmap-panel")`, out[0].Detections[0].String())
-	})
-
-	t.Run("datasource", func(t *testing.T) {
-		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "datasource.json"))
-		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
-		out, err := d.Run(context.Background())
-		require.NoError(t, err)
-		require.Len(t, out, 1)
-		require.Len(t, out[0].Detections, 1)
-		require.Equal(t, "akumuli-datasource", out[0].Detections[0].PluginID)
-		require.Equal(t, output.DetectionTypeDatasource, out[0].Detections[0].DetectionType)
-		require.Equal(t, "akumuli", out[0].Detections[0].Title)
-		require.Equal(t, `Found panel with angular data source "akumuli" ("akumuli-datasource")`, out[0].Detections[0].String())
-	})
-
-	t.Run("not angular", func(t *testing.T) {
-		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "not-angular.json"))
-		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
-		out, err := d.Run(context.Background())
-		require.NoError(t, err)
-		require.Len(t, out, 1)
-		require.Empty(t, out[0].Detections)
-	})
-
-	t.Run("multiple", func(t *testing.T) {
-		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "multiple.json"))
-		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
-		out, err := d.Run(context.Background())
-		require.NoError(t, err)
-		require.Len(t, out, 1)
-		require.Len(t, out[0].Detections, 4)
-
-		exp := []struct {
-			pluginID      string
-			detectionType output.DetectionType
-			title         string
-		}{
-			{"akumuli-datasource", output.DetectionTypeDatasource, "akumuli"},
-			{"grafana-worldmap-panel", output.DetectionTypePanel, "worldmap + akumuli"},
-			{"akumuli-datasource", output.DetectionTypeDatasource, "worldmap + akumuli"},
-			{"graph", output.DetectionTypeLegacyPanel, "graph-old"},
-		}
-		for i, e := range exp {
-			require.Equalf(t, e.pluginID, out[0].Detections[i].PluginID, "plugin id %d", i)
-			require.Equalf(t, e.detectionType, out[0].Detections[i].DetectionType, "detection type %d", i)
-			require.Equalf(t, e.title, out[0].Detections[i].Title, "title %d", i)
-		}
-	})
-
-	t.Run("mixed", func(t *testing.T) {
-		// mix of angular and react panels
-
-		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "mixed.json"))
-		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
-		out, err := d.Run(context.Background())
-		require.NoError(t, err)
-		require.Len(t, out, 1)
-		require.Len(t, out[0].Detections, 1)
-		require.Equal(t, "angular", out[0].Detections[0].Title)
-	})
-
-	t.Run("rows", func(t *testing.T) {
-		t.Run("expanded", func(t *testing.T) {
-			cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "rows-expanded.json"))
+	
+	type expDetection struct {
+		pluginID      string
+		detectionType output.DetectionType
+		title         string
+		message       string
+	}
+	for _, tc := range []struct {
+		name          string
+		file          string
+		expDetections []expDetection
+	}{
+		{
+			name: "legacy panel",
+			file: "graph-old.json",
+			expDetections: []expDetection{{
+				pluginID:      "graph",
+				detectionType: output.DetectionTypeLegacyPanel,
+				title:         "Flot graph",
+				message:       `Found legacy plugin "graph" in panel "Flot graph". It can be migrated to a React-based panel by Grafana when opening the dashboard.`,
+			}},
+		},
+		{
+			name: "angular panel",
+			file: "worldmap.json",
+			expDetections: []expDetection{{
+				pluginID:      "grafana-worldmap-panel",
+				detectionType: output.DetectionTypePanel,
+				title:         "Panel Title",
+				message:       `Found angular panel "Panel Title" ("grafana-worldmap-panel")`,
+			}},
+		},
+		{
+			name: "datasource",
+			file: "datasource.json",
+			expDetections: []expDetection{{
+				pluginID:      "akumuli-datasource",
+				detectionType: output.DetectionTypeDatasource,
+				title:         "akumuli",
+				message:       `Found panel with angular data source "akumuli" ("akumuli-datasource")`,
+			}},
+		},
+		{
+			name: "multiple",
+			file: "multiple.json",
+			expDetections: []expDetection{
+				{pluginID: "akumuli-datasource", detectionType: output.DetectionTypeDatasource, title: "akumuli"},
+				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "worldmap + akumuli"},
+				{pluginID: "akumuli-datasource", detectionType: output.DetectionTypeDatasource, title: "worldmap + akumuli"},
+				{pluginID: "graph", detectionType: output.DetectionTypeLegacyPanel, title: "graph-old"},
+			},
+		},
+		{
+			name:          "not angular",
+			file:          "not-angular.json",
+			expDetections: nil,
+		},
+		{
+			name: "mix of angular and react",
+			file: "mixed.json",
+			expDetections: []expDetection{
+				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "angular"},
+			},
+		},
+		{
+			name: "rows expanded",
+			file: "rows-expanded.json",
+			expDetections: []expDetection{
+				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "expanded"},
+			},
+		},
+		{
+			name: "rows collapsed",
+			file: "rows-collapsed.json",
+			expDetections: []expDetection{
+				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "collapsed"},
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", tc.file))
 			d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
 			out, err := d.Run(context.Background())
 			require.NoError(t, err)
-			require.Len(t, out, 1)
-			require.Len(t, out[0].Detections, 1)
-			require.Equal(t, "expanded", out[0].Detections[0].Title)
+			require.Len(t, out, 1, "should have result for one dashboard")
+			detections := out[0].Detections
+			require.Len(t, detections, len(tc.expDetections), "should have the correct number of detections in the dashboard")
+			for i, actual := range detections {
+				exp := tc.expDetections[i]
+				require.Equal(t, exp.pluginID, actual.PluginID)
+				require.Equal(t, exp.detectionType, actual.DetectionType)
+				require.Equal(t, exp.title, actual.Title)
+				if exp.message != "" {
+					require.Equal(t, exp.message, actual.String())
+				}
+			}
 		})
-
-		t.Run("collapsed", func(t *testing.T) {
-			cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "rows-collapsed.json"))
-			d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
-			out, err := d.Run(context.Background())
-			require.NoError(t, err)
-			require.Len(t, out, 1)
-			require.Len(t, out[0].Detections, 1)
-			require.Equal(t, "collapsed", out[0].Detections[0].Title)
-		})
-	})
+	}
 }
 
 // TestAPIClient is a GrafanaDetectorAPIClient implementation for testing.
