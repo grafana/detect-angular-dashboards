@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -77,18 +78,26 @@ func main() {
 	var outputData []output.Dashboard
 	var mu sync.Mutex
 
+	// Readiness flag using atomic boolean
+	var ready int32
+	var readinessSet bool
+
 	go func() {
 		for data := range outputChan {
 			log.Log("Updating outputData with results from most recent detection")
 			// Need to lock to avoid concurrent read/write access to outputData
 			mu.Lock()
 			outputData = data
+			if !readinessSet {
+				atomic.StoreInt32(&ready, 1)
+				readinessSet = true
+			}
 			mu.Unlock()
 		}
 	}()
 
 	// Run detection on startup
-	runDetection(ctx, log, client, outputChan)
+	// runDetection(ctx, log, client, outputChan)
 
 	if flags.ServerMode {
 		// Run detection periodically
@@ -97,6 +106,10 @@ func main() {
 			http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
 				handleOutputRequest(w, r, &mu, outputData, log)
 			})
+			http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
+				handleReadyRequest(w, r, &ready)
+			})
+
 			serverAddress := fmt.Sprintf(":%d", flags.ServerPort)
 			log.Log("Listening on %s", serverAddress)
 			if err := http.ListenAndServe(serverAddress, nil); err != nil {
@@ -105,14 +118,18 @@ func main() {
 			}
 		}()
 
-		for {
-			select {
-			case <-ctx.Done():
-				log.Log("Shutting down")
-				return
-			case <-ticker.C:
-				runDetection(ctx, log, client, outputChan)
-			}
+	}
+
+	// Run detection on startup
+	runDetection(ctx, log, client, outputChan)
+
+	for {
+		select {
+		case <-ctx.Done():
+			log.Log("Shutting down")
+			return
+		case <-ticker.C:
+			runDetection(ctx, log, client, outputChan)
 		}
 	}
 }
@@ -138,6 +155,22 @@ func handleOutputRequest(w http.ResponseWriter, r *http.Request, mu *sync.Mutex,
 	if err := enc.Encode(angularDashboards); err != nil {
 		log.Errorf("http server: %s\n", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// handleReadyRequest handles the /ready HTTP endpoint.
+func handleReadyRequest(w http.ResponseWriter, r *http.Request, ready *int32) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if atomic.LoadInt32(ready) == 1 {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Ready"))
+	} else {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte("Not Ready"))
 	}
 }
 
