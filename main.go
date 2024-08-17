@@ -80,6 +80,7 @@ func main() {
 	go func() {
 		for data := range outputChan {
 			log.Log("Updating outputData with results from most recent detection")
+			// Need to lock to avoid concurrent read/write access to outputData
 			mu.Lock()
 			outputData = data
 			mu.Unlock()
