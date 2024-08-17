@@ -97,9 +97,11 @@ func main() {
 			http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
 				handleOutputRequest(w, r, &mu, outputData, log)
 			})
-			log.Log("Listening on :8080")
-			if err := http.ListenAndServe(":8080", nil); err != nil {
-				log.Errorf("http server: %s\n", err)
+			serverAddress := fmt.Sprintf(":%d", flags.ServerPort)
+			log.Log("Listening on %s", serverAddress)
+			if err := http.ListenAndServe(serverAddress, nil); err != nil {
+				log.Errorf("Failed to setup http server: %s\n", err)
+				os.Exit(1)
 			}
 		}()
 
