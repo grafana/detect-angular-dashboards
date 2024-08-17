@@ -128,7 +128,9 @@ func handleOutputRequest(w http.ResponseWriter, r *http.Request, mu *sync.Mutex,
 	defer mu.Unlock()
 	w.Header().Set("Content-Type", "application/json")
 
-	// Filter Angular dashboards to avoid modifying the original slice
+	// Have to do this because the JSONOutputter.Output method modifies the slice in place
+	// which results in werid bug where the slice gets duplicate entries. The number of duplicate entries
+	// continues to grow with each request to /output. Something is leaky
 	angularDashboards := filterAngularDashboards(outputData)
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
