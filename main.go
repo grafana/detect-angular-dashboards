@@ -18,6 +18,7 @@ import (
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
 	"github.com/grafana/detect-angular-dashboards/build"
 	"github.com/grafana/detect-angular-dashboards/detector"
+	"github.com/grafana/detect-angular-dashboards/flags"
 	"github.com/grafana/detect-angular-dashboards/logger"
 	"github.com/grafana/detect-angular-dashboards/output"
 )
@@ -25,13 +26,13 @@ import (
 const envGrafana = "GRAFANA_TOKEN"
 
 func main() {
-	versionFlag, verboseFlag, jsonOutputFlag, skipTLSFlag, serverModeFlag, interval := parseFlags()
+	flags := flags.ParseFlags()
 
-	if versionFlag {
+	if flags.Version {
 		fmt.Printf("%s %s (%s)\n", os.Args[0], build.LinkerVersion, build.LinkerCommitSHA)
 		os.Exit(0)
 	}
-	log := newLogger(verboseFlag, jsonOutputFlag)
+	log := newLogger(flags.Verbose, flags.JSONOutput)
 
 	token, err := getToken()
 	if err != nil {
@@ -45,7 +46,7 @@ func main() {
 	}
 
 	opts := []api.ClientOption{api.WithAuthentication(token)}
-	if skipTLSFlag {
+	if flags.SkipTLS {
 		opts = append(opts, api.WithHTTPClient(&http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -54,7 +55,7 @@ func main() {
 	}
 	client := grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
 
-	ticker := time.NewTicker(interval)
+	ticker := time.NewTicker(flags.Interval)
 	defer ticker.Stop()
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -71,6 +72,7 @@ func main() {
 		ticker.Stop()
 	}()
 
+	// Channel used to send runDetection results to the HTTP server
 	outputChan := make(chan []output.Dashboard)
 	var outputData []output.Dashboard
 	var mu sync.Mutex
@@ -87,31 +89,12 @@ func main() {
 	// Run detection on startup
 	runDetection(ctx, log, client, outputChan)
 
-	if serverModeFlag {
+	if flags.ServerMode {
 		// Run detection periodically
-		log.Log("Starting periodic detection loop with interval %s", interval)
+		log.Log("Starting periodic detection loop with interval %s", flags.Interval)
 		go func() {
 			http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
-				if r.Method != http.MethodGet {
-					http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-					return
-				}
-
-				mu.Lock()
-				defer mu.Unlock()
-				w.Header().Set("Content-Type", "application/json")
-
-				// Have to do this because the JSONOutputter.Output method modifies the slice in place
-				// which results in werid bug where the slice gets duplicate entries. The number of duplicate entries
-				// continues to grow with each request to /output. Something is leaky
-				angularDashboards := filterAngularDashboards(outputData)
-				enc := json.NewEncoder(w)
-				enc.SetIndent("", "  ")
-
-				if err := enc.Encode(angularDashboards); err != nil {
-					log.Errorf("http server: %s\n", err)
-					http.Error(w, err.Error(), http.StatusInternalServerError)
-				}
+				handleOutputRequest(w, r, &mu, outputData, log)
 			})
 			log.Log("Listening on :8080")
 			if err := http.ListenAndServe(":8080", nil); err != nil {
@@ -131,32 +114,37 @@ func main() {
 	}
 }
 
-// parseFlags parses the command-line flags.
+// handleOutputRequest handles the /output HTTP endpoint.
+func handleOutputRequest(w http.ResponseWriter, r *http.Request, mu *sync.Mutex, outputData []output.Dashboard, log *logger.LeveledLogger) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	w.Header().Set("Content-Type", "application/json")
+
+	// Filter Angular dashboards to avoid modifying the original slice
+	angularDashboards := filterAngularDashboards(outputData)
+	enc := json.NewEncoder(w)
+	enc.SetIndent("", "  ")
+
+	if err := enc.Encode(angularDashboards); err != nil {
+		log.Errorf("http server: %s\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+// filterAngularDashboards filters dashboards to include only those with detections.
 func filterAngularDashboards(dashboards []output.Dashboard) []output.Dashboard {
 	var angularDashboards []output.Dashboard
-	// angularDashboards := make([]output.Dashboard, 0, len(dashboards))
-
 	for _, dashboard := range dashboards {
-		// Remove dashboards without detections
 		if len(dashboard.Detections) > 0 {
 			angularDashboards = append(angularDashboards, dashboard)
 		}
 	}
-
 	return angularDashboards
-}
-
-// parseFlags parses the command-line flags.
-func parseFlags() (bool, bool, bool, bool, bool, time.Duration) {
-	versionFlag := flag.Bool("version", false, "print version number")
-	verboseFlag := flag.Bool("v", false, "verbose output")
-	jsonOutputFlag := flag.Bool("j", false, "json output")
-	skipTLSFlag := flag.Bool("insecure", false, "skip TLS verification")
-	intervalFlag := flag.Duration("interval", 10*time.Minute, "detection refresh interval")
-	serverModeFlag := flag.Bool("server", false, "Run as http server instead of CLI. Output is exposed as JSON at /output. Default port is 8080. Default refersh interval is 10 minutes.")
-	flag.Parse()
-
-	return *versionFlag, *verboseFlag, *jsonOutputFlag, *skipTLSFlag, *serverModeFlag, *intervalFlag
 }
 
 // newLogger initializes a new leveled logger.
