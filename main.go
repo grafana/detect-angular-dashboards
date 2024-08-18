@@ -26,6 +26,11 @@ import (
 
 const envGrafana = "GRAFANA_TOKEN"
 
+type Output struct {
+	mu   sync.Mutex
+	data []output.Dashboard
+}
+
 func main() {
 	flags := flags.ParseFlags()
 
@@ -37,7 +42,7 @@ func main() {
 
 	token, err := getToken()
 	if err != nil {
-		log.Error(err.Error())
+		log.Errorf("Failed to retrieve Grafana token: %s\n", err.Error())
 		os.Exit(1)
 	}
 
@@ -75,36 +80,35 @@ func main() {
 
 	// Channel used to send runDetection results to the HTTP server
 	outputChan := make(chan []output.Dashboard)
-	var outputData []output.Dashboard
-	var mu sync.Mutex
+	output := &Output{}
 
 	// Readiness flag using atomic boolean
 	var ready int32
-	var readinessSet bool
+	var once sync.Once
 
 	go func() {
 		for data := range outputChan {
 			log.Log("Updating outputData with results from most recent detection")
+
 			// Need to lock to avoid concurrent read/write access to outputData
-			mu.Lock()
-			outputData = data
-			if !readinessSet {
+			output.mu.Lock()
+			output.data = data
+			output.mu.Unlock()
+
+			// Use sync.Once to set readiness only once
+			once.Do(func() {
 				atomic.StoreInt32(&ready, 1)
-				readinessSet = true
-			}
-			mu.Unlock()
+				log.Log("Updating readiness probe to ready")
+			})
 		}
 	}()
-
-	// Run detection on startup
-	// runDetection(ctx, log, client, outputChan)
 
 	if flags.ServerMode {
 		// Run detection periodically
 		log.Log("Starting periodic detection loop with interval %s", flags.Interval)
 		go func() {
 			http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
-				handleOutputRequest(w, r, &mu, outputData, log)
+				handleOutputRequest(w, r, output, log)
 			})
 			http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
 				handleReadyRequest(w, r, &ready)
@@ -135,20 +139,20 @@ func main() {
 }
 
 // handleOutputRequest handles the /output HTTP endpoint.
-func handleOutputRequest(w http.ResponseWriter, r *http.Request, mu *sync.Mutex, outputData []output.Dashboard, log *logger.LeveledLogger) {
+func handleOutputRequest(w http.ResponseWriter, r *http.Request, output *Output, log *logger.LeveledLogger) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	mu.Lock()
-	defer mu.Unlock()
+	output.mu.Lock()
+	defer output.mu.Unlock()
 	w.Header().Set("Content-Type", "application/json")
 
 	// Have to do this because the JSONOutputter.Output method modifies the slice in place
 	// which results in werid bug where the slice gets duplicate entries. The number of duplicate entries
 	// continues to grow with each request to /output. Something is leaky
-	angularDashboards := filterAngularDashboards(outputData)
+	angularDashboards := filterAngularDashboards(output.data)
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 
