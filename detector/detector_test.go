@@ -19,7 +19,7 @@ import (
 func TestDetector(t *testing.T) {
 	t.Run("meta", func(t *testing.T) {
 		cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", "graph-old.json"))
-		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
+		d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient(), 5)
 		out, err := d.Run(context.Background())
 		require.NoError(t, err)
 		require.Len(t, out, 1)
@@ -31,7 +31,7 @@ func TestDetector(t *testing.T) {
 		require.Equal(t, "2023-11-07T11:13:24+01:00", out[0].Created)
 		require.Equal(t, "2024-02-21T13:09:27+01:00", out[0].Updated)
 	})
-	
+
 	type expDetection struct {
 		pluginID      string
 		detectionType output.DetectionType
@@ -112,7 +112,7 @@ func TestDetector(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cl := NewTestAPIClient(filepath.Join("testdata", "dashboards", tc.file))
-			d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient())
+			d := NewDetector(logger.NewLeveledLogger(false), cl, gcom.NewAPIClient(), 5)
 			out, err := d.Run(context.Background())
 			require.NoError(t, err)
 			require.Len(t, out, 1, "should have result for one dashboard")
