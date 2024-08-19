@@ -45,21 +45,7 @@ func main() {
 		log.Errorf("Failed to retrieve Grafana token: %s\n", err.Error())
 		os.Exit(1)
 	}
-
-	grafanaURL := grafana.DefaultBaseURL
-	if flag.NArg() >= 1 {
-		grafanaURL = flag.Arg(0)
-	}
-
-	opts := []api.ClientOption{api.WithAuthentication(token)}
-	if flags.SkipTLS {
-		opts = append(opts, api.WithHTTPClient(&http.Client{
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-			},
-		}))
-	}
-	client := grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
+	client := initializeClient(token, &flags)
 
 	ticker := time.NewTicker(flags.Interval)
 	defer ticker.Stop()
@@ -68,15 +54,7 @@ func main() {
 	defer cancel()
 
 	// Handle graceful shutdown
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		<-sigs
-		log.Log("Received shutdown signal")
-		cancel()
-		ticker.Stop()
-	}()
+	setupGracefulShutdown(cancel, ticker, log)
 
 	// Channel used to send runDetection results to the HTTP server
 	outputChan := make(chan []output.Dashboard)
@@ -136,6 +114,37 @@ func main() {
 			runDetection(ctx, log, client, flags.MaxConcurrency, outputChan)
 		}
 	}
+}
+
+// initializeClient initializes the Grafana API client.
+func initializeClient(token string, flags *flags.Flags) grafana.APIClient {
+	grafanaURL := grafana.DefaultBaseURL
+	if flag.NArg() >= 1 {
+		grafanaURL = flag.Arg(0)
+	}
+
+	opts := []api.ClientOption{api.WithAuthentication(token)}
+	if flags.SkipTLS {
+		opts = append(opts, api.WithHTTPClient(&http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			},
+		}))
+	}
+	return grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
+}
+
+// setupGracefulShutdown sets up a signal handler for SIGINT and SIGTERM to gracefully shutdown the application.
+func setupGracefulShutdown(cancel context.CancelFunc, ticker *time.Ticker, log *logger.LeveledLogger) {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		<-sigs
+		log.Log("Received shutdown signal")
+		cancel()
+		ticker.Stop()
+	}()
 }
 
 // handleOutputRequest handles the /output HTTP endpoint.
