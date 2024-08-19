@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/grafana/detect-angular-dashboards/api/gcom"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
@@ -38,14 +39,17 @@ type Detector struct {
 
 	angularDetected     map[string]bool
 	datasourcePluginIDs map[string]string
+	maxConcurrency      int
 }
 
 // NewDetector returns a new Detector.
-func NewDetector(log *logger.LeveledLogger, grafanaClient GrafanaDetectorAPIClient, gcomClient gcom.APIClient) *Detector {
+func NewDetector(log *logger.LeveledLogger, grafanaClient GrafanaDetectorAPIClient, gcomClient gcom.APIClient, maxConcurrency int) *Detector {
 	return &Detector{
-		log:           log,
-		grafanaClient: grafanaClient,
-		gcomClient:    gcomClient,
+		log:             log,
+		grafanaClient:   grafanaClient,
+		gcomClient:      gcomClient,
+		angularDetected: map[string]bool{},
+		maxConcurrency:  maxConcurrency,
 	}
 }
 
@@ -60,7 +64,6 @@ func (d *Detector) Run(ctx context.Context) ([]output.Dashboard, error) {
 	// Determine if plugins are angular.
 	// This can be done from frontendsettings (faster and works with private plugins, but only works with >= 10.1.0)
 	// or from GCOM (slower, but always available, but public plugins only)
-	d.angularDetected = map[string]bool{}
 	frontendSettings, err := d.grafanaClient.GetFrontendSettings(ctx)
 	if err != nil {
 		return []output.Dashboard{}, fmt.Errorf("get frontend settings: %w", err)
@@ -154,33 +157,59 @@ func (d *Detector) Run(ctx context.Context) ([]output.Dashboard, error) {
 		return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
 	}
 
+	// Create a semaphore to limit concurrency
+	semaphore := make(chan struct{}, d.maxConcurrency)
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+	var downloadErrors []error
+
 	for _, dash := range dashboards {
-		// Determine absolute dashboard URL for output
-		dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(d.grafanaClient.BaseURL(), "/api"), dash.URL)
-		if err != nil {
-			// Silently ignore errors
-			dashboardAbsURL = ""
-		}
-		dashboardDefinition, err := d.grafanaClient.GetDashboard(ctx, dash.UID)
-		if err != nil {
-			return []output.Dashboard{}, fmt.Errorf("get dashboard %q: %w", dash.UID, err)
-		}
-		dashboardOutput := output.Dashboard{
-			Detections: []output.Detection{},
-			URL:        dashboardAbsURL,
-			Title:      dash.Title,
-			Folder:     dashboardDefinition.Meta.FolderTitle,
-			CreatedBy:  dashboardDefinition.Meta.CreatedBy,
-			UpdatedBy:  dashboardDefinition.Meta.UpdatedBy,
-			Created:    dashboardDefinition.Meta.Created,
-			Updated:    dashboardDefinition.Meta.Updated,
-		}
-		dashboardOutput.Detections, err = d.checkPanels(dashboardDefinition, dashboardDefinition.Dashboard.Panels)
-		if err != nil {
-			return []output.Dashboard{}, fmt.Errorf("check panels: %w", err)
-		}
-		finalOutput = append(finalOutput, dashboardOutput)
+		wg.Add(1)
+		go func(dash grafana.ListedDashboard) {
+			defer wg.Done()
+			semaphore <- struct{}{}        // Acquire semaphore
+			defer func() { <-semaphore }() // Release semaphore
+
+			dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(d.grafanaClient.BaseURL(), "/api"), dash.URL)
+			if err != nil {
+				dashboardAbsURL = ""
+			}
+			dashboardDefinition, err := d.grafanaClient.GetDashboard(ctx, dash.UID)
+			if err != nil {
+				mu.Lock()
+				downloadErrors = append(downloadErrors, fmt.Errorf("get dashboard %q: %w", dash.UID, err))
+				mu.Unlock()
+				return
+			}
+			dashboardOutput := output.Dashboard{
+				Detections: []output.Detection{},
+				URL:        dashboardAbsURL,
+				Title:      dash.Title,
+				Folder:     dashboardDefinition.Meta.FolderTitle,
+				CreatedBy:  dashboardDefinition.Meta.CreatedBy,
+				UpdatedBy:  dashboardDefinition.Meta.UpdatedBy,
+				Created:    dashboardDefinition.Meta.Created,
+				Updated:    dashboardDefinition.Meta.Updated,
+			}
+			dashboardOutput.Detections, err = d.checkPanels(dashboardDefinition, dashboardDefinition.Dashboard.Panels)
+			if err != nil {
+				mu.Lock()
+				downloadErrors = append(downloadErrors, fmt.Errorf("check panels: %w", err))
+				mu.Unlock()
+				return
+			}
+			mu.Lock()
+			finalOutput = append(finalOutput, dashboardOutput)
+			mu.Unlock()
+		}(dash)
 	}
+
+	wg.Wait()
+
+	if len(downloadErrors) > 0 {
+		return finalOutput, fmt.Errorf("errors occurred during dashboard download: %v", downloadErrors)
+	}
+
 	return finalOutput, nil
 }
 

@@ -125,7 +125,7 @@ func main() {
 	}
 
 	// Run detection on startup
-	runDetection(ctx, log, client, outputChan)
+	runDetection(ctx, log, client, flags.MaxConcurrency, outputChan)
 
 	for {
 		select {
@@ -133,7 +133,7 @@ func main() {
 			log.Log("Shutting down")
 			return
 		case <-ticker.C:
-			runDetection(ctx, log, client, outputChan)
+			runDetection(ctx, log, client, flags.MaxConcurrency, outputChan)
 		}
 	}
 }
@@ -210,10 +210,10 @@ func getToken() (string, error) {
 }
 
 // runDetection performs the detection of Angular dashboards and sends the output to a channel.
-func runDetection(ctx context.Context, log *logger.LeveledLogger, client grafana.APIClient, outputChan chan<- []output.Dashboard) {
+func runDetection(ctx context.Context, log *logger.LeveledLogger, client grafana.APIClient, maxConcurrency int, outputChan chan<- []output.Dashboard) {
 	log.Log("Detecting Angular dashboards")
 
-	d := detector.NewDetector(log, client, gcom.NewAPIClient())
+	d := detector.NewDetector(log, client, gcom.NewAPIClient(), maxConcurrency)
 	finalOutput, err := d.Run(ctx)
 	if err != nil {
 		log.Errorf("%s\n", err)
