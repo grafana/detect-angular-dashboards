@@ -70,9 +70,6 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 	ticker := time.NewTicker(flags.Interval)
 	defer ticker.Stop()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	var out Output
 	go func() {
 		// Trigger for the first time
@@ -81,16 +78,13 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 
 		for {
 			select {
-			case <-ctx.Done():
-				log.Log("Shutting down")
-				return
 			case <-run:
 			case <-ticker.C:
 			}
 
 			// Run detection periodically
 			log.Log("Running detection")
-			data, err := d.Run(ctx)
+			data, err := d.Run(context.Background())
 			if err != nil {
 				log.Errorf("%s\n", err)
 				continue
