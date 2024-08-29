@@ -8,10 +8,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"os/signal"
 	"sync"
 	"sync/atomic"
-	"syscall"
 	"time"
 
 	"github.com/grafana/detect-angular-dashboards/api"
@@ -63,23 +61,7 @@ func main() {
 	}
 }
 
-func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
-	var out output.Outputter
-	if flags.JSONOutput {
-		out = output.NewJSONOutputter(os.Stdout)
-	} else {
-		out = output.NewLoggerReadableOutput(log)
-	}
-	data, err := d.Run(context.Background())
-	if err != nil {
-		return fmt.Errorf("run detector: %w", err)
-	}
-	if err := out.Output(data); err != nil {
-		return fmt.Errorf("output: %w", err)
-	}
-	return nil
-}
-
+// runServerMode runs the program in server (HTTP) mode.
 func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
 	// Readiness flag using atomic boolean
 	var ready int32
@@ -91,9 +73,6 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	// Handle graceful shutdown
-	// setupGracefulShutdown(cancel, ticker, log)
 
 	var out Output
 	go func() {
@@ -139,6 +118,24 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 	return http.ListenAndServe(serverAddress, nil)
 }
 
+// runCLIMode runs the program in CLI mode.
+func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
+	var out output.Outputter
+	if flags.JSONOutput {
+		out = output.NewJSONOutputter(os.Stdout)
+	} else {
+		out = output.NewLoggerReadableOutput(log)
+	}
+	data, err := d.Run(context.Background())
+	if err != nil {
+		return fmt.Errorf("run detector: %w", err)
+	}
+	if err := out.Output(data); err != nil {
+		return fmt.Errorf("output: %w", err)
+	}
+	return nil
+}
+
 // initializeClient initializes the Grafana API client.
 func initializeClient(token string, flags *flags.Flags) grafana.APIClient {
 	grafanaURL := grafana.DefaultBaseURL
@@ -155,19 +152,6 @@ func initializeClient(token string, flags *flags.Flags) grafana.APIClient {
 		}))
 	}
 	return grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
-}
-
-// setupGracefulShutdown sets up a signal handler for SIGINT and SIGTERM to gracefully shutdown the application.
-func setupGracefulShutdown(cancel context.CancelFunc, ticker *time.Ticker, log *logger.LeveledLogger) {
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		<-sigs
-		log.Log("Received shutdown signal")
-		cancel()
-		ticker.Stop()
-	}()
 }
 
 // handleOutputRequest handles the /output HTTP endpoint.
