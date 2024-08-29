@@ -47,71 +47,83 @@ func main() {
 	}
 	client := initializeClient(token, &flags)
 
-	ticker := time.NewTicker(flags.Interval)
-	defer ticker.Stop()
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	// Handle graceful shutdown
-	setupGracefulShutdown(cancel, ticker, log)
-
-	// Channel used to send runDetection results to the HTTP server
-	outputChan := make(chan []output.Dashboard)
-	output := &Output{}
-
-	// Readiness flag using atomic boolean
-	var ready int32
-	var once sync.Once
-
-	go func() {
-		for data := range outputChan {
-			log.Log("Updating outputData with results from most recent detection")
-
-			// Need to lock to avoid concurrent read/write access to outputData
-			output.mu.Lock()
-			output.data = data
-			output.mu.Unlock()
-
-			// Use sync.Once to set readiness only once
-			once.Do(func() {
-				atomic.StoreInt32(&ready, 1)
-				log.Log("Updating readiness probe to ready")
-			})
-		}
-	}()
+	d := detector.NewDetector(log, client, gcom.NewAPIClient(), flags.MaxConcurrency)
 
 	if flags.ServerMode {
-		// Run detection periodically
-		log.Log("Starting periodic detection loop with interval %s", flags.Interval)
-		go func() {
-			http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
-				handleOutputRequest(w, r, output, log)
-			})
-			http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
-				handleReadyRequest(w, r, &ready)
-			})
+		// Readiness flag using atomic boolean
+		var ready int32
+		var once sync.Once
 
-			serverAddress := fmt.Sprintf(":%d", flags.ServerPort)
-			log.Log("Listening on %s", serverAddress)
-			if err := http.ListenAndServe(serverAddress, nil); err != nil {
-				log.Errorf("Failed to setup http server: %s\n", err)
-				os.Exit(1)
+		ticker := time.NewTicker(flags.Interval)
+		defer ticker.Stop()
+		run := make(chan struct{}, 1)
+
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		// Handle graceful shutdown
+		// setupGracefulShutdown(cancel, ticker, log)
+
+		var out Output
+		go func() {
+			run <- struct{}{}
+			for {
+				select {
+				case <-ctx.Done():
+					log.Log("Shutting down")
+					return
+				case <-run:
+				case <-ticker.C:
+				}
+
+				// Run detection periodically
+				log.Log("Running detection")
+				data, err := d.Run(ctx)
+				if err != nil {
+					log.Errorf("%s\n", err)
+					continue
+				}
+
+				out.mu.Lock()
+				out.data = data
+				out.mu.Unlock()
+
+				// Use sync.Once to set readiness only once
+				once.Do(func() {
+					atomic.StoreInt32(&ready, 1)
+					log.Log("Updating readiness probe to ready")
+				})
 			}
 		}()
 
-	}
+		http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
+			handleOutputRequest(w, r, &out, log)
+		})
+		http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
+			handleReadyRequest(w, r, &ready)
+		})
 
-	// Run detection on startup
-	runDetection(ctx, log, client, flags.MaxConcurrency, outputChan)
-
-	for {
-		select {
-		case <-ctx.Done():
-			log.Log("Shutting down")
-			return
-		case <-ticker.C:
-			runDetection(ctx, log, client, flags.MaxConcurrency, outputChan)
+		serverAddress := fmt.Sprintf(":%d", flags.ServerPort)
+		log.Log("Listening on %s", serverAddress)
+		if err := http.ListenAndServe(serverAddress, nil); err != nil {
+			log.Errorf("Failed to setup http server: %s\n", err)
+			os.Exit(1)
+		}
+	} else {
+		var out output.Outputter
+		if flags.JSONOutput {
+			out = output.NewJSONOutputter(os.Stdout)
+		} else {
+			out = output.NewLoggerReadableOutput(log)
+		}
+		// Print output
+		data, err := d.Run(context.Background())
+		if err != nil {
+			log.Errorf("%s\n", err)
+			os.Exit(1)
+		}
+		if err := out.Output(data); err != nil {
+			log.Errorf("output: %s\n", err)
 		}
 	}
 }
@@ -216,19 +228,4 @@ func getToken() (string, error) {
 		return "", fmt.Errorf("environment variable %s is not set", envGrafana)
 	}
 	return token, nil
-}
-
-// runDetection performs the detection of Angular dashboards and sends the output to a channel.
-func runDetection(ctx context.Context, log *logger.LeveledLogger, client grafana.APIClient, maxConcurrency int, outputChan chan<- []output.Dashboard) {
-	log.Log("Detecting Angular dashboards")
-
-	d := detector.NewDetector(log, client, gcom.NewAPIClient(), maxConcurrency)
-	finalOutput, err := d.Run(ctx)
-	if err != nil {
-		log.Errorf("%s\n", err)
-		return
-	}
-
-	// Send output to channel
-	outputChan <- finalOutput
 }
