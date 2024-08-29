@@ -69,14 +69,16 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 
 	ticker := time.NewTicker(flags.Interval)
 	defer ticker.Stop()
-	run := make(chan struct{}, 1)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	var out Output
 	go func() {
+		// Trigger for the first time
+		run := make(chan struct{}, 1)
 		run <- struct{}{}
+
 		for {
 			select {
 			case <-ctx.Done():
