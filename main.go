@@ -50,82 +50,93 @@ func main() {
 	d := detector.NewDetector(log, client, gcom.NewAPIClient(), flags.MaxConcurrency)
 
 	if flags.ServerMode {
-		// Readiness flag using atomic boolean
-		var ready int32
-		var once sync.Once
-
-		ticker := time.NewTicker(flags.Interval)
-		defer ticker.Stop()
-		run := make(chan struct{}, 1)
-
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-
-		// Handle graceful shutdown
-		// setupGracefulShutdown(cancel, ticker, log)
-
-		var out Output
-		go func() {
-			run <- struct{}{}
-			for {
-				select {
-				case <-ctx.Done():
-					log.Log("Shutting down")
-					return
-				case <-run:
-				case <-ticker.C:
-				}
-
-				// Run detection periodically
-				log.Log("Running detection")
-				data, err := d.Run(ctx)
-				if err != nil {
-					log.Errorf("%s\n", err)
-					continue
-				}
-
-				out.mu.Lock()
-				out.data = data
-				out.mu.Unlock()
-
-				// Use sync.Once to set readiness only once
-				once.Do(func() {
-					atomic.StoreInt32(&ready, 1)
-					log.Log("Updating readiness probe to ready")
-				})
-			}
-		}()
-
-		http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
-			handleOutputRequest(w, r, &out, log)
-		})
-		http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
-			handleReadyRequest(w, r, &ready)
-		})
-
-		serverAddress := fmt.Sprintf(":%d", flags.ServerPort)
-		log.Log("Listening on %s", serverAddress)
-		if err := http.ListenAndServe(serverAddress, nil); err != nil {
-			log.Errorf("Failed to setup http server: %s\n", err)
-			os.Exit(1)
-		}
-	} else {
-		var out output.Outputter
-		if flags.JSONOutput {
-			out = output.NewJSONOutputter(os.Stdout)
-		} else {
-			out = output.NewLoggerReadableOutput(log)
-		}
-		// Print output
-		data, err := d.Run(context.Background())
-		if err != nil {
+		if err := runServerMode(&flags, log, d); err != nil {
 			log.Errorf("%s\n", err)
 			os.Exit(1)
 		}
-		if err := out.Output(data); err != nil {
-			log.Errorf("output: %s\n", err)
-		}
+		return
 	}
+
+	if err := runCLIMode(&flags, log, d); err != nil {
+		log.Errorf("%s\n", err)
+		os.Exit(1)
+	}
+}
+
+func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
+	var out output.Outputter
+	if flags.JSONOutput {
+		out = output.NewJSONOutputter(os.Stdout)
+	} else {
+		out = output.NewLoggerReadableOutput(log)
+	}
+	data, err := d.Run(context.Background())
+	if err != nil {
+		return fmt.Errorf("run detector: %w", err)
+	}
+	if err := out.Output(data); err != nil {
+		return fmt.Errorf("output: %w", err)
+	}
+	return nil
+}
+
+func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
+	// Readiness flag using atomic boolean
+	var ready int32
+	var once sync.Once
+
+	ticker := time.NewTicker(flags.Interval)
+	defer ticker.Stop()
+	run := make(chan struct{}, 1)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Handle graceful shutdown
+	// setupGracefulShutdown(cancel, ticker, log)
+
+	var out Output
+	go func() {
+		run <- struct{}{}
+		for {
+			select {
+			case <-ctx.Done():
+				log.Log("Shutting down")
+				return
+			case <-run:
+			case <-ticker.C:
+			}
+
+			// Run detection periodically
+			log.Log("Running detection")
+			data, err := d.Run(ctx)
+			if err != nil {
+				log.Errorf("%s\n", err)
+				continue
+			}
+
+			out.mu.Lock()
+			out.data = data
+			out.mu.Unlock()
+
+			// Use sync.Once to set readiness only once
+			once.Do(func() {
+				atomic.StoreInt32(&ready, 1)
+				log.Log("Updating readiness probe to ready")
+			})
+		}
+	}()
+
+	http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
+		handleOutputRequest(w, r, &out, log)
+	})
+	http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
+		handleReadyRequest(w, r, &ready)
+	})
+
+	serverAddress := fmt.Sprintf(":%d", flags.ServerPort)
+	log.Log("Listening on %s", serverAddress)
+	return http.ListenAndServe(serverAddress, nil)
 }
 
 // initializeClient initializes the Grafana API client.
