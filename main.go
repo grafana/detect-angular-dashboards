@@ -8,10 +8,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"os/signal"
 	"sync"
 	"sync/atomic"
-	"syscall"
 	"time"
 
 	"github.com/grafana/detect-angular-dashboards/api"
@@ -32,36 +30,33 @@ type Output struct {
 }
 
 func main() {
-	flags := flags.ParseFlags()
+	f := flags.Parse()
 
-	if flags.Version {
+	if f.Version {
 		fmt.Printf("%s %s (%s)\n", os.Args[0], build.LinkerVersion, build.LinkerCommitSHA)
 		os.Exit(0)
 	}
-	log := newLogger(flags.Verbose, flags.JSONOutput)
+	log := newLogger(f.Verbose, f.JSONOutput)
 
 	token, err := getToken()
 	if err != nil {
 		log.Errorf("Failed to retrieve Grafana token: %s\n", err.Error())
 		os.Exit(1)
 	}
-	client := initializeClient(token, &flags)
+	client := initializeClient(token, &f)
 
-	ticker := time.NewTicker(flags.Interval)
+	ticker := time.NewTicker(f.Interval)
 	defer ticker.Stop()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
-	// Handle graceful shutdown
-	setupGracefulShutdown(cancel, ticker, log)
 
 	// Channel used to send runDetection results to the HTTP server
 	outputChan := make(chan []output.Dashboard)
 	output := &Output{}
 
 	// Readiness flag using atomic boolean
-	var ready int32
+	var ready atomic.Bool
 	var once sync.Once
 
 	go func() {
@@ -75,15 +70,15 @@ func main() {
 
 			// Use sync.Once to set readiness only once
 			once.Do(func() {
-				atomic.StoreInt32(&ready, 1)
+				ready.Store(true)
 				log.Log("Updating readiness probe to ready")
 			})
 		}
 	}()
 
-	if flags.ServerMode {
+	if f.Server != "" {
 		// Run detection periodically
-		log.Log("Starting periodic detection loop with interval %s", flags.Interval)
+		log.Log("Starting periodic detection loop with interval %s", f.Interval)
 		go func() {
 			http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
 				handleOutputRequest(w, r, output, log)
@@ -92,9 +87,8 @@ func main() {
 				handleReadyRequest(w, r, &ready)
 			})
 
-			serverAddress := fmt.Sprintf(":%d", flags.ServerPort)
-			log.Log("Listening on %s", serverAddress)
-			if err := http.ListenAndServe(serverAddress, nil); err != nil {
+			log.Log("Listening on %s", f.Server)
+			if err := http.ListenAndServe(f.Server, nil); err != nil {
 				log.Errorf("Failed to setup http server: %s\n", err)
 				os.Exit(1)
 			}
@@ -103,7 +97,7 @@ func main() {
 	}
 
 	// Run detection on startup
-	runDetection(ctx, log, client, flags.MaxConcurrency, outputChan)
+	runDetection(ctx, log, client, f.MaxConcurrency, outputChan)
 
 	for {
 		select {
@@ -111,7 +105,7 @@ func main() {
 			log.Log("Shutting down")
 			return
 		case <-ticker.C:
-			runDetection(ctx, log, client, flags.MaxConcurrency, outputChan)
+			runDetection(ctx, log, client, f.MaxConcurrency, outputChan)
 		}
 	}
 }
@@ -132,19 +126,6 @@ func initializeClient(token string, flags *flags.Flags) grafana.APIClient {
 		}))
 	}
 	return grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
-}
-
-// setupGracefulShutdown sets up a signal handler for SIGINT and SIGTERM to gracefully shutdown the application.
-func setupGracefulShutdown(cancel context.CancelFunc, ticker *time.Ticker, log *logger.LeveledLogger) {
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		<-sigs
-		log.Log("Received shutdown signal")
-		cancel()
-		ticker.Stop()
-	}()
 }
 
 // handleOutputRequest handles the /output HTTP endpoint.
@@ -172,13 +153,13 @@ func handleOutputRequest(w http.ResponseWriter, r *http.Request, output *Output,
 }
 
 // handleReadyRequest handles the /ready HTTP endpoint.
-func handleReadyRequest(w http.ResponseWriter, r *http.Request, ready *int32) {
+func handleReadyRequest(w http.ResponseWriter, r *http.Request, ready *atomic.Bool) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	if atomic.LoadInt32(ready) == 1 {
+	if ready.Load() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Ready"))
 	} else {
