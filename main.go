@@ -45,28 +45,54 @@ func main() {
 	}
 	client := initializeClient(token, &f)
 
-	ticker := time.NewTicker(f.Interval)
-	defer ticker.Stop()
+	d := detector.NewDetector(log, client, gcom.NewAPIClient(), f.MaxConcurrency)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	if f.Server != "" {
+		if err := runServerMode(&f, log, d); err != nil {
+			log.Errorf("%s\n", err)
+			os.Exit(1)
+		}
+		return
+	}
 
-	// Channel used to send runDetection results to the HTTP server
-	outputChan := make(chan []output.Dashboard)
-	output := &Output{}
+	if err := runCLIMode(&f, log, d); err != nil {
+		log.Errorf("%s\n", err)
+		os.Exit(1)
+	}
+}
 
+// runServerMode runs the program in server (HTTP) mode.
+func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
 	// Readiness flag using atomic boolean
 	var ready atomic.Bool
 	var once sync.Once
 
-	go func() {
-		for data := range outputChan {
-			log.Log("Updating outputData with results from most recent detection")
+	ticker := time.NewTicker(flags.Interval)
+	defer ticker.Stop()
 
-			// Need to lock to avoid concurrent read/write access to outputData
-			output.mu.Lock()
-			output.data = data
-			output.mu.Unlock()
+	var out Output
+	go func() {
+		// Trigger for the first time
+		run := make(chan struct{}, 1)
+		run <- struct{}{}
+
+		for {
+			select {
+			case <-run:
+			case <-ticker.C:
+			}
+
+			// Run detection periodically
+			log.Log("Running detection")
+			data, err := d.Run(context.Background())
+			if err != nil {
+				log.Errorf("%s\n", err)
+				continue
+			}
+
+			out.mu.Lock()
+			out.data = data
+			out.mu.Unlock()
 
 			// Use sync.Once to set readiness only once
 			once.Do(func() {
@@ -76,38 +102,33 @@ func main() {
 		}
 	}()
 
-	if f.Server != "" {
-		// Run detection periodically
-		log.Log("Starting periodic detection loop with interval %s", f.Interval)
-		go func() {
-			http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
-				handleOutputRequest(w, r, output, log)
-			})
-			http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
-				handleReadyRequest(w, r, &ready)
-			})
+	http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
+		handleOutputRequest(w, r, &out, log)
+	})
+	http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
+		handleReadyRequest(w, r, &ready)
+	})
 
-			log.Log("Listening on %s", f.Server)
-			if err := http.ListenAndServe(f.Server, nil); err != nil {
-				log.Errorf("Failed to setup http server: %s\n", err)
-				os.Exit(1)
-			}
-		}()
+	log.Log("Listening on %s", flags.Server)
+	return http.ListenAndServe(flags.Server, nil)
+}
 
+// runCLIMode runs the program in CLI mode.
+func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
+	var out output.Outputter
+	if flags.JSONOutput {
+		out = output.NewJSONOutputter(os.Stdout)
+	} else {
+		out = output.NewLoggerReadableOutput(log)
 	}
-
-	// Run detection on startup
-	runDetection(ctx, log, client, f.MaxConcurrency, outputChan)
-
-	for {
-		select {
-		case <-ctx.Done():
-			log.Log("Shutting down")
-			return
-		case <-ticker.C:
-			runDetection(ctx, log, client, f.MaxConcurrency, outputChan)
-		}
+	data, err := d.Run(context.Background())
+	if err != nil {
+		return fmt.Errorf("run detector: %w", err)
 	}
+	if err := out.Output(data); err != nil {
+		return fmt.Errorf("output: %w", err)
+	}
+	return nil
 }
 
 // initializeClient initializes the Grafana API client.
@@ -197,19 +218,4 @@ func getToken() (string, error) {
 		return "", fmt.Errorf("environment variable %s is not set", envGrafana)
 	}
 	return token, nil
-}
-
-// runDetection performs the detection of Angular dashboards and sends the output to a channel.
-func runDetection(ctx context.Context, log *logger.LeveledLogger, client grafana.APIClient, maxConcurrency int, outputChan chan<- []output.Dashboard) {
-	log.Log("Detecting Angular dashboards")
-
-	d := detector.NewDetector(log, client, gcom.NewAPIClient(), maxConcurrency)
-	finalOutput, err := d.Run(ctx)
-	if err != nil {
-		log.Errorf("%s\n", err)
-		return
-	}
-
-	// Send output to channel
-	outputChan <- finalOutput
 }
