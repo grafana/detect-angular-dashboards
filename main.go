@@ -83,7 +83,7 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 			}
 
 			// Run detection periodically
-			log.Log("Running detection")
+			log.Log("Detecting Angular dashboards")
 			data, err := d.Run(context.Background())
 			if err != nil {
 				log.Errorf("%s\n", err)
@@ -115,6 +115,7 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 
 // runCLIMode runs the program in CLI mode.
 func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
+	log.Log("Detecting Angular dashboards")
 	var out output.Outputter
 	if flags.JSONOutput {
 		out = output.NewJSONOutputter(os.Stdout)
