@@ -69,6 +69,7 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 
 	ticker := time.NewTicker(flags.Interval)
 	defer ticker.Stop()
+	log.Log("Running detection every %s", flags.Interval)
 
 	var out Output
 	go func() {
