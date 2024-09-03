@@ -8,8 +8,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"os/signal"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"time"
 
 	"github.com/grafana/detect-angular-dashboards/api"
@@ -91,6 +93,8 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 				continue
 			}
 
+			// Run detection periodically
+			log.Log("Updating Output Data")
 			out.mu.Lock()
 			out.data = data
 			out.mu.Unlock()
@@ -110,8 +114,43 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 		handleReadyRequest(w, r, &ready)
 	})
 
-	log.Log("Listening on %s", flags.Server)
-	return http.ListenAndServe(flags.Server, nil)
+	if err := runServer(flags, log); err != nil {
+		log.Error("runServer Failed with the following err: %v", err)
+		return err
+	}
+
+	return nil
+}
+
+func runServer(flags *flags.Flags, log *logger.LeveledLogger) error {
+	server := &http.Server{Addr: flags.Server}
+
+	// Channel to listen for OS signals
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	// Start the server in a goroutine
+	go func() {
+		log.Log("Listening on %s", flags.Server)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Error("ListenAndServe(): %s", err)
+		}
+	}()
+
+	// Wait for a signal interrupt
+	sig := <-sigChan
+	log.Log("Received signal: %s. Shutting down server...", sig)
+
+	// Gracefully shut down the server
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		log.Error("Server Shutdown Failed:%+v", err)
+		return err
+	}
+	log.Log("Server gracefully stopped")
+
+	return nil
 }
 
 // runCLIMode runs the program in CLI mode.
