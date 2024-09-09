@@ -190,8 +190,8 @@ func initializeClient(token string, flags *flags.Flags) grafana.APIClient {
 	return grafana.NewAPIClient(api.NewClient(grafanaURL, opts...))
 }
 
-// handleOutputRequest handles the /output HTTP endpoint.
-func handleOutputRequest(w http.ResponseWriter, r *http.Request, output *Output, log *logger.LeveledLogger) {
+// handleDetectionsRequest handles the /output HTTP endpoint.
+func handleDetectionsRequest(w http.ResponseWriter, r *http.Request, output *Output, log *logger.LeveledLogger) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
