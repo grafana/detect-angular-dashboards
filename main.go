@@ -107,8 +107,8 @@ func runServerMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.De
 		}
 	}()
 
-	http.HandleFunc("/output", func(w http.ResponseWriter, r *http.Request) {
-		handleOutputRequest(w, r, &out, log)
+	http.HandleFunc("/detections", func(w http.ResponseWriter, r *http.Request) {
+		handleDetectionsRequest(w, r, &out, log)
 	})
 	http.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
 		handleReadyRequest(w, r, &ready)
