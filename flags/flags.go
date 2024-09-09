@@ -24,7 +24,7 @@ func Parse() Flags {
 	flag.BoolVar(&flags.JSONOutput, "j", false, "json output")
 	flag.BoolVar(&flags.SkipTLS, "insecure", false, "skip TLS verification")
 	flag.DurationVar(&flags.Interval, "interval", 5*time.Minute, "detection refresh interval")
-	flag.StringVar(&flags.Server, "server", "", "Run as http server instead of CLI. Output is exposed as JSON at /output. Default refersh interval is 5 minutes.")
+	flag.StringVar(&flags.Server, "server", "", "Run as HTTP server instead of CLI. Value must be a listen address (e.g.: 0.0.0.0:5000. Output is exposed as JSON at /output.")
 	flag.IntVar(&flags.MaxConcurrency, "max-concurrency", 10, "maximum number of concurrent dashboard downloads")
 	flag.Parse()
 
