@@ -52,7 +52,7 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
 > The example below will produce a valid "output.json" file that can be used with other tools.
 
 ```bash
-GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.example.com/api | tee output.json
+GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards -j http://my-grafana.example.com/api | tee output.json
 2023/08/17 11:25:54 Detecting Angular dashboards for "http://my-grafana.example.com/api"
 [
   {
