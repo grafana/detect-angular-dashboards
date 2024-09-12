@@ -31,8 +31,23 @@ The reason behind admin rights is that the plugins endpoint returns all plugins 
 Then, create a service account token for the newly created service account and set it to the `GRAFANA_TOKEN` env var.
 
 ## Usage
+The detect-angular-dashboards binary supports two modes of operation. A CLI mode which can be used on demand, as well as a server mode which periodically quries Grafana for the current set of dashboards and generates a JSON response on the `/detections` endpoint with a list of dashboards that were detected to be using Angular. This endpoint can be linked directly with Grafana by leveraging the [Infinity Datasource](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/). 
 
-### Readable output
+### Server Mode
+> Pass flag `-server` to run the program in server mode. Value must be a valid listen address ex. "0.0.0.0:8080".
+> Pass optional flag `-max-concurrency` to the program to limit the max concurrency when downloading dashboards from Grafana, otherwise default value is used. 
+> Pass optional flag `-interval` to the program to set the detection refresh interval when running in server mode, otherwise default value is used. 
+
+```bash
+GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards -server "0.0.0.0:8080" -max-concurrency=10 http://my-grafana.example.com/api
+INFO: 2024/09/11 16:59:04 Running detection every 5m0s
+INFO: 2024/09/11 16:59:04 Detecting Angular dashboards
+INFO: 2024/09/11 16:59:04 Listening on 0.0.0.0:8080
+INFO: 2024/09/11 16:59:34 Updating Output Data
+INFO: 2024/09/11 16:59:34 Updating readiness probe to ready
+```
+
+### CLI Mode - Readable output
 
 ```bash
 GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.example.com/api
@@ -46,7 +61,7 @@ GRAFANA_TOKEN=glsa_aaaaaaaaaaa ./detect-angular-dashboards http://my-grafana.exa
 2023/08/17 11:17:14 Found angular panel "My panel" ("akumuli-datasource")
 ```
 
-### JSON output
+### CLI Mode - JSON output
 
 > Pass flag -j to the program to output in JSON format to stdout. All other messages will be sent to stderr.
 > The example below will produce a valid "output.json" file that can be used with other tools.
