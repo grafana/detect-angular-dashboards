@@ -7,6 +7,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/grafana/detect-angular-dashboards/api"
 	"github.com/grafana/detect-angular-dashboards/api/gcom"
 	"github.com/grafana/detect-angular-dashboards/api/grafana"
 	"github.com/grafana/detect-angular-dashboards/logger"
@@ -157,6 +158,11 @@ func (d *Detector) Run(ctx context.Context) ([]output.Dashboard, error) {
 		return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
 	}
 
+	orgID, ok := api.OrgFromContext(ctx)
+	if !ok {
+		return []output.Dashboard{}, fmt.Errorf("could not get org ID from context")
+	}
+
 	// Create a semaphore to limit concurrency
 	semaphore := make(chan struct{}, d.maxConcurrency)
 	var wg sync.WaitGroup
@@ -190,6 +196,7 @@ func (d *Detector) Run(ctx context.Context) ([]output.Dashboard, error) {
 				UpdatedBy:  dashboardDefinition.Meta.UpdatedBy,
 				Created:    dashboardDefinition.Meta.Created,
 				Updated:    dashboardDefinition.Meta.Updated,
+				OrgID:      orgID,
 			}
 			dashboardOutput.Detections, err = d.checkPanels(dashboardDefinition, dashboardDefinition.Dashboard.Panels)
 			if err != nil {

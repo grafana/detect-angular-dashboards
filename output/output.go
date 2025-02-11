@@ -53,6 +53,7 @@ type Dashboard struct {
 	CreatedBy  string
 	Created    string
 	Updated    string
+	OrgID      int
 }
 
 type Outputter interface {
