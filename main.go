@@ -47,6 +47,28 @@ func main() {
 	}
 	client := initializeClient(token, &f)
 
+	if !client.UsingBasicAuth() && f.AllOrgs {
+		log.Errorf("all-orgs flag can only be used with basic authentication")
+		os.Exit(1)
+	}
+
+	// orgs to run detection on
+	var orgs []grafana.Org
+	if f.AllOrgs {
+		orgs, err = client.GetOrgs(context.Background())
+		if err != nil {
+			log.Errorf("Failed to get orgs: %s\n", err)
+			os.Exit(1)
+		}
+	} else {
+		currentOrg, err := client.GetCurrentOrg(context.Background())
+		if err != nil {
+			log.Errorf("Failed to get current org: %s\n", err)
+			os.Exit(1)
+		}
+		orgs = append(orgs, currentOrg)
+	}
+
 	d := detector.NewDetector(log, client, gcom.NewAPIClient(), f.MaxConcurrency)
 
 	if f.Server != "" {
@@ -57,7 +79,7 @@ func main() {
 		return
 	}
 
-	if err := runCLIMode(&f, log, d); err != nil {
+	if err := runCLIMode(&f, log, d, orgs); err != nil {
 		log.Errorf("%s\n", err)
 		os.Exit(1)
 	}
@@ -154,7 +176,7 @@ func runServer(flags *flags.Flags, log *logger.LeveledLogger) error {
 }
 
 // runCLIMode runs the program in CLI mode.
-func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector) error {
+func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detector, orgs []grafana.Org) error {
 	log.Log("Detecting Angular dashboards")
 	var out output.Outputter
 	if flags.JSONOutput {
@@ -162,13 +184,20 @@ func runCLIMode(flags *flags.Flags, log *logger.LeveledLogger, d *detector.Detec
 	} else {
 		out = output.NewLoggerReadableOutput(log)
 	}
-	data, err := d.Run(context.Background())
-	if err != nil {
-		return fmt.Errorf("run detector: %w", err)
+
+	for _, org := range orgs {
+		ctx := api.NewOrgContext(context.Background(), org.ID)
+		log.Log("Running detection for organization %q (%d)", org.Name, org.ID)
+
+		data, err := d.Run(ctx)
+		if err != nil {
+			return fmt.Errorf("run detector: %w", err)
+		}
+		if err := out.Output(data); err != nil {
+			return fmt.Errorf("output: %w", err)
+		}
 	}
-	if err := out.Output(data); err != nil {
-		return fmt.Errorf("output: %w", err)
-	}
+
 	return nil
 }
 
