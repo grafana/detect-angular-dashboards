@@ -75,7 +75,7 @@ func (cl Client) newRequest(ctx context.Context, method, url string) (*http.Requ
 	// API let's use it first
 	if cl.token != "" {
 		req.Header.Add("Authorization", "Bearer "+cl.token)
-	} else if cl.basicAuthUser != "" && cl.basicAuthPassword != "" {
+	} else if cl.UsingBasicAuth() {
 		req.SetBasicAuth(cl.basicAuthUser, cl.basicAuthPassword)
 	}
 	return req, err
@@ -100,4 +100,8 @@ func (cl Client) Request(ctx context.Context, method, url string, out interface{
 		}
 	}
 	return nil
+}
+
+func (cl Client) UsingBasicAuth() bool {
+	return cl.basicAuthUser != "" && cl.basicAuthPassword != ""
 }
