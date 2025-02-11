@@ -5,10 +5,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
 var ErrBadStatusCode = fmt.Errorf("bad status code")
+
+type orgCtxKeyType string
+
+const orgCtxKey orgCtxKeyType = "orgID"
+
+func NewOrgContext(ctx context.Context, orgID int) context.Context {
+	return context.WithValue(ctx, orgCtxKey, orgID)
+}
+
+func OrgFromContext(ctx context.Context) (int, bool) {
+	org, ok := ctx.Value(orgCtxKey).(int)
+	return org, ok
+}
 
 type Client struct {
 	BaseURL string
@@ -78,6 +92,12 @@ func (cl Client) newRequest(ctx context.Context, method, url string) (*http.Requ
 	} else if cl.UsingBasicAuth() {
 		req.SetBasicAuth(cl.basicAuthUser, cl.basicAuthPassword)
 	}
+
+	orgID, ok := OrgFromContext(ctx)
+	if ok {
+		req.Header.Add("X-Grafana-Org-Id", strconv.Itoa(orgID))
+	}
+
 	return req, err
 }
 
