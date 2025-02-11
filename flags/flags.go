@@ -14,6 +14,7 @@ type Flags struct {
 	Server         string
 	Interval       time.Duration
 	MaxConcurrency int
+	AllOrgs        bool
 }
 
 // Parse parses the command-line flags.
@@ -26,6 +27,7 @@ func Parse() Flags {
 	flag.DurationVar(&flags.Interval, "interval", 5*time.Minute, "detection refresh interval when running in HTTP server mode")
 	flag.StringVar(&flags.Server, "server", "", "Run as HTTP server instead of CLI. Value must be a listen address (e.g.: 0.0.0.0:5000. Output is exposed as JSON at /detections.")
 	flag.IntVar(&flags.MaxConcurrency, "max-concurrency", 10, "maximum number of concurrent dashboard downloads")
+	flag.BoolVar(&flags.AllOrgs, "all-orgs", false, "run detection for all organizations")
 	flag.Parse()
 
 	return flags
