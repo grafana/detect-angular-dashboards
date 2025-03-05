@@ -75,7 +75,7 @@
       },
       "thresholds": "0,10",
       "title": "expanded",
-      "type": "grafana-worldmap-panel",
+      "type": "briangann-datatable-panel",
       "unitPlural": "",
       "unitSingle": "",
       "valueName": "total"

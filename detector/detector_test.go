@@ -55,12 +55,12 @@ func TestDetector(t *testing.T) {
 		},
 		{
 			name: "angular panel",
-			file: "worldmap.json",
+			file: "datatable.json",
 			expDetections: []expDetection{{
-				pluginID:      "grafana-worldmap-panel",
+				pluginID:      "briangann-datatable-panel",
 				detectionType: output.DetectionTypePanel,
 				title:         "Panel Title",
-				message:       `Found angular panel "Panel Title" ("grafana-worldmap-panel")`,
+				message:       `Found angular panel "Panel Title" ("briangann-datatable-panel")`,
 			}},
 		},
 		{
@@ -78,8 +78,8 @@ func TestDetector(t *testing.T) {
 			file: "multiple.json",
 			expDetections: []expDetection{
 				{pluginID: "akumuli-datasource", detectionType: output.DetectionTypeDatasource, title: "akumuli"},
-				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "worldmap + akumuli"},
-				{pluginID: "akumuli-datasource", detectionType: output.DetectionTypeDatasource, title: "worldmap + akumuli"},
+				{pluginID: "briangann-datatable-panel", detectionType: output.DetectionTypePanel, title: "datatable + akumuli"},
+				{pluginID: "akumuli-datasource", detectionType: output.DetectionTypeDatasource, title: "datatable + akumuli"},
 				{pluginID: "graph", detectionType: output.DetectionTypeLegacyPanel, title: "graph-old"},
 			},
 		},
@@ -92,21 +92,21 @@ func TestDetector(t *testing.T) {
 			name: "mix of angular and react",
 			file: "mixed.json",
 			expDetections: []expDetection{
-				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "angular"},
+				{pluginID: "briangann-datatable-panel", detectionType: output.DetectionTypePanel, title: "angular"},
 			},
 		},
 		{
 			name: "rows expanded",
 			file: "rows-expanded.json",
 			expDetections: []expDetection{
-				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "expanded"},
+				{pluginID: "briangann-datatable-panel", detectionType: output.DetectionTypePanel, title: "expanded"},
 			},
 		},
 		{
 			name: "rows collapsed",
 			file: "rows-collapsed.json",
 			expDetections: []expDetection{
-				{pluginID: "grafana-worldmap-panel", detectionType: output.DetectionTypePanel, title: "collapsed"},
+				{pluginID: "briangann-datatable-panel", detectionType: output.DetectionTypePanel, title: "collapsed"},
 			},
 		},
 	} {
