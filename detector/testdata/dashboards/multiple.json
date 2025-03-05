@@ -153,8 +153,8 @@
         "queryType": "geohash"
       },
       "thresholds": "0,10",
-      "title": "worldmap + akumuli",
-      "type": "grafana-worldmap-panel",
+      "title": "datatable + akumuli",
+      "type": "briangann-datatable-panel",
       "unitPlural": "",
       "unitSingle": "",
       "valueName": "total"

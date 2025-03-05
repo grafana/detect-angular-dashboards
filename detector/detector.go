@@ -275,7 +275,7 @@ func (d *Detector) checkPanel(dashboardDefinition *grafana.DashboardDefinition, 
 	var out []output.Detection
 
 	// Check panel
-	if p.Type == pluginIDGraphOld || p.Type == pluginIDTableOld || (p.Type == pluginIDTable && dashboardDefinition.Dashboard.SchemaVersion < 24) {
+	if d.isLegacyPanel(p.Type, dashboardDefinition.Dashboard.SchemaVersion) {
 		// Different warning on legacy panel that can be migrated to React automatically
 		out = append(out, output.Detection{
 			DetectionType: output.DetectionTypeLegacyPanel,
