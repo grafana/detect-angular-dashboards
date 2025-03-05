@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 
@@ -14,9 +15,13 @@ import (
 )
 
 const (
-	pluginIDGraphOld = "graph"
-	pluginIDTable    = "table"
-	pluginIDTableOld = "table-old"
+	pluginIDGraphOld      = "graph"
+	pluginIDTable         = "table"
+	pluginIDTableOld      = "table-old"
+	pluginIDPiechart      = "grafana-piechart-panel"
+	pluginIDWorldmap      = "grafana-worldmap-panel"
+	pluginIDSinglestatOld = "grafana-singlestat-panel"
+	pluginIDSinglestat    = "singlestat"
 )
 
 // GrafanaDetectorAPIClient is an interface that can be used to interact with the Grafana API for
@@ -236,15 +241,40 @@ func (d *Detector) checkPanels(dashboardDefinition *grafana.DashboardDefinition,
 	return out, nil
 }
 
+// isLegacyPanel returns true if the panel is a legacy panel that can be automatically migrated to a React equivalent
+// by core Grafana upon opening the dashboard in the browser.
+func (d *Detector) isLegacyPanel(pluginType string, dashboardSchemaVersion int) bool {
+	if slices.Contains([]string{
+		// "graph" has been replaced with timeseries
+		pluginIDGraphOld,
+		// "table-old" is the old table panel (after it has been migrated)
+		pluginIDTableOld,
+		// "grafana-piechart-panel" can be migrated by core:
+		// https://github.com/grafana/grafana/blob/2638de6aeb6d780a2f51dd78f54e0ef7fcc25a7d/public/app/plugins/panel/piechart/migrations.ts#L11 ?
+		pluginIDPiechart,
+		// "grafana-worldmap-panel" can be migrated to "geomap" by core:
+		// https://github.com/grafana/grafana/blob/2638de6aeb6d780a2f51dd78f54e0ef7fcc25a7d/public/app/features/dashboard/state/getPanelPluginToMigrateTo.ts#L67-L72
+		pluginIDWorldmap,
+		// "singlestat" and "grafana-singlestat-panel" can also be auto-migrated by core:
+		// https://github.com/grafana/grafana/blob/2638de6aeb6d780a2f51dd78f54e0ef7fcc25a7d/public/app/plugins/panel/stat/StatMigrations.ts#L16-L17
+		pluginIDSinglestatOld,
+		pluginIDSinglestat,
+	}, pluginType) {
+		return true
+	}
+	// "table" with a schema version < 24 is Angular table panel, which will be replaced by `table-old`
+	// https://github.com/grafana/grafana/blob/7869ca1932c3a2a8f233acf35a3fe676187847bc/public/app/features/dashboard/state/DashboardMigrator.ts#L595-L610
+	if pluginType == pluginIDTable && dashboardSchemaVersion < 24 {
+		return true
+	}
+	return false
+}
+
 // checkPanel checks the given panel for Angular plugins.
 func (d *Detector) checkPanel(dashboardDefinition *grafana.DashboardDefinition, p *grafana.DashboardPanel) ([]output.Detection, error) {
 	var out []output.Detection
 
 	// Check panel
-	// - "graph" has been replaced with timeseries
-	// - "table-old" is the old table panel (after it has been migrated)
-	// - "table" with a schema version < 24 is Angular table panel, which will be replaced by `table-old`:
-	//		https://github.com/grafana/grafana/blob/7869ca1932c3a2a8f233acf35a3fe676187847bc/public/app/features/dashboard/state/DashboardMigrator.ts#L595-L610
 	if p.Type == pluginIDGraphOld || p.Type == pluginIDTableOld || (p.Type == pluginIDTable && dashboardDefinition.Dashboard.SchemaVersion < 24) {
 		// Different warning on legacy panel that can be migrated to React automatically
 		out = append(out, output.Detection{
