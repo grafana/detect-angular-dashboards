@@ -157,62 +157,69 @@ func (d *Detector) Run(ctx context.Context) ([]output.Dashboard, error) {
 		d.datasourcePluginIDs[ds.Name] = ds.Type
 	}
 
-	dashboards, err := d.grafanaClient.GetDashboards(ctx, 1)
-	if err != nil {
-		return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
-	}
+	var page int
+	for {
+		page += 1
+		dashboards, err := d.grafanaClient.GetDashboards(ctx, page)
+		if err != nil {
+			return []output.Dashboard{}, fmt.Errorf("get dashboards: %w", err)
+		}
+		if len(dashboards) == 0 {
+			break
+		}
 
-	// Create a semaphore to limit concurrency
-	semaphore := make(chan struct{}, d.maxConcurrency)
-	var wg sync.WaitGroup
-	var mu sync.Mutex
-	var downloadErrors []error
+		// Create a semaphore to limit concurrency
+		semaphore := make(chan struct{}, d.maxConcurrency)
+		var wg sync.WaitGroup
+		var mu sync.Mutex
+		var downloadErrors []error
 
-	for _, dash := range dashboards {
-		wg.Add(1)
-		go func(dash grafana.ListedDashboard) {
-			defer wg.Done()
-			semaphore <- struct{}{}        // Acquire semaphore
-			defer func() { <-semaphore }() // Release semaphore
+		for _, dash := range dashboards {
+			wg.Add(1)
+			go func(dash grafana.ListedDashboard) {
+				defer wg.Done()
+				semaphore <- struct{}{}        // Acquire semaphore
+				defer func() { <-semaphore }() // Release semaphore
 
-			dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(d.grafanaClient.BaseURL(), "/api"), dash.URL)
-			if err != nil {
-				dashboardAbsURL = ""
-			}
-			dashboardDefinition, err := d.grafanaClient.GetDashboard(ctx, dash.UID)
-			if err != nil {
+				dashboardAbsURL, err := url.JoinPath(strings.TrimSuffix(d.grafanaClient.BaseURL(), "/api"), dash.URL)
+				if err != nil {
+					dashboardAbsURL = ""
+				}
+				dashboardDefinition, err := d.grafanaClient.GetDashboard(ctx, dash.UID)
+				if err != nil {
+					mu.Lock()
+					downloadErrors = append(downloadErrors, fmt.Errorf("get dashboard %q: %w", dash.UID, err))
+					mu.Unlock()
+					return
+				}
+				dashboardOutput := output.Dashboard{
+					Detections: []output.Detection{},
+					URL:        dashboardAbsURL,
+					Title:      dash.Title,
+					Folder:     dashboardDefinition.Meta.FolderTitle,
+					CreatedBy:  dashboardDefinition.Meta.CreatedBy,
+					UpdatedBy:  dashboardDefinition.Meta.UpdatedBy,
+					Created:    dashboardDefinition.Meta.Created,
+					Updated:    dashboardDefinition.Meta.Updated,
+				}
+				dashboardOutput.Detections, err = d.checkPanels(dashboardDefinition, dashboardDefinition.Dashboard.Panels)
+				if err != nil {
+					mu.Lock()
+					downloadErrors = append(downloadErrors, fmt.Errorf("check panels: %w", err))
+					mu.Unlock()
+					return
+				}
 				mu.Lock()
-				downloadErrors = append(downloadErrors, fmt.Errorf("get dashboard %q: %w", dash.UID, err))
+				finalOutput = append(finalOutput, dashboardOutput)
 				mu.Unlock()
-				return
-			}
-			dashboardOutput := output.Dashboard{
-				Detections: []output.Detection{},
-				URL:        dashboardAbsURL,
-				Title:      dash.Title,
-				Folder:     dashboardDefinition.Meta.FolderTitle,
-				CreatedBy:  dashboardDefinition.Meta.CreatedBy,
-				UpdatedBy:  dashboardDefinition.Meta.UpdatedBy,
-				Created:    dashboardDefinition.Meta.Created,
-				Updated:    dashboardDefinition.Meta.Updated,
-			}
-			dashboardOutput.Detections, err = d.checkPanels(dashboardDefinition, dashboardDefinition.Dashboard.Panels)
-			if err != nil {
-				mu.Lock()
-				downloadErrors = append(downloadErrors, fmt.Errorf("check panels: %w", err))
-				mu.Unlock()
-				return
-			}
-			mu.Lock()
-			finalOutput = append(finalOutput, dashboardOutput)
-			mu.Unlock()
-		}(dash)
-	}
+			}(dash)
+		}
 
-	wg.Wait()
+		wg.Wait()
 
-	if len(downloadErrors) > 0 {
-		return finalOutput, fmt.Errorf("errors occurred during dashboard download: %v", downloadErrors)
+		if len(downloadErrors) > 0 {
+			return finalOutput, fmt.Errorf("errors occurred during dashboard download: %v", downloadErrors)
+		}
 	}
 
 	return finalOutput, nil
