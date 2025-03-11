@@ -5,7 +5,7 @@ name: publish
 
 steps:
   - name: github-release
-    image: golang:1.20.6-alpine3.18
+    image: golang:1.24-alpine3.21
     environment:
       GITHUB_APP_ID:
         from_secret: gh-app-id
@@ -50,6 +50,6 @@ get:
 
 ---
 kind: signature
-hmac: 98fbd9fb22bf117038f88ce04cceb49ffd6eb7b34a0d9c467cfd123d6735a547
+hmac: 408f85bd86c07da20975a9d327c1304891dd02356df5a545f3bb67e6c8659701
 
 ...
