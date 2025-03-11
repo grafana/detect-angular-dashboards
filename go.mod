@@ -1,6 +1,6 @@
 module github.com/grafana/detect-angular-dashboards
 
-go 1.20
+go 1.24
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.6.0
