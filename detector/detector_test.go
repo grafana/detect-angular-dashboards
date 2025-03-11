@@ -178,7 +178,11 @@ func (c *TestAPIClient) GetDatasourcePluginIDs(_ context.Context) (datasources [
 }
 
 // GetDashboards returns a dummy response with only one dashboard.
-func (c *TestAPIClient) GetDashboards(_ context.Context, _ int) ([]grafana.ListedDashboard, error) {
+func (c *TestAPIClient) GetDashboards(_ context.Context, page int) ([]grafana.ListedDashboard, error) {
+	if page > 1 {
+		// Only 1 page, return empty list for all other pages.
+		return []grafana.ListedDashboard{}, nil
+	}
 	return []grafana.ListedDashboard{
 		{
 			UID:   "test-case-dashboard",
