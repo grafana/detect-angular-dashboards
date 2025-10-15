@@ -75,7 +75,7 @@ func (o LoggerReadableOutput) Output(v []Dashboard) error {
 		}
 		o.log.Log("Found dashboard with Angular plugins %q %q:", dashboard.Title, dashboard.URL)
 		for _, detection := range dashboard.Detections {
-			o.log.Log(detection.String())
+			o.log.Log("%s", detection.String())
 		}
 	}
 	return nil
