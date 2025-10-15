@@ -58,11 +58,12 @@ jobs:
           target-branch: ${{ github.ref_name }}
           token: ${{ steps.generate-github-token.outputs.token }}
 
+      # Rename all files from `detect-angular-dashboards_<COMMIT_SHA>_<OS>_<ARCH>`
+      # to `detect-angular-dashboards_<SEMVER>_<OS>_<ARCH>` before attaching them to the GitHub release.
       - name: Rename release artifacts
         if: ${{ steps.release.outputs.release_created }}
         run: |
           cd /tmp/build-artifacts
-          # Rename all files from "detect-angular-dashboards_abcdef_darwin_amd64" to "detect-angular-dashboards_latest_darwin_amd64"
           for f in *.zip; do mv "$f" "${f/_${GITHUB_SHA}_/_${NEW_VERSION}_}"; done
         env:
           GITHUB_SHA: ${{ github.sha }}
