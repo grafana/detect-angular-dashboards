@@ -67,7 +67,7 @@ jobs:
         run: |
           cd /tmp/build-artifacts
           for f in *.zip; do mv "$f" "${f/_${GITHUB_SHA}_/_${NEW_VERSION}_}"; done
-          shell: bash
+        shell: bash
         env:
           GITHUB_SHA: ${{ github.sha }}
           NEW_VERSION: ${{ steps.release.outputs.version }}
