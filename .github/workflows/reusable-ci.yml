@@ -31,8 +31,8 @@ jobs:
           args: |
             "./..." --timeout=7m
 
-  test:
-    name: Test
+  build-test:
+    name: Build and test
     runs-on: ubuntu-arm64-small
     steps:
       - name: Checkout
@@ -50,5 +50,12 @@ jobs:
           install-only: true
       - name: Test
         run: mage test
-
-  # TODO: upload build artifact
+      - name: Build and package all
+        run: mage package ${COMMIT_HASH}
+        env:
+          COMMIT_HASH: ${{ github.sha }}
+      - name: Upload artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: build-artifacts
+          path: dist/artifacts/${{ github.sha }}/*.zip
