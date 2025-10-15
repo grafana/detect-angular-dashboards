@@ -65,3 +65,4 @@ jobs:
         with:
           name: build-artifacts
           path: dist/artifacts/${{ inputs.commit-hash || github.sha }}/*.zip
+          retention-days: 3
