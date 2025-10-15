@@ -7,6 +7,8 @@ jobs:
   ci:
     name: CI
     uses: ./.github/workflows/reusable-ci.yml
+    with:
+      upload-artifacts: true
   release-please:
     name: Release Please
     runs-on: ubuntu-arm64-small

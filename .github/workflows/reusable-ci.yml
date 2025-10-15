@@ -8,6 +8,11 @@ on:
         description: "The commit hash to use for build and package step. Defaults to `github.sha` if not provided."
         required: false
         default: ""
+      upload-artifacts:
+        type: boolean
+        description: "Whether to upload build artifacts produced by `mage package`. Defaults to `false`."
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -57,10 +62,12 @@ jobs:
       - name: Test
         run: mage test
       - name: Build and package all
+        if: ${{ inputs.upload-artifacts }}
         run: mage package ${COMMIT_HASH}
         env:
           COMMIT_HASH: ${{ inputs.commit-hash || github.sha }}
       - name: Upload artifacts
+        if: ${{ inputs.upload-artifacts }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: build-artifacts
