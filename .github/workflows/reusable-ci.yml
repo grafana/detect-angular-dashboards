@@ -2,6 +2,12 @@ name: CI
 
 on:
   workflow_call:
+    inputs:
+      commit-hash:
+        type: string
+        description: "The commit hash to use for build and package step. Defaults to `github.sha` if not provided."
+        required: false
+        default: ""
 
 permissions:
   contents: read
@@ -53,9 +59,9 @@ jobs:
       - name: Build and package all
         run: mage package ${COMMIT_HASH}
         env:
-          COMMIT_HASH: ${{ github.sha }}
+          COMMIT_HASH: ${{ inputs.commit-hash || github.sha }}
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: build-artifacts
-          path: dist/artifacts/${{ github.sha }}/*.zip
+          path: dist/artifacts/${{ inputs.commit-hash || github.sha }}/*.zip

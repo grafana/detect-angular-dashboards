@@ -18,6 +18,8 @@ jobs:
   ci:
     name: CI
     uses: ./.github/workflows/reusable-ci.yml
+    with:
+      commit-hash: ${{ github.event.pull_request.head.sha }}
   check-title:
     name: Check PR title
     permissions:
