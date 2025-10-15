@@ -61,9 +61,11 @@ jobs:
           install-only: true
       - name: Test
         run: mage test
+        shell: bash
       - name: Build and package all
         if: ${{ inputs.upload-artifacts }}
         run: mage package ${COMMIT_HASH}
+        shell: bash
         env:
           COMMIT_HASH: ${{ inputs.commit-hash || github.sha }}
       - name: Upload artifacts
