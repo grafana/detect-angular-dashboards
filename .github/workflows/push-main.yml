@@ -65,7 +65,7 @@ jobs:
       - name: Rename release artifacts
         if: ${{ steps.release.outputs.release_created }}
         run: |
-          cd /tmp/build-artifacts
+          cd /tmp/dist-artifactss
           for f in *.zip; do mv "$f" "${f/_${GITHUB_SHA}_/_${NEW_VERSION}_}"; done
         shell: bash
         env:
@@ -75,7 +75,7 @@ jobs:
       - name: Attach build artifacts to release
         if: ${{ steps.release.outputs.release_created }}
         run: |
-          gh release upload "${TAG_NAME}" /tmp/build-artifacts/*.zip
+          gh release upload "${TAG_NAME}" /tmp/dist-artifactss/*.zip
         shell: bash
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-token.outputs.token }}
