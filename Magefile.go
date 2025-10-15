@@ -216,6 +216,7 @@ func releasePleaseVersion() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer func() { _ = f.Close() }()
 	var manifest map[string]string
 	if err := json.NewDecoder(f).Decode(&manifest); err != nil {
 		return "", err
