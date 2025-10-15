@@ -26,8 +26,8 @@ jobs:
         id: download-artifacts
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
-          name: build-artifacts
-          path: /tmp/build-artifacts
+          name: dist-artifacts
+          path: /tmp/dist-artifacts
 
       - name: Get secrets from Vault
         id: get-secrets
