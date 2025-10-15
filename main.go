@@ -223,10 +223,10 @@ func handleReadyRequest(w http.ResponseWriter, r *http.Request, ready *atomic.Bo
 
 	if ready.Load() {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Ready"))
+		_, _ = w.Write([]byte("Ready"))
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte("Not Ready"))
+		_, _ = w.Write([]byte("Not Ready"))
 	}
 }
 
