@@ -1,16 +1,7 @@
 name: CI
 
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
-    branches:
-      - main
-  push:
-    branches:
-      - main
+  workflow_call:
 
 permissions:
   contents: read
@@ -19,10 +10,6 @@ env:
   GO_VERSION: "1.25"
   GOLANGCI_LINT_VERSION: v2.4.0
   MAGE_VERSION: v2.5.0
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   lint:
@@ -63,3 +50,5 @@ jobs:
           install-only: true
       - name: Test
         run: mage test
+
+  # TODO: upload build artifact

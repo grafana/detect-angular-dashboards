@@ -1,16 +1,17 @@
-name: Release detect-angular-dashboards
-
 on:
   push:
     branches:
       - main
 
-permissions:
-  contents: read
-
 jobs:
+  ci:
+    uses: ./.github/workflows/reusable-ci.yml
   release-please:
+    name: Release Please
     runs-on: ubuntu-arm64-small
+
+    needs:
+      - ci
 
     permissions:
       contents: write # Needed to create releases and tags
