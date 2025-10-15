@@ -10,18 +10,9 @@ on:
     branches:
       - main
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  ci:
-    name: CI
-    uses: ./.github/workflows/reusable-ci.yml
-    with:
-      commit-hash: ${{ github.event.pull_request.head.sha }}
-  check-title:
-    name: Check PR title
+  check-pr-title:
+    name: Check title
     permissions:
       pull-requests: read
     runs-on: ubuntu-arm64-small

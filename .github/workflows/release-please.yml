@@ -4,17 +4,9 @@ on:
       - main
 
 jobs:
-  ci:
-    name: CI
-    uses: ./.github/workflows/reusable-ci.yml
-    with:
-      upload-artifacts: true
   release-please:
     name: Release Please
     runs-on: ubuntu-arm64-small
-
-    needs:
-      - ci
 
     permissions:
       contents: write # Needed to create releases and tags
@@ -22,13 +14,6 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download artifacts
-        id: download-artifacts
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
-        with:
-          name: dist-artifacts
-          path: /tmp/dist-artifacts
-
       - name: Get secrets from Vault
         id: get-secrets
         uses: grafana/shared-workflows/actions/get-vault-secrets@a37de51f3d713a30a9e4b21bcdfbd38170020593 # get-vault-secrets/v1.3.0
@@ -60,22 +45,24 @@ jobs:
           target-branch: ${{ github.ref_name }}
           token: ${{ steps.generate-github-token.outputs.token }}
 
-      # Rename all files from `detect-angular-dashboards_<COMMIT_SHA>_<OS>_<ARCH>`
-      # to `detect-angular-dashboards_<SEMVER>_<OS>_<ARCH>` before attaching them to the GitHub release.
-      - name: Rename release artifacts
+      # Whenever there is a new release, build detect-angular-dashboards
+      # with the new version in the linker fields and attach the build artifacts to the GitHub release.
+
+      - name: Setup
+        if: ${{ steps.release.outputs.release_created }}
+        uses: ./.github/actions/setup
+
+      - name: Build and package all
         if: ${{ steps.release.outputs.release_created }}
         run: |
-          cd /tmp/dist-artifactss
-          for f in *.zip; do mv "$f" "${f/_${GITHUB_SHA}_/_${NEW_VERSION}_}"; done
-        shell: bash
+          mage package "${PACKAGE_NAME}"
         env:
-          GITHUB_SHA: ${{ github.sha }}
-          NEW_VERSION: ${{ steps.release.outputs.version }}
+          PACKAGE_NAME: ${{ steps.release.outputs.version }}
 
       - name: Attach build artifacts to release
         if: ${{ steps.release.outputs.release_created }}
         run: |
-          gh release upload "${TAG_NAME}" /tmp/dist-artifactss/*.zip
+          gh release upload "${TAG_NAME}" ./dist/artifacts/${TAG_NAME}/*.zip
         shell: bash
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-token.outputs.token }}

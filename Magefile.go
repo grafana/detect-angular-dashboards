@@ -4,6 +4,7 @@ package main
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -38,6 +39,10 @@ func (Build) Go(goOs, goArch string) error {
 	if commitSha := gitCommitSha(); commitSha != "" {
 		// If commit sha was determined, add it to ldflags
 		ldFlags = append(ldFlags, fmt.Sprintf("-X %s.LinkerCommitSHA=%s", buildPkg, commitSha))
+	}
+	if version, err := releasePleaseVersion(); err == nil && version != "" {
+		// Add release please version as linker version
+		ldFlags = append(ldFlags, fmt.Sprintf("-X %s.LinkerVersion=%s", buildPkg, version))
 	}
 
 	// Add all ldflags to args
@@ -203,4 +208,18 @@ func Lint() error {
 func gitCommitSha() string {
 	hash, _ := sh.Output("git", "rev-parse", "--short", "HEAD")
 	return hash
+}
+
+// releasePleaseVersion reads the .release-please-manifest.json file and returns the version for the current component (".").
+func releasePleaseVersion() (string, error) {
+	f, err := os.Open(".release-please-manifest.json")
+	if err != nil {
+		return "", err
+	}
+	var manifest map[string]string
+	if err := json.NewDecoder(f).Decode(&manifest); err != nil {
+		return "", err
+	}
+	const releasePleaseComponent = "."
+	return manifest[releasePleaseComponent], nil
 }
