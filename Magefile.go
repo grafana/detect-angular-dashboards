@@ -30,10 +30,8 @@ const (
 	distFolder      = "dist"
 	artifactsFolder = "artifacts"
 
-	droneServerURL = "https://drone.grafana.net"
-	gitHubOrg      = "grafana"
-	gitHubRepo     = "detect-angular-dashboards"
-	droneRepo      = gitHubOrg + "/" + gitHubRepo
+	gitHubOrg  = "grafana"
+	gitHubRepo = "detect-angular-dashboards"
 )
 
 // Go builds the go binary for the specified os and arch into dist/<os>_<arch>/detect-angular-dashboards.
@@ -49,10 +47,6 @@ func (Build) Go(goOs, goArch string) error {
 	if commitSha := gitCommitSha(); commitSha != "" {
 		// If commit sha was determined, add it to ldflags
 		ldFlags = append(ldFlags, fmt.Sprintf("-X %s.LinkerCommitSHA=%s", buildPkg, commitSha))
-	}
-	if droneTag := os.Getenv("DRONE_TAG"); droneTag != "" {
-		// Add drone tag as linker version
-		ldFlags = append(ldFlags, fmt.Sprintf("-X %s.LinkerVersion=%s", buildPkg, droneTag))
 	}
 
 	// Add all ldflags to args
@@ -200,7 +194,7 @@ func Clean() error {
 
 // Test runs the test suite.
 func Test() error {
-	return sh.RunV("go", "test", "./...")
+	return sh.RunV("go", "test", "-v", "./...")
 }
 
 // Lint runs golangci-lint.
@@ -209,19 +203,6 @@ func Lint() error {
 		return err
 	}
 
-	return nil
-}
-
-// Drone runs drone lint to ensure .drone.yml is valid and it signs the Drone configuration file.
-// This needs to be run everytime the .drone.yml file is modified.
-// See https://github.com/grafana/deployment_tools/blob/master/docs/infrastructure/drone/signing.md for more info
-func Drone() error {
-	if err := sh.RunV("drone", "lint", "--trusted"); err != nil {
-		return err
-	}
-	if err := sh.RunV("drone", "--server", droneServerURL, "sign", "--save", droneRepo); err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -343,15 +324,9 @@ func (g GitHub) Release(releaseName string) error {
 }
 
 // gitCommitSha returns the git commit sha for the current repo or "" if none.
-// It tries to get it from DRONE_COMMIT_SHA env var (set from drone).
-// If it's not set, it invokes `git`.
+// It invokes `git` to determine the commit sha.
 // If it's not possible to run `git`, it returns an empty string.
 func gitCommitSha() string {
-	// Try to get git commit sha, prioritize env var from drone
-	if commitSha := os.Getenv("DRONE_COMMIT_SHA"); commitSha != "" {
-		return commitSha
-	}
-	// If not possible, try invoking `git` command
 	hash, _ := sh.Output("git", "rev-parse", "--short", "HEAD")
 	return hash
 }
