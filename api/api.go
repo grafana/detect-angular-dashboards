@@ -81,7 +81,7 @@ func (cl Client) newRequest(ctx context.Context, method, url string) (*http.Requ
 	return req, err
 }
 
-func (cl Client) Request(ctx context.Context, method, url string, out interface{}) error {
+func (cl Client) Request(ctx context.Context, method, url string, out interface{}) (err error) {
 	req, err := cl.newRequest(ctx, method, url)
 	if err != nil {
 		return fmt.Errorf("new request: %w", err)
@@ -90,7 +90,13 @@ func (cl Client) Request(ctx context.Context, method, url string, out interface{
 	if err != nil {
 		return fmt.Errorf("do request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			if err == nil {
+				err = fmt.Errorf("close response body: %w", closeErr)
+			}
+		}
+	}()
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("%w: %d", ErrBadStatusCode, resp.StatusCode)
 	}
