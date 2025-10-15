@@ -4,8 +4,9 @@ on:
   pull_request:
     types:
       - opened
-      - synchronize
       - reopened
+      - edited
+      - synchronize
     branches:
       - main
 
@@ -17,4 +18,12 @@ jobs:
   ci:
     name: CI
     uses: ./.github/workflows/reusable-ci.yml
-  # TODO: conventional commits
+  check-title:
+    name: Check PR title
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-arm64-small
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
