@@ -20,6 +20,13 @@ jobs:
       id-token: write
 
     steps:
+      - name: Download artifacts
+        id: download-artifacts
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: build-artifacts
+          path: /tmp/build-artifacts
+
       - name: Get secrets from Vault
         id: get-secrets
         uses: grafana/shared-workflows/actions/get-vault-secrets@a37de51f3d713a30a9e4b21bcdfbd38170020593 # get-vault-secrets/v1.3.0
@@ -51,9 +58,20 @@ jobs:
           target-branch: ${{ github.ref_name }}
           token: ${{ steps.generate-github-token.outputs.token }}
 
-      - name: Upload release artifacts
+      - name: Rename release artifacts
         if: ${{ steps.release.outputs.release_created }}
-        # TODO: adjust
-        run: gh release upload ${{ steps.release.outputs.tag_name }} ./artifact/some-build-artifact.zip
+        run: |
+          cd /tmp/build-artifacts
+          # Rename all files from "detect-angular-dashboards_abcdef_darwin_amd64" to "detect-angular-dashboards_latest_darwin_amd64"
+          for f in *.zip; do mv "$f" "${f/_${GITHUB_SHA}_/_${NEW_VERSION}_}"; done
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          NEW_VERSION: ${{ steps.release.outputs.version }}
+
+      - name: Attach build artifacts to release
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          gh release upload "${TAG_NAME}" /tmp/build-artifacts/*.zip
         env:
           GITHUB_TOKEN: ${{ steps.generate-github-token.outputs.token }}
+          TAG_NAME: ${{ steps.release.outputs.tag_name }}
