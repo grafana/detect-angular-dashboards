@@ -5,6 +5,7 @@ on:
 
 jobs:
   ci:
+    name: CI
     uses: ./.github/workflows/reusable-ci.yml
   release-please:
     name: Release Please

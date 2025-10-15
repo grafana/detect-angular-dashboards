@@ -15,5 +15,6 @@ concurrency:
 
 jobs:
   ci:
+    name: CI
     uses: ./.github/workflows/reusable-ci.yml
   # TODO: conventional commits
