@@ -1,0 +1,22 @@
+name: PR checks
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+    branches:
+      - main
+
+jobs:
+  check-pr-title:
+    name: Check title
+    permissions:
+      pull-requests: read
+    runs-on: ubuntu-arm64-small
+    steps:
+      - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,17 @@
+env:
+  GO_VERSION: "1.24"
+  MAGE_VERSION: v1.15.0
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Go
+      uses: actions/setup-go@44694675825211faa026b3c33043df3e48a5fa00 # v6.0.0
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Install Mage
+      uses: magefile/mage-action@6f50bbb8ea47d56e62dee92392788acbc8192d0b # v3.1.0
+      with:
+        version: ${{ env.MAGE_VERSION }}
+        install-only: true
