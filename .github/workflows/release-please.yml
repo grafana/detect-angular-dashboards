@@ -64,7 +64,7 @@ jobs:
         run: |
           mage package "${PACKAGE_NAME}"
         env:
-          PACKAGE_NAME: ${{ steps.release.outputs.version }}
+          PACKAGE_NAME: ${{ steps.release.outputs.tag_name }}
 
       - name: Attach build artifacts to release
         if: ${{ steps.release.outputs.release_created }}
