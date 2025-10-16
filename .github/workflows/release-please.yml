@@ -1,3 +1,5 @@
+name: Release detect-angular-dashboards
+
 on:
   push:
     branches:
