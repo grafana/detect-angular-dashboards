@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/grafana/detect-angular-dashboards/compare/v0.11.0...v0.11.1) (2025-10-29)
+
+
+### 🐛 Bug Fixes
+
+* **ci:** fix release-please attachments ([#43](https://github.com/grafana/detect-angular-dashboards/issues/43)) ([34fa9f7](https://github.com/grafana/detect-angular-dashboards/commit/34fa9f732e3c6b905a73e62dee4569aea1c2110c))
+
 ## [0.11.0](https://github.com/grafana/detect-angular-dashboards/compare/v0.10.0...v0.11.0) (2025-10-16)
 
 
