@@ -3,7 +3,7 @@ module github.com/grafana/detect-angular-dashboards
 go 1.24
 
 require (
-	github.com/magefile/mage v1.15.0
+	github.com/magefile/mage v1.17.2
 	github.com/stretchr/testify v1.11.1
 )
 
