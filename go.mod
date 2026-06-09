@@ -1,6 +1,6 @@
 module github.com/grafana/detect-angular-dashboards
 
-go 1.24
+go 1.26.4
 
 require (
 	github.com/magefile/mage v1.15.0
