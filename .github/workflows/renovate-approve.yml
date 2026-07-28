@@ -1,12 +1,18 @@
 name: Renovate approve
 
+# Sweeps open renovate PRs on a schedule instead of reacting to their PR events.
+# Reading labels and check status from the API at decision time avoids the races
+# a pull_request payload has: renovate adds the tier labels a moment after
+# creating the PR, and a check cancelled by a runner eviction never fires a new
+# event to retry. This also folds in what renovate-rerun-sweeper.yml used to do,
+# so there is one place that reconciles open renovate PRs.
 on:
-  pull_request:
-    # labeled: renovate adds the tier labels right after creating the PR, so
-    # the opened event payload can miss them and every label-gated step skips.
-    # Each label event cancels the previous run via the concurrency group and
-    # the last one carries the full label set.
-    types: [opened, synchronize, reopened, labeled]
+  schedule:
+    # Hourly across the window renovate is allowed to open PRs in (Mon-Thu,
+    # 08:00-16:59 Europe/Berlin), so an approval lands while someone is around
+    # to catch a bad one.
+    - cron: '23 7-17 * * 1-4'
+  workflow_dispatch:
 
 permissions: {}
 
@@ -15,35 +21,130 @@ env:
   CLAUDE_REVIEW_EFFORT: high
 
 concurrency:
-  group: renovate-approve-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  group: renovate-approve
+  cancel-in-progress: false
 
 jobs:
-  approve:
-    name: Renovate approve
-    # id-token: write is for the GATB token mint and the Anthropic WIF
-    # exchange; the approval itself is posted with the minted bot token.
+  collect:
+    name: Collect renovate PRs needing a decision
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: read
+      # Rerunning runs that infrastructure cancelled, as the sweeper did.
+      actions: write
+    runs-on: ubuntu-latest
+    outputs:
+      prs: ${{ steps.collect.outputs.prs }}
+    steps:
+      - name: Collect
+        id: collect
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          # Give up after this many attempts per run; if the infrastructure
+          # keeps cancelling the same job, a human should look at it.
+          MAX_ATTEMPTS: 3
+        run: |
+          set -euo pipefail
+
+          mapfile -t candidates < <(
+            gh pr list --author 'app/renovate-sh-app' --state open --limit 100 \
+              --json number,headRefName \
+              --jq '.[] | select(.headRefName | startswith("renovate/")) | .number'
+          )
+
+          selected='[]'
+          for pr in "${candidates[@]:-}"; do
+            [ -n "$pr" ] || continue
+
+            pr_data=$(gh pr view "$pr" --json headRefOid,labels,reviews,comments)
+            sha=$(jq -r '.headRefOid' <<<"$pr_data")
+
+            # Never overrule a person, and never judge the same commit twice:
+            # either an approval that survived, or a needs-human comment
+            # carrying this exact commit. A rebase moves the SHA and reopens
+            # the decision.
+            skip=$(jq -r --arg sha "$sha" '
+              if   ([.reviews[] | select(.state == "CHANGES_REQUESTED")] | length) > 0 then "a human requested changes"
+              elif ([.reviews[] | select(.state == "APPROVED" and (.author.login | startswith("grafana-plugins-platform-bot")))] | length) > 0 then "already approved"
+              elif ([.comments[] | select((.author.login | startswith("grafana-plugins-platform-bot")) and (.body | contains($sha)))] | length) > 0 then "already judged this commit"
+              else "" end' <<<"$pr_data")
+            if [ -n "$skip" ]; then
+              echo "PR #$pr: skipping, $skip"
+              continue
+            fi
+
+            # Only decide on PRs whose deterministic checks all came back clean.
+            # "Renovate approve" is excluded because a stale check run left on a
+            # PR by the previous pull_request-triggered version would otherwise
+            # block it forever.
+            checks=$(gh pr checks "$pr" --json name,bucket \
+              --jq '[.[] | select(.name != "Renovate approve") | .bucket] | unique' 2>/dev/null || echo '["pending"]')
+
+            if jq -e 'length == 0' >/dev/null <<<"$checks"; then
+              echo "PR #$pr: skipping, no checks reported yet"
+              continue
+            fi
+
+            if jq -e 'any(.[]; . == "cancel")' >/dev/null <<<"$checks"; then
+              # An eviction cancels a check and nothing re-runs it on its own,
+              # so nudge it here and pick the PR up on a later sweep.
+              runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$sha&per_page=100" \
+                --jq '[.workflow_runs[] | {id, status, conclusion, run_attempt}]')
+              jq -r --argjson max "$MAX_ATTEMPTS" \
+                '.[] | select(.status == "completed" and .conclusion == "cancelled" and .run_attempt < $max) | .id' \
+                <<<"$runs" |
+              while read -r id; do
+                echo "PR #$pr: rerunning cancelled run $id"
+                gh api -X POST "repos/$GH_REPO/actions/runs/$id/rerun" || true
+              done
+              echo "PR #$pr: skipping, waiting on the reruns"
+              continue
+            fi
+
+            if jq -e 'any(.[]; . != "pass" and . != "skipping")' >/dev/null <<<"$checks"; then
+              echo "PR #$pr: skipping, checks are $(jq -c . <<<"$checks")"
+              continue
+            fi
+
+            # claude-gate wins when renovate applied both tier labels.
+            labels=$(jq -c '[.labels[].name]' <<<"$pr_data")
+            if jq -e 'index("claude-gate")' >/dev/null <<<"$labels"; then
+              mode=gated
+            elif jq -e 'index("automerge-direct")' >/dev/null <<<"$labels"; then
+              mode=direct
+            else
+              echo "PR #$pr: skipping, no tier label"
+              continue
+            fi
+
+            echo "PR #$pr: $mode at $sha"
+            selected=$(jq -c --argjson pr "$pr" --arg sha "$sha" --arg mode "$mode" \
+              '. + [{number: $pr, sha: $sha, mode: $mode}]' <<<"$selected")
+          done
+
+          echo "prs=$selected" >> "$GITHUB_OUTPUT"
+
+  decide:
+    name: Decide PR #${{ matrix.pr.number }}
+    needs: collect
+    if: needs.collect.outputs.prs != '[]'
+    strategy:
+      # One PR going wrong must not stop the others being decided.
+      fail-fast: false
+      matrix:
+        pr: ${{ fromJSON(needs.collect.outputs.prs) }}
+    # id-token: write is for the app token mint and the Anthropic WIF exchange;
+    # the approval itself is posted with the minted app token.
     permissions:
       contents: read
       pull-requests: read
       checks: read
       id-token: write
-    # pull_request branch filters only match the base branch, so the head
-    # branch has to be checked here at the job level.
-    if: github.event.pull_request.user.login == 'renovate-sh-app[bot]' && startsWith(github.head_ref, 'renovate/')
     runs-on: ubuntu-latest
     steps:
-      # Only judge PRs whose deterministic checks already passed cleanly.
-      # Excludes itself via running-workflow-name to avoid waiting on its own check.
-      - name: Wait for CI checks
-        uses: lewagon/wait-on-check-action@1d57e2c51a58d812d2765e036a028b6bdb5a6154 # v1.8.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          running-workflow-name: Renovate approve
-          wait-interval: 30
-          allowed-conclusions: success,skipped
-
       # Approvals must come from an identity whose review counts toward the
       # ruleset's required approval; the workflow GITHUB_TOKEN does not.
       - name: Generate bot token
@@ -53,22 +154,25 @@ jobs:
           github_app: grafana-plugins-platform-bot
 
       - name: Approve clear-cut update
-        if: contains(github.event.pull_request.labels.*.name, 'automerge-direct') && !contains(github.event.pull_request.labels.*.name, 'claude-gate')
+        if: matrix.pr.mode == 'direct'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ matrix.pr.number }}
         run: |
           gh pr review "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --approve --body "Automated approval: patch, pin, digest or lock file maintenance update with all CI checks green."
 
+      # The default branch, not the PR head: Claude reads the repository's own
+      # code to judge how the updated package is used, and gets the diff itself
+      # through `gh pr diff`.
       - name: Checkout
-        if: contains(github.event.pull_request.labels.*.name, 'claude-gate')
+        if: matrix.pr.mode == 'gated'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Claude review
         id: claude
-        if: contains(github.event.pull_request.labels.*.name, 'claude-gate')
+        if: matrix.pr.mode == 'gated'
         uses: anthropics/claude-code-action@44423bdec74b97d67543eb16c110546762c110b2 # v1.0.181
         with:
           # Workload identity federation: the workflow's GitHub OIDC token is
@@ -84,12 +188,9 @@ jobs:
           # token that can write. It only produces a verdict; the next step
           # posts it with the bot token.
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # The action refuses bot-initiated runs by default; renovate is the
-          # only actor that can reach this step (job-level author gate above).
-          allowed_bots: renovate-sh-app
           prompt: |
             This is a Renovate dependency update PR that needs a merge/no-merge decision.
-            Repository: ${{ github.repository }}, PR number: ${{ github.event.pull_request.number }}.
+            Repository: ${{ github.repository }}, PR number: ${{ matrix.pr.number }}.
 
             Inspect it with the gh CLI: `gh pr view` for the Renovate PR body (changelogs,
             release notes), `gh pr diff` for the actual change, and read this repository's
@@ -130,21 +231,24 @@ jobs:
             --allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh release view:*),Bash(gh release list:*),WebFetch(domain:github.com),WebFetch(domain:raw.githubusercontent.com),WebFetch(domain:registry.npmjs.org),Read,Grep,Glob"
 
       # The only step that writes, deterministically, with the bot token Claude
-      # never sees. A missing or unparseable verdict fails the job so the
-      # sweeper retries (the action exits 0 whenever Claude completes, even if
-      # it decided nothing). Guards: keep an existing bot approval (renovate
-      # rebases can retain it), never approve over a human's requested changes.
+      # never sees. A missing or unparseable verdict fails the job and leaves the
+      # commit unmarked, so the next sweep retries (the action exits 0 whenever
+      # Claude completes, even if it decided nothing). The needs-human comment
+      # carries the commit so the next sweep knows this one was judged. Guards
+      # re-read reviews in case something changed since the collect job ran.
       - name: Post gate decision
-        if: contains(github.event.pull_request.labels.*.name, 'claude-gate')
+        if: matrix.pr.mode == 'gated'
+        shell: bash
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ matrix.pr.number }}
+          HEAD_SHA: ${{ matrix.pr.sha }}
           EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
         run: |
           verdict=$(jq -r '[.[] | select(.type == "result")] | last | .result // ""' "$EXECUTION_FILE" |
             grep -E '^VERDICT: (approve|needs-human)' | tail -1 || true)
           if [ -z "$verdict" ]; then
-            echo "No verdict in Claude's output. Failing so the sweeper retries."
+            echo "No verdict in Claude's output. Failing so the next sweep retries."
             exit 1
           fi
           printf '%s\n' "$verdict"
@@ -166,6 +270,7 @@ jobs:
               ;;
             "VERDICT: needs-human"*)
               body="${verdict#VERDICT: needs-human}"
-              gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "Needs human review: ${body# }"
+              gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" \
+                --body "$(printf 'Needs human review: %s\n\n<!-- renovate-approve: judged %s -->' "${body# }" "$HEAD_SHA")"
               ;;
           esac
