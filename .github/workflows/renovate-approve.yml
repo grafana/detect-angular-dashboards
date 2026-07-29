@@ -36,7 +36,7 @@ jobs:
       statuses: read
       # Rerunning runs that infrastructure cancelled, as the sweeper did.
       actions: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-arm64-small
     outputs:
       prs: ${{ steps.collect.outputs.prs }}
     steps:
