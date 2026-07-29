@@ -146,7 +146,7 @@ jobs:
       pull-requests: read
       checks: read
       id-token: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-arm64-small
     steps:
       # Approvals must come from an identity whose review counts toward the
       # ruleset's required approval; the workflow GITHUB_TOKEN does not.
