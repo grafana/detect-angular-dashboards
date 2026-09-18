@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.11.3](https://github.com/grafana/detect-angular-dashboards/compare/v0.11.2...v0.11.3) (2026-04-21)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** update module github.com/stretchr/testify to v1.11.1 ([#58](https://github.com/grafana/detect-angular-dashboards/issues/58)) ([dfbd9b4](https://github.com/grafana/detect-angular-dashboards/commit/dfbd9b4b57c496ace347720242c0d7a0ce0f8555))
+
+
+### 🔧 Chores
+
+* **deps:** pin golang docker tag to 59a9237 ([#57](https://github.com/grafana/detect-angular-dashboards/issues/57)) ([f51947e](https://github.com/grafana/detect-angular-dashboards/commit/f51947ef284a6d65df5dd37c56fabc206cf7c1ac))
+* **deps:** update actions/checkout action to v6 ([#59](https://github.com/grafana/detect-angular-dashboards/issues/59)) ([94cc2d1](https://github.com/grafana/detect-angular-dashboards/commit/94cc2d1de20568c2843d5e4d30ba2cad31a6cdb3))
+* **deps:** update actions/create-github-app-token action to v3 ([#70](https://github.com/grafana/detect-angular-dashboards/issues/70)) ([a00acd4](https://github.com/grafana/detect-angular-dashboards/commit/a00acd4ca9fb1c0be733ab6773dbe686696b733b))
+* **deps:** update actions/setup-go action to v6.2.0 ([#61](https://github.com/grafana/detect-angular-dashboards/issues/61)) ([5479304](https://github.com/grafana/detect-angular-dashboards/commit/54793042191966ef531380d3c860343214ca1330))
+* **deps:** update golangci/golangci-lint-action action to v9 ([#60](https://github.com/grafana/detect-angular-dashboards/issues/60)) ([fa2192c](https://github.com/grafana/detect-angular-dashboards/commit/fa2192c3b311249ba205c7a445bb4b42cef64272))
+* **deps:** update magefile/mage-action action to v4 ([#71](https://github.com/grafana/detect-angular-dashboards/issues/71)) ([938f342](https://github.com/grafana/detect-angular-dashboards/commit/938f342934a2399f70bd0b350b2a9edd9c886e7f))
+
 ## [0.11.2](https://github.com/grafana/detect-angular-dashboards/compare/v0.11.1...v0.11.2) (2026-01-08)
 
 
